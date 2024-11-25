@@ -60,7 +60,7 @@ class Validator:
 
         with self.validation_complete_cv:
             if not self.validation_complete_cv.wait(timeout=5):  # TODO timeout
-                logger.warn("Operation timedout")
+                logger.warn("Operation timed out")
                 self.timedout_operations += 1
 
         self.expecting_event.clear()
