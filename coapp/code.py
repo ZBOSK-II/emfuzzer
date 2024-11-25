@@ -5,7 +5,7 @@ def decode_code(octet):
 
 
 def code_short_string(code):
-    return f"{code[0]},{code[1]:02}"
+    return f"{code[0]}.{code[1]:02}"
 
 
 __MESSAGES = {
