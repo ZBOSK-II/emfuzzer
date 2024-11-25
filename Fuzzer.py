@@ -1,11 +1,12 @@
+import logging
+
 from .coapp import Validator
 from .net import Loop
 
-import logging
-
 logger = logging.getLogger(__name__)
 
-def fuzz(target, files):
+
+def fuzz(target, files, timeout):
     validator = Validator(target)
 
     with Loop(validator) as loop:  # TODO
@@ -16,6 +17,13 @@ def fuzz(target, files):
             if len(data) == 0:
                 logger.warn(f"No data found, skipping {path}")
                 continue
+
             loop.send(target, data)
-            validator.wait_for_validation() # TODO timeout
-    return validator.total_errors()
+
+            validator.wait_for_validation(timeout)
+
+    result = validator.total_errors()
+
+    logger.info(f"Total errors: {result}")
+
+    return result

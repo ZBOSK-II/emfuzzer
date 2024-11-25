@@ -2,13 +2,12 @@ import argparse
 import logging
 import sys
 import time
-
 from pathlib import Path
 
 from .coapp import Validator
+from .Fuzzer import fuzz
 from .net import Loop
 
-from .Fuzzer import fuzz
 
 def __parse_target(parser, args):
     return args.host, args.port
@@ -42,8 +41,14 @@ def parse_args():
         default=5683,
         type=int,
     )
+    parser.add_argument(
+        "--timeout",
+        help="Timeout to be used for each operation",
+        default=5,
+        type=int,
+    )
+
     # TODO delay
-    # TODO timeout
     args = parser.parse_args()
 
     args.data = __parse_data(parser, args.data)
@@ -57,7 +62,7 @@ def main():
 
     args = parse_args()
 
-    return fuzz(args.target, args.data)
+    return fuzz(args.target, args.data, args.timeout)
 
 
 if __name__ == "__main__":
