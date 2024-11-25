@@ -8,6 +8,7 @@ from pathlib import Path
 from .coapp import Validator
 from .net import Loop
 
+from .Fuzzer import fuzz
 
 def __parse_target(parser, args):
     return args.host, args.port
@@ -56,12 +57,7 @@ def main():
 
     args = parse_args()
 
-    validator = Validator(args.target)
-
-    with Loop(validator) as loop:  # TODO
-        loop.send(args.target, b"aaaaa")
-        validator.wait_for_validation()
-    return 0
+    return fuzz(args.target, args.data)
 
 
 if __name__ == "__main__":

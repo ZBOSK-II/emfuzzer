@@ -12,6 +12,7 @@ class Validator:
         self.expected_ip = expected_ip
 
         self.expecting_event = threading.Event()
+        self.validation_complete = threading.Event()
         self.validation_complete_cv = threading.Condition()
 
         self.total = 0
@@ -23,6 +24,7 @@ class Validator:
 
     def __call__(self, addr, data):
         self.validate(addr, data)
+        self.validation_complete.set()
         with self.validation_complete_cv:
             self.validation_complete_cv.notify()
 
@@ -55,17 +57,21 @@ class Validator:
             self.failed_operations += 1
             return
 
-    def wait_for_validation(self):
+    def wait_for_validation(self, timeout=5):
         self.expecting_event.set()
+        self.validation_complete.clear()
 
         with self.validation_complete_cv:
-            if not self.validation_complete_cv.wait(timeout=5):  # TODO timeout
+            if not self.validation_complete_cv.wait_for(
+                lambda: self.validation_complete.is_set(), timeout=timeout
+            ):
                 logger.warn("Operation timed out")
                 self.timedout_operations += 1
 
         self.expecting_event.clear()
+        self.validation_complete.clear()
 
-    def total_errors():
+    def total_errors(self):
         return (
             self.unexpected_origin
             + self.unexpected_message
