@@ -45,10 +45,15 @@ def parse_args():
         "--timeout",
         help="Timeout to be used for each operation",
         default=5,
-        type=int,
+        type=float,
+    )
+    parser.add_argument(
+        "--delay",
+        help="Delay between operations",
+        default=0.2,
+        type=float,
     )
 
-    # TODO delay
     args = parser.parse_args()
 
     args.data = __parse_data(parser, args.data)
@@ -62,7 +67,7 @@ def main():
 
     args = parse_args()
 
-    return fuzz(args.target, args.data, args.timeout)
+    return fuzz(args.target, args.data, args.timeout, args.delay)
 
 
 if __name__ == "__main__":

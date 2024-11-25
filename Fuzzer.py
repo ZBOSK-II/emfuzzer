@@ -1,4 +1,5 @@
 import logging
+import time
 
 from .coapp import Validator
 from .net import Loop
@@ -6,10 +7,10 @@ from .net import Loop
 logger = logging.getLogger(__name__)
 
 
-def fuzz(target, files, timeout):
+def fuzz(target, files, timeout, delay):
     validator = Validator(target)
 
-    with Loop(validator) as loop:  # TODO
+    with Loop(validator) as loop:
         for path in files:
             logger.info(f"Opening {path}")
             with path.open("rb") as file:
@@ -21,6 +22,8 @@ def fuzz(target, files, timeout):
             loop.send(target, data)
 
             validator.wait_for_validation(timeout)
+
+            time.sleep(delay)
 
     result = validator.total_errors()
 
