@@ -1,6 +1,6 @@
-import sys
-import socket
 import logging
+import sys
+import time
 
 from .net import Loop
 
@@ -8,10 +8,9 @@ from .net import Loop
 def main():
     logging.basicConfig(level=logging.DEBUG)
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    loop = Loop(sock)  # TODO
-    loop.start()
-    loop.send(b"aaaaa")
+    with Loop(None) as loop:  # TODO
+        loop.send(("127.0.0.1", 2000), b"aaaaa")
+        time.sleep(10)
     return 0
 
 
