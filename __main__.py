@@ -63,7 +63,10 @@ def parse_args():
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s [%(levelname)8s](%(name)20s): %(message)s",
+    )
 
     args = parse_args()
 
