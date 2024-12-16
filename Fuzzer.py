@@ -3,12 +3,14 @@ import time
 
 from .coapp import Validator
 from .net import Loop
+from .ping import Pinger
 
 logger = logging.getLogger(__name__)
 
 
 def fuzz(target, files, timeout, delay):
     validator = Validator(target)
+    pinger = Pinger(host=target[0], count=5)  # TODO ping configurable?
 
     with Loop(validator) as loop:
         for path in files:
@@ -22,11 +24,14 @@ def fuzz(target, files, timeout, delay):
             loop.send(target, data)
 
             validator.wait_for_validation(timeout)
+            pinger.check_alive(timeout)
 
             time.sleep(delay)
 
-    result = validator.total_errors()
+    coapp_result = validator.total_errors()
+    logger.info(f"Total COAPP errors: {coapp_result}")
 
-    logger.info(f"Total errors: {result}")
+    ping_result = pinger.total_errors()
+    logger.info(f"Totoal ping errors: {ping_result}")
 
-    return result
+    return coapp_result + ping_result
