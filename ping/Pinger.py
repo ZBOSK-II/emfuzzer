@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class Pinger:
 
-    def __init__(self, host, count, interval=1):
+    def __init__(self, host: str, count: int, interval: int = 1):
         self.args = [
             "ping",
             "-c",
@@ -22,7 +22,7 @@ class Pinger:
         self.timedout = 0
         self.failed = 0
 
-    def check_alive(self, timeout):
+    def check_alive(self, timeout: int) -> None:
         self.total += 1
 
         logger.info(f"Checking `{' '.join(self.args)}`")
@@ -46,5 +46,5 @@ class Pinger:
 
         logger.info("Target is alive")
 
-    def total_errors(self):
+    def total_errors(self) -> int:
         return self.timedout + self.failed
