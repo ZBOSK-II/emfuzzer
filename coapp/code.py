@@ -1,14 +1,14 @@
-def decode_code(octet):
+def decode_code(octet: int) -> tuple[int, int]:
     clazz = (octet & 0b11100000) >> 5
     code = octet & 0xB00011111
     return clazz, code
 
 
-def code_short_string(code):
+def code_short_string(code: tuple[int, int]) -> str:
     return f"{code[0]}.{code[1]:02}"
 
 
-__MESSAGES = {
+__MESSAGES: dict[int, tuple[str, dict[int, str]]] = {
     1: (
         "REQUEST",
         {
@@ -75,15 +75,15 @@ __MESSAGES = {
 }
 
 
-def code_message(code):
+def code_message(code: tuple[int, int]) -> str:
     class_message, code_dict = __MESSAGES.get(code[0], ("UNKNOWN", {}))
     code_message = code_dict.get(code[1], "-unknown-")
     return f"{class_message}: {code_message}"
 
 
-def code_to_string(code):
+def code_to_string(code: tuple[int, int]) -> str:
     return f"{code_short_string(code)} ({code_message(code)})"
 
 
-def code_reports_success(code):
+def code_reports_success(code: tuple[int, int]) -> bool:
     return code[0] == 2
