@@ -1,1 +1,1 @@
-from .Pinger import Pinger
+from .Pinger import Pinger as Pinger

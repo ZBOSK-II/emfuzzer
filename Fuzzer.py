@@ -1,5 +1,6 @@
 import logging
 import time
+from pathlib import Path
 
 from .coapp import Validator
 from .net import Loop
@@ -8,7 +9,7 @@ from .ping import Pinger
 logger = logging.getLogger(__name__)
 
 
-def fuzz(target, files, timeout, delay):
+def fuzz(target: str, files: list[Path], timeout: int, delay: int) -> int:
     validator = Validator(target)
     pinger = Pinger(host=target[0], count=5)  # TODO ping configurable?
 
