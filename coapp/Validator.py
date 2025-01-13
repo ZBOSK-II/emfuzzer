@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class Validator:
 
-    def __init__(self, expected_ip):
+    def __init__(self, expected_ip: str):
         self.expected_ip = expected_ip
 
         self.expecting_event = threading.Event()
@@ -22,13 +22,13 @@ class Validator:
         self.failed_operations = 0
         self.timedout_operations = 0
 
-    def __call__(self, addr, data):
+    def __call__(self, addr: str, data: bytes) -> None:
         self.validate(addr, data)
         self.validation_complete.set()
         with self.validation_complete_cv:
             self.validation_complete_cv.notify()
 
-    def validate(self, addr, data):
+    def validate(self, addr: str, data: bytes) -> None:
         self.total += 1
 
         if addr != self.expected_ip:
@@ -57,7 +57,7 @@ class Validator:
             self.failed_operations += 1
             return
 
-    def wait_for_validation(self, timeout=5):
+    def wait_for_validation(self, timeout: int = 5) -> None:
         self.expecting_event.set()
         self.validation_complete.clear()
 
@@ -71,7 +71,7 @@ class Validator:
         self.expecting_event.clear()
         self.validation_complete.clear()
 
-    def total_errors(self):
+    def total_errors(self) -> int:
         return (
             self.unexpected_origin
             + self.unexpected_message
