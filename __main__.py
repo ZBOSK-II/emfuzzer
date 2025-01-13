@@ -9,19 +9,21 @@ from .Fuzzer import fuzz
 from .net import Loop
 
 
-def __parse_target(parser, args):
+def __parse_target(
+    parser: argparse.ArgumentParser, args: argparse.Namespace
+) -> tuple[str, int]:
     return args.host, args.port
 
 
-def __parse_data(parser, data):
-    data = [Path(f) for f in data]
-    for f in data:
+def __parse_data(parser: argparse.ArgumentParser, data: list[str]) -> list[Path]:
+    result = [Path(f) for f in data]
+    for f in result:
         if not f.is_file():
             parser.error(f"Specified path is not a file: {f}")
-    return data
+    return result
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="CoAP Fuzzer", description="Fuzzes CoAP target using provided data"
     )
@@ -62,7 +64,7 @@ def parse_args():
     return args
 
 
-def main():
+def main() -> int:
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s [%(levelname)8s](%(name)20s): %(message)s",
