@@ -1,10 +1,16 @@
 import logging
 import subprocess
+from enum import StrEnum, auto
 
 logger = logging.getLogger(__name__)
 
 
 class Pinger:
+
+    class Result(StrEnum):
+        ALIVE = auto()
+        TIMEOUT = auto()
+        ERROR = auto()
 
     def __init__(self, host: str, count: int, interval: int = 1):
         self.args = [
@@ -18,13 +24,7 @@ class Pinger:
             host,
         ]
 
-        self.total = 0
-        self.timedout = 0
-        self.failed = 0
-
-    def check_alive(self, timeout: int) -> None:
-        self.total += 1
-
+    def check_alive(self, timeout: int) -> Result:
         logger.info(f"Checking `{' '.join(self.args)}`")
         try:
             result = subprocess.run(
@@ -35,16 +35,12 @@ class Pinger:
             )
         except subprocess.TimeoutExpired:
             logger.warn("Ping timedout")
-            self.timedout += 1
-            return
+            return self.Result.TIMEOUT
 
         if result.returncode != 0:
             logger.warn(f"Ping returned {result.returncode}")
             logger.warn(result.stdout)
-            self.failed += 1
-            return
+            return self.Result.ERROR
 
         logger.info("Target is alive")
-
-    def total_errors(self) -> int:
-        return self.timedout + self.failed
+        return self.Result.ALIVE
