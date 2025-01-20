@@ -1,1 +1,1 @@
-from .Loop import Loop as Loop
+from .Loop import Loop as Loop  # noqa

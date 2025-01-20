@@ -1,1 +1,1 @@
-from .Validator import Validator as Validator
+from .Validator import Validator as Validator  # noqa

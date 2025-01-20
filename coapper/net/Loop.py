@@ -4,11 +4,10 @@ import queue
 import select
 import socket
 import threading
-import time
 from binascii import hexlify
 from collections.abc import Callable
 from types import TracebackType
-from typing import Optional, cast
+from typing import Optional, Self, cast
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +93,7 @@ class Loop:
     def __wake_select(self) -> None:
         os.write(self.pipe[1], b"x")
 
-    def __enter__(self) -> Loop:
+    def __enter__(self) -> Self:
         self.start()
         return self
 

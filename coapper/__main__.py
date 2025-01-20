@@ -1,12 +1,9 @@
 import argparse
 import logging
 import sys
-import time
 from pathlib import Path
 
-from .coapp import Validator
 from .Fuzzer import fuzz
-from .net import Loop
 
 
 def __parse_target(
