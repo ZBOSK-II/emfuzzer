@@ -1,0 +1,25 @@
+default:
+  image: python:3.13
+  cache:
+    paths:
+      - .pip_cache
+  before_script:
+    - python --version ; pip --version  # For debugging
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - pip install -r requirements-dev.txt
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip_cache"
+
+isort:
+  script:
+    - isort --profile black .
+
+flake8:
+  script:
+    - flake8 .
+
+mypy:
+  script:
+    - mypy .
