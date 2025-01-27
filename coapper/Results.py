@@ -41,6 +41,7 @@ class Results:
             "args": " ".join(sys.argv[1:]),
             "start": self.__iso_timestamp(),
         }
+        self.extra: dict[str, int] = {}
 
     def register(
         self, group: str, results: type[StrEnum], success: StrEnum
@@ -52,8 +53,9 @@ class Results:
     def add_key(self, key: str) -> None:
         self.keys.append(key)
 
-    def mark_finish(self) -> None:
+    def finish(self, extra: dict[str, int]) -> None:
         self.info["end"] = self.__iso_timestamp()
+        self.extra = extra
 
     def __getitem__(self, group: str) -> ResultsGroup:
         return self.data[group]
@@ -73,6 +75,7 @@ class Results:
             {"info": self.info}
             | {k: v.to_dict() for k, v in self.data.items()}
             | {"all": self.keys}
+            | {"extra": self.extra}
         )
 
     @staticmethod

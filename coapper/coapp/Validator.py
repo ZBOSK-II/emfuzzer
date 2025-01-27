@@ -73,6 +73,9 @@ class Validator(Base):
 
         return self.last_result
 
+    def extra_stats(self) -> dict[str, int]:
+        return {"unexpected_messages": self.unexpected_messages}
+
     def __unexpected_message(self) -> None:
         logger.warn("Message unexpected at this stage")
         self.unexpected_messages += 1

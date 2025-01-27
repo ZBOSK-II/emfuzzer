@@ -40,7 +40,7 @@ def fuzz(args: Arguments) -> int:
 
             time.sleep(args.delay)
 
-    results.mark_finish()
+    results.finish(validator.extra_stats())
     logger.info("Results:\n" + results.summary())
 
     with open(args.output_prefix + ".json", "w", encoding="utf-8") as f:
