@@ -1,3 +1,4 @@
+import json
 import logging
 import time
 
@@ -41,5 +42,9 @@ def fuzz(args: Arguments) -> int:
 
     results.mark_finish()
     logger.info("Results:\n" + results.summary())
+
+    with open(args.output_prefix + ".json", "w", encoding="utf-8") as f:
+        json.dump(results.to_dict(), f, indent=2)
+        f.write("\n")
 
     return results.total_errors()
