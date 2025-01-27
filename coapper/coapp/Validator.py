@@ -2,12 +2,13 @@ import logging
 import threading
 from enum import StrEnum, auto
 
+from ..net import Validator as Base
 from .code import code_reports_success, code_to_string, decode_code
 
 logger = logging.getLogger(__name__)
 
 
-class Validator:
+class Validator(Base):
 
     class Result(StrEnum):
         SUCCESS = auto()
@@ -27,7 +28,7 @@ class Validator:
 
         self.unexpected_messages = 0
 
-    def __call__(self, addr: str, data: bytes) -> None:
+    def validate(self, addr: str, data: bytes) -> None:
         if not self.expecting_event.is_set():
             self.__unexpected_message()
             return
@@ -57,11 +58,11 @@ class Validator:
 
         return self.Result.SUCCESS
 
-    def mark_sent(self) -> None:
+    def mark_sent(self, addr: str, data: bytes) -> None:
         self.last_result = self.Result.UNKNOWN
         self.expecting_event.set()
 
-    def wait_for_validation(self, timeout: int = 5) -> Result:
+    def wait_for_result(self, timeout: int = 5) -> Result:
         with self.validation_complete_cv:
             if not self.validation_complete_cv.wait_for(
                 lambda: self.last_result != self.Result.UNKNOWN, timeout=timeout

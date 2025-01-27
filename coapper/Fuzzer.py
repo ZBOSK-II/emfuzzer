@@ -29,10 +29,9 @@ def fuzz(target: str, files: list[Path], timeout: int, delay: int) -> int:
                 logger.warn(f"No data found, skipping {path}")
                 continue
 
-            validator.mark_sent()
             loop.send(target, data)
 
-            coapp_results.collect(str(path), validator.wait_for_validation(timeout))
+            coapp_results.collect(str(path), validator.wait_for_result(timeout))
             pinger_results.collect(str(path), pinger.check_alive(timeout))
 
             time.sleep(delay)

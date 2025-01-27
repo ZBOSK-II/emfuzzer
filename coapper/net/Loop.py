@@ -5,9 +5,10 @@ import select
 import socket
 import threading
 from binascii import hexlify
-from collections.abc import Callable
 from types import TracebackType
 from typing import Optional, Self, cast
+
+from .Validator import Validator
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ type Selectable = int | socket.socket
 
 
 class Loop:
-    def __init__(self, validator: Optional[Callable[[str, bytes], None]]):
+    def __init__(self, validator: Optional[Validator]):
         self.interrupted = threading.Event()
         self.pipe = os.pipe()
         self.udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -54,7 +55,7 @@ class Loop:
                     f"Received {len(data)} bytes from {addr}: {hexlify(data).decode('utf-8')}"
                 )
                 if self.validator:
-                    self.validator(addr, data)
+                    self.validator.validate(addr, data)
             elif fd == self.pipe[0]:
                 os.read(self.pipe[0], 1)
 
@@ -67,6 +68,8 @@ class Loop:
             logger.info(
                 f"Sending {len(data)} bytes to {addr}: {hexlify(data).decode('utf-8')}"
             )
+            if self.validator:
+                self.validator.mark_sent(addr, data)
             cast(socket.socket, fd).sendto(data, addr)
 
     def __process_xlist(self, xlist: list[Selectable]) -> None:
