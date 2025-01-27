@@ -8,6 +8,7 @@ from binascii import hexlify
 from types import TracebackType
 from typing import Optional, Self, cast
 
+from .Address import Address
 from .Validator import Validator
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ class Loop:
         self.pipe = os.pipe()
         self.udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.thread = threading.Thread(target=self.__loop, name="NetworkLoop")
-        self.queue: queue.Queue[tuple[str, bytes]] = queue.Queue()
+        self.queue: queue.Queue[tuple[Address, bytes]] = queue.Queue()
         self.validator = validator
 
     def __loop(self) -> None:
@@ -55,7 +56,7 @@ class Loop:
                     f"Received {len(data)} bytes from {addr}: {hexlify(data).decode('utf-8')}"
                 )
                 if self.validator:
-                    self.validator.validate(addr, data)
+                    self.validator.validate(Address(*addr), data)
             elif fd == self.pipe[0]:
                 os.read(self.pipe[0], 1)
 
@@ -70,7 +71,7 @@ class Loop:
             )
             if self.validator:
                 self.validator.mark_sent(addr, data)
-            cast(socket.socket, fd).sendto(data, addr)
+            cast(socket.socket, fd).sendto(data, addr.as_tuple())
 
     def __process_xlist(self, xlist: list[Selectable]) -> None:
         for fd in xlist:
@@ -89,7 +90,7 @@ class Loop:
         self.udp.close()
         logger.info("Network thread stopped")
 
-    def send(self, addr: str, data: bytes) -> None:
+    def send(self, addr: Address, data: bytes) -> None:
         self.queue.put((addr, data))
         self.__wake_select()
 

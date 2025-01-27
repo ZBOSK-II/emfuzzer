@@ -3,13 +3,14 @@ import logging
 import sys
 from pathlib import Path
 
+from .Arguments import Address, Arguments
 from .Fuzzer import fuzz
 
 
 def __parse_target(
     parser: argparse.ArgumentParser, args: argparse.Namespace
-) -> tuple[str, int]:
-    return args.host, args.port
+) -> Address:
+    return Address(args.host, args.port)
 
 
 def __parse_data(parser: argparse.ArgumentParser, data: list[str]) -> list[Path]:
@@ -20,7 +21,7 @@ def __parse_data(parser: argparse.ArgumentParser, data: list[str]) -> list[Path]
     return result
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args() -> Arguments:
     parser = argparse.ArgumentParser(
         prog="CoAP Fuzzer", description="Fuzzes CoAP target using provided data"
     )
@@ -69,7 +70,7 @@ def main() -> int:
 
     args = parse_args()
 
-    return fuzz(args.target, args.data, args.timeout, args.delay)
+    return fuzz(args)
 
 
 if __name__ == "__main__":

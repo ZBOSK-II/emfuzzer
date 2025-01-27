@@ -2,6 +2,7 @@ import logging
 import threading
 from enum import StrEnum, auto
 
+from ..net import Address
 from ..net import Validator as Base
 from .code import code_reports_success, code_to_string, decode_code
 
@@ -18,7 +19,7 @@ class Validator(Base):
         FAILED_OPERATIONS = auto()
         TIMEDOUT = auto()
 
-    def __init__(self, expected_ip: str):
+    def __init__(self, expected_ip: Address):
         self.expected_ip = expected_ip
 
         self.expecting_event = threading.Event()
@@ -28,7 +29,7 @@ class Validator(Base):
 
         self.unexpected_messages = 0
 
-    def validate(self, addr: str, data: bytes) -> None:
+    def validate(self, addr: Address, data: bytes) -> None:
         if not self.expecting_event.is_set():
             self.__unexpected_message()
             return
@@ -37,7 +38,7 @@ class Validator(Base):
         with self.validation_complete_cv:
             self.validation_complete_cv.notify()
 
-    def check_message(self, addr: str, data: bytes) -> Result:
+    def check_message(self, addr: Address, data: bytes) -> Result:
         if addr != self.expected_ip:
             logger.warn(
                 f"Message received from unexpected origin: {addr} vs {self.expected_ip}"
@@ -58,7 +59,7 @@ class Validator(Base):
 
         return self.Result.SUCCESS
 
-    def mark_sent(self, addr: str, data: bytes) -> None:
+    def mark_sent(self, addr: Address, data: bytes) -> None:
         self.last_result = self.Result.UNKNOWN
         self.expecting_event.set()
 
