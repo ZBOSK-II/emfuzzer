@@ -1,4 +1,5 @@
 from enum import StrEnum
+from typing import Mapping
 
 
 class ResultsGroup:
@@ -30,6 +31,7 @@ class Results:
 
     def __init__(self) -> None:
         self.data: dict[str, ResultsGroup] = {}
+        self.keys: list[str] = []
 
     def register(
         self, group: str, results: type[StrEnum], success: StrEnum
@@ -38,11 +40,15 @@ class Results:
         self.data[group] = g
         return g
 
+    def add_key(self, key: str) -> None:
+        self.keys.append(key)
+
     def __getitem__(self, group: str) -> ResultsGroup:
         return self.data[group]
 
     def summary(self) -> str:
-        return "\n".join(
+        header = f"Sent: {len(self.keys)}\n"
+        return header + "\n".join(
             f"{k} ({v.total_errors()}/{v.total()}):\n{v.summary()}"
             for k, v in self.data.items()
         )
@@ -50,5 +56,5 @@ class Results:
     def total_errors(self) -> int:
         return sum(g.total_errors() for g in self.data.values())
 
-    def to_dict(self) -> dict[str, dict[str, list[str]]]:
-        return {k: v.to_dict() for k, v in self.data.items()}
+    def to_dict(self) -> Mapping[str, list | Mapping]:
+        return {k: v.to_dict() for k, v in self.data.items()} | {"all": self.keys}
