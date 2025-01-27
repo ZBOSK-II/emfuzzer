@@ -6,13 +6,11 @@ from .coapp import Validator
 from .net import Loop
 from .ping import Pinger
 from .Results import Results
-from .Version import VERSION
 
 logger = logging.getLogger(__name__)
 
 
 def fuzz(args: Arguments) -> int:
-    logger.info(f"Started instance ({VERSION})")
     validator = Validator(args.target)
     pinger = Pinger(host=args.target.host, count=5)  # TODO ping configurable?
 

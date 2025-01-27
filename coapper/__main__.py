@@ -1,10 +1,12 @@
 import argparse
 import logging
 import sys
+from datetime import datetime
 from pathlib import Path
 
 from .Arguments import Address, Arguments
 from .Fuzzer import fuzz
+from .Version import VERSION
 
 
 def __parse_target(
@@ -19,6 +21,21 @@ def __parse_data(parser: argparse.ArgumentParser, data: list[str]) -> list[Path]
         if not f.is_file():
             parser.error(f"Specified path is not a file: {f}")
     return result
+
+
+def __setup_logger(prefix: str):
+    format = "%(asctime)s [%(levelname)8s](%(name)20s): %(message)s"
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format=format,
+    )
+
+    root_logger = logging.getLogger()
+    handler = logging.FileHandler(f"{prefix}.log")
+    handler.setFormatter(root_logger.handlers[0].formatter)
+    logging.getLogger().addHandler(handler)
+
+    root_logger.info(f"Started instance ({VERSION})")
 
 
 def parse_args() -> Arguments:
@@ -53,22 +70,26 @@ def parse_args() -> Arguments:
         default=0.2,
         type=float,
     )
+    parser.add_argument(
+        "--output-prefix",
+        help="Prefix to be used for saving output (logs, reports, etc.)",
+        default="coapper",
+        type=str,
+    )
 
     args = parser.parse_args()
 
     args.data = __parse_data(parser, args.data)
     args.target = __parse_target(parser, args)
+    args.output_prefix += f"-{datetime.now():%Y%m%d-%H%M%S}"
 
     return args
 
 
 def main() -> int:
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s [%(levelname)8s](%(name)20s): %(message)s",
-    )
-
     args = parse_args()
+
+    __setup_logger(args.output_prefix)
 
     return fuzz(args)
 
