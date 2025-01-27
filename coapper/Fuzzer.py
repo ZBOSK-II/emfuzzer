@@ -41,6 +41,7 @@ def fuzz(target: str, files: list[Path], timeout: int, delay: int) -> int:
 
             time.sleep(delay)
 
+    results.mark_finish()
     logger.info("Results:\n" + results.summary())
 
     return results.total_errors()

@@ -1,5 +1,9 @@
+import sys
+from datetime import datetime
 from enum import StrEnum
 from typing import Mapping
+
+from .Version import VERSION
 
 
 class ResultsGroup:
@@ -32,6 +36,11 @@ class Results:
     def __init__(self) -> None:
         self.data: dict[str, ResultsGroup] = {}
         self.keys: list[str] = []
+        self.info = {
+            "version": VERSION,
+            "args": " ".join(sys.argv[1:]),
+            "start": self.__iso_timestamp(),
+        }
 
     def register(
         self, group: str, results: type[StrEnum], success: StrEnum
@@ -42,6 +51,9 @@ class Results:
 
     def add_key(self, key: str) -> None:
         self.keys.append(key)
+
+    def mark_finish(self) -> None:
+        self.info["end"] = self.__iso_timestamp()
 
     def __getitem__(self, group: str) -> ResultsGroup:
         return self.data[group]
@@ -57,4 +69,12 @@ class Results:
         return sum(g.total_errors() for g in self.data.values())
 
     def to_dict(self) -> Mapping[str, list | Mapping]:
-        return {k: v.to_dict() for k, v in self.data.items()} | {"all": self.keys}
+        return (
+            {"info": self.info}
+            | {k: v.to_dict() for k, v in self.data.items()}
+            | {"all": self.keys}
+        )
+
+    @staticmethod
+    def __iso_timestamp() -> str:
+        return datetime.now().astimezone().isoformat()
