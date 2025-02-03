@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Protocol
 
-from .net import Address
+from .net import Address as Address
 
 
 class Arguments(Protocol):

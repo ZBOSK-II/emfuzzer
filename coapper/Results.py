@@ -24,7 +24,7 @@ class ResultsGroup:
     def total_errors(self) -> int:
         return sum(len(v) for k, v in self.data.items() if k != self.success_key)
 
-    def summary(self, indent="\t") -> str:
+    def summary(self, indent: str = "\t") -> str:
         return "\n".join(f"{indent}{k}: {len(v)}" for k, v in self.data.items())
 
     def to_dict(self) -> dict[str, list[str]]:
@@ -70,7 +70,7 @@ class Results:
     def total_errors(self) -> int:
         return sum(g.total_errors() for g in self.data.values())
 
-    def to_dict(self) -> Mapping[str, list | Mapping]:
+    def to_dict(self) -> Mapping[str, list[str] | Mapping[str, str | int | list[str]]]:
         return (
             {"info": self.info}
             | {k: v.to_dict() for k, v in self.data.items()}
