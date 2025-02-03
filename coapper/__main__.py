@@ -4,15 +4,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from .Arguments import Address, Arguments
+from .Arguments import Arguments
+from .Config import Config
 from .Fuzzer import fuzz
 from .Version import VERSION
-
-
-def __parse_target(
-    parser: argparse.ArgumentParser, args: argparse.Namespace
-) -> Address:
-    return Address(args.host, args.port)
 
 
 def __parse_data(parser: argparse.ArgumentParser, data: list[str]) -> list[Path]:
@@ -48,39 +43,21 @@ def parse_args() -> Arguments:
         help="List of files containing binary data to send to the target",
     )
     parser.add_argument(
-        "--host",
-        help="Target of the packets",
-        default="127.0.0.1",
-    )
-    parser.add_argument(
-        "--port",
-        help="Target port of the packets",
-        default=5683,
-        type=int,
-    )
-    parser.add_argument(
-        "--timeout",
-        help="Timeout to be used for each operation",
-        default=5,
-        type=float,
-    )
-    parser.add_argument(
-        "--delay",
-        help="Delay between operations",
-        default=0.2,
-        type=float,
-    )
-    parser.add_argument(
         "--output-prefix",
         help="Prefix to be used for saving output (logs, reports, etc.)",
         default="coapper",
         type=str,
     )
+    parser.add_argument(
+        "--config",
+        help="Path to the configuration file",
+        default="default-config.json",
+        type=Path,
+    )
 
     args = parser.parse_args()
 
     args.data = __parse_data(parser, args.data)
-    args.target = __parse_target(parser, args)
     args.output_prefix += f"-{datetime.now():%Y%m%d-%H%M%S}"
 
     return args
@@ -91,7 +68,7 @@ def main() -> int:
 
     __setup_logger(args.output_prefix)
 
-    return fuzz(args)
+    return fuzz(args, Config.from_file(args.config))
 
 
 if __name__ == "__main__":

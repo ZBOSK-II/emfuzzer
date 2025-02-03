@@ -1,8 +1,9 @@
 import sys
 from datetime import datetime
 from enum import StrEnum
-from typing import Mapping
+from typing import Any, Collection, Mapping
 
+from .Config import Config
 from .Version import VERSION
 
 
@@ -33,12 +34,13 @@ class ResultsGroup:
 
 class Results:
 
-    def __init__(self) -> None:
+    def __init__(self, config: Config):
         self.data: dict[str, ResultsGroup] = {}
         self.keys: list[str] = []
         self.info = {
             "version": VERSION,
             "args": " ".join(sys.argv[1:]),
+            "config": config.to_dict(),
             "start": self.__iso_timestamp(),
         }
         self.extra: dict[str, int] = {}
@@ -70,7 +72,7 @@ class Results:
     def total_errors(self) -> int:
         return sum(g.total_errors() for g in self.data.values())
 
-    def to_dict(self) -> Mapping[str, list[str] | Mapping[str, str | int | list[str]]]:
+    def to_dict(self) -> Mapping[str, Collection[Any]]:
         return (
             {"info": self.info}
             | {k: v.to_dict() for k, v in self.data.items()}

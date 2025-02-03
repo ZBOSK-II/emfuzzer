@@ -19,8 +19,9 @@ class Validator(Base):
         FAILED_OPERATIONS = auto()
         TIMEDOUT = auto()
 
-    def __init__(self, expected_ip: Address):
+    def __init__(self, expected_ip: Address, timeout: float):
         self.expected_ip = expected_ip
+        self.timeout = timeout
 
         self.expecting_event = threading.Event()
         self.validation_complete_cv = threading.Condition()
@@ -63,10 +64,10 @@ class Validator(Base):
         self.last_result = self.Result.UNKNOWN
         self.expecting_event.set()
 
-    def wait_for_result(self, timeout: int = 5) -> Result:
+    def wait_for_result(self) -> Result:
         with self.validation_complete_cv:
             if not self.validation_complete_cv.wait_for(
-                lambda: self.last_result != self.Result.UNKNOWN, timeout=timeout
+                lambda: self.last_result != self.Result.UNKNOWN, timeout=self.timeout
             ):
                 logger.warn("Operation timed out")
                 return self.Result.TIMEDOUT

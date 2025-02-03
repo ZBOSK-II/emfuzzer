@@ -4,18 +4,20 @@ import time
 
 from .Arguments import Arguments
 from .coapp import Validator
-from .net import Loop
+from .Config import Config
+from .net import Address, Loop
 from .ping import Pinger
 from .Results import Results
 
 logger = logging.getLogger(__name__)
 
 
-def fuzz(args: Arguments) -> int:
-    validator = Validator(args.target)
-    pinger = Pinger(host=args.target.host, count=5)  # TODO ping configurable?
+def fuzz(args: Arguments, config: Config) -> int:
+    target = Address.from_config(config.section("target"))
+    validator = Validator(target, config.get_float("coapp", "validator", "timeout"))
+    pinger = Pinger.from_config(target.host, config.section("pinger"))
 
-    results = Results()
+    results = Results(config)
     coapp_results = results.register(
         "coapp", Validator.Result, Validator.Result.SUCCESS
     )
@@ -33,12 +35,12 @@ def fuzz(args: Arguments) -> int:
             key = str(path)
             results.add_key(key)
 
-            loop.send(args.target, data)
+            loop.send(target, data)
 
-            coapp_results.collect(key, validator.wait_for_result(args.timeout))
-            pinger_results.collect(key, pinger.check_alive(args.timeout))
+            coapp_results.collect(key, validator.wait_for_result())
+            pinger_results.collect(key, pinger.check_alive())
 
-            time.sleep(args.delay)
+            time.sleep(config.get_float("case", "delay"))
 
     results.finish(validator.extra_stats())
     logger.info("Results:\n" + results.summary())
