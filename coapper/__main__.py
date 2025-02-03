@@ -35,7 +35,9 @@ def __setup_logger(prefix: str) -> None:
 
 def parse_args() -> Arguments:
     parser = argparse.ArgumentParser(
-        prog="CoAP Fuzzer", description="Fuzzes CoAP target using provided data"
+        prog="CoAP Fuzzer",
+        description="Fuzzes CoAP target using provided data",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
         "data",
