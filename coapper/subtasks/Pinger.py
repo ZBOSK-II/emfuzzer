@@ -5,8 +5,12 @@ from .Subprocess import Subprocess
 
 
 class Pinger(Subprocess):
+    """
+    Executes `count` pings and expects replies from all of them.
+    """
 
-    def __init__(self, name: str, host: str, count: int, interval: int, timeout: float):
+    def __init__(self, name: str, host: str, count: int, interval: int):
+        timeout = (count + 1) * interval
         super().__init__(
             name=name,
             timeout=timeout,
@@ -17,7 +21,7 @@ class Pinger(Subprocess):
                 "-i",
                 str(interval),
                 "-w",
-                str((count + 1) * interval),
+                str(timeout),
                 host,
             ],
             shell=False,
@@ -30,5 +34,4 @@ class Pinger(Subprocess):
             host=config.get_str("host"),
             count=config.get_int("count"),
             interval=config.get_int("interval"),
-            timeout=config.get_float("timeout"),
         )

@@ -12,8 +12,7 @@
         "args": {
           "host": "127.0.0.1",
           "count": 2,
-          "interval": 1,
-          "timeout": 5
+          "interval": 1
         }
       }
     ]
