@@ -82,9 +82,27 @@ def test_throws_when_not_str_list() -> None:
     with pytest.raises(TypeError):
         conf.get_str_list("a")
     with pytest.raises(TypeError):
-        conf.get_str("b")
+        conf.get_str_list("b")
     with pytest.raises(TypeError):
-        conf.get_str("sub")
+        conf.get_str_list("sub")
+
+
+def test_returns_config_list() -> None:
+    conf = Config({"a": [{"x": "y"}, {"z": 2}], "sub": {"b": [{"a": "1"}]}})
+
+    assert [c.to_dict() for c in conf.get_config_list("a")] == [{"x": "y"}, {"z": 2}]
+    assert [c.to_dict() for c in conf.get_config_list("sub", "b")] == [{"a": "1"}]
+
+
+def test_throws_when_not_config_list() -> None:
+    conf = Config({"a": 2.5, "b": [3], "sub": {"x": "z"}})
+
+    with pytest.raises(TypeError):
+        conf.get_config_list("a")
+    with pytest.raises(TypeError):
+        conf.get_config_list("b")
+    with pytest.raises(TypeError):
+        conf.get_config_list("sub")
 
 
 def test_returns_bool() -> None:

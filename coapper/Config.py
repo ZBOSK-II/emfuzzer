@@ -50,6 +50,14 @@ class Config:
             raise TypeError("not an str", path, *subpath)
         return value
 
+    def get_config_list(self, path: str, *subpath: str) -> list[Self]:
+        value = self._get_value(path, *subpath)
+        if type(value) is not list:
+            raise TypeError("not an list", path, *subpath)
+        if any(type(x) is not dict for x in value):
+            raise TypeError("not all elements are dict", path, *subpath)
+        return [self.__class__(v) for v in value]
+
     def get_str_list(self, path: str, *subpath: str) -> list[str]:
         value = self._get_value(path, *subpath)
         if type(value) is not list:
