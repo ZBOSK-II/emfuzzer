@@ -5,3 +5,4 @@ mypy==1.14.0
 mypy_extensions==1.0.0
 pycodestyle==2.12.1
 pyflakes==3.2.0
+pytest==8.3.4

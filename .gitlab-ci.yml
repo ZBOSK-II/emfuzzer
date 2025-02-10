@@ -23,3 +23,8 @@ flake8:
 mypy:
   script:
     - mypy .
+
+pytest:
+  stage: "test"
+  script:
+    - python -m pytest
