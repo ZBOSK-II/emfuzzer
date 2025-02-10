@@ -32,13 +32,13 @@ def fuzz(args: Arguments, config: Config) -> int:
                 logger.warn(f"No data found, skipping {path}")
                 continue
 
-            key = str(path)
-            results.add_key(key)
+            case_name = str(path)
+            results.add_key(case_name)
 
             loop.send(target, data)
 
-            coapp_results.collect(key, validator.wait_for_result())
-            checks.execute_for(key)
+            coapp_results.collect(case_name, validator.wait_for_result())
+            checks.execute_for(case_name)
 
             time.sleep(config.get_float("case", "delay"))
 
