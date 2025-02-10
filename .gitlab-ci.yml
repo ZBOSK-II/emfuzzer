@@ -9,22 +9,30 @@ default:
     - source .venv/bin/activate
     - pip install -r requirements-dev.txt
 
+stages:
+  - check
+  - build
+  - test
+
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip_cache"
 
 isort:
+  stage: check
   script:
     - isort --profile black .
 
 flake8:
+  stage: check
   script:
     - flake8 .
 
 mypy:
+  stage: check
   script:
     - mypy .
 
 pytest:
-  stage: "test"
+  stage: test
   script:
     - python -m pytest
