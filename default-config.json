@@ -5,6 +5,17 @@
   },
   "case": {
     "delay": 0.2,
+    "setups": [
+      {
+        "type": "ping_alive",
+        "name": "ping",
+        "args": {
+          "host": "127.0.0.1",
+          "count": 10,
+          "interval": 1
+        }
+      }
+    ],
     "checks": [
       {
         "type": "ping_stable",

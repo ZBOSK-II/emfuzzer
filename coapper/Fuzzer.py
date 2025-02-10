@@ -21,6 +21,7 @@ def fuzz(args: Arguments, config: Config) -> int:
         "coapp", Validator.Result, Validator.Result.SUCCESS
     )
 
+    setups = SubTasks.from_config("case", "setups", results=results, config=config)
     checks = SubTasks.from_config("case", "checks", results=results, config=config)
 
     with Loop(validator) as loop:
@@ -34,6 +35,8 @@ def fuzz(args: Arguments, config: Config) -> int:
 
             case_name = str(path)
             results.add_key(case_name)
+
+            setups.execute_for(case_name)
 
             loop.send(target, data)
 
