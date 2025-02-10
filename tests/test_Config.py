@@ -85,3 +85,22 @@ def test_throws_when_not_str_list() -> None:
         conf.get_str("b")
     with pytest.raises(TypeError):
         conf.get_str("sub")
+
+
+def test_returns_bool() -> None:
+    conf = Config({"a": True, "b": 0, "sub": {"c": 1}})
+
+    assert conf.get_bool("a")
+    assert not conf.get_bool("b")
+    assert conf.get_bool("sub", "c")
+
+
+def test_throws_when_not_bool() -> None:
+    conf = Config({"a": 2.5, "b": "true", "sub": {"x": "z"}})
+
+    with pytest.raises(TypeError):
+        conf.get_bool("a")
+    with pytest.raises(TypeError):
+        conf.get_bool("b")
+    with pytest.raises(TypeError):
+        conf.get_bool("sub")

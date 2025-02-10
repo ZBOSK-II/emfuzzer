@@ -38,6 +38,12 @@ class Config:
             raise TypeError("not an float", path, *subpath)
         return float(value)
 
+    def get_bool(self, path: str, *subpath: str) -> bool:
+        value = self._get_value(path, *subpath)
+        if type(value) not in (int, bool):
+            raise TypeError("not an bool", path, *subpath)
+        return bool(value)
+
     def get_str(self, path: str, *subpath: str) -> str:
         value = self._get_value(path, *subpath)
         if type(value) is not str:
