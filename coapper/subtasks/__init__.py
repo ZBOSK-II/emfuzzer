@@ -40,6 +40,10 @@ def runnable_from_config(config: Config, *prefix: str) -> Runnable:
             from .Pinger import Pinger
 
             return Pinger.from_config(name, args)
+        case "ping_alive":
+            from .PingIsAlive import PingIsAlive
+
+            return PingIsAlive.from_config(name, args)
         case _:
             raise ValueError(f"Unknown sub-task type '{type}'")
 
