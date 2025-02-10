@@ -36,7 +36,7 @@ class Subprocess(Runnable):
             logger.warn(f"<{self.name()}: Operation timedout")
             return self.Result.TIMEOUT
         except Exception as ex:
-            logger.error(f"<{self.name()}>: Operation error", ex)
+            logger.error(f"<{self.name()}>: Operation error: {ex}")
             return self.Result.ERROR
 
         if result.returncode != 0:
