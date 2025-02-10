@@ -21,7 +21,7 @@ def fuzz(args: Arguments, config: Config) -> int:
     coapp_results = results.register(
         "coapp", Validator.Result, Validator.Result.SUCCESS
     )
-    pinger_results = results.register("pinger", Pinger.Result, Pinger.Result.ALIVE)
+    pinger_results = results.register("pinger", Pinger.Result, Pinger.Result.SUCCESS)
 
     with Loop(validator) as loop:
         for path in args.data:

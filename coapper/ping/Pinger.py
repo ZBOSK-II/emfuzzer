@@ -1,53 +1,30 @@
-import logging
-import subprocess
-from enum import StrEnum, auto
 from typing import Self
 
 from ..Config import Config
+from ..subtasks.Subprocess import Subprocess
 
-logger = logging.getLogger(__name__)
 
-
-class Pinger:
-
-    class Result(StrEnum):
-        ALIVE = auto()
-        TIMEOUT = auto()
-        ERROR = auto()
+class Pinger(Subprocess):
 
     def __init__(self, host: str, count: int, interval: int, timeout: float):
-        self.timeout = timeout
-        self.args = [
-            "ping",
-            "-c",
-            str(count),
-            "-i",
-            str(interval),
-            "-w",
-            str((count + 1) * interval),
-            host,
-        ]
+        super().__init__(
+            name="Pinger",
+            timeout=timeout,
+            args=[
+                "ping",
+                "-c",
+                str(count),
+                "-i",
+                str(interval),
+                "-w",
+                str((count + 1) * interval),
+                host,
+            ],
+            shell=False,
+        )
 
-    def check_alive(self) -> Result:
-        logger.info(f"Checking `{' '.join(self.args)}`")
-        try:
-            result = subprocess.run(
-                self.args,
-                timeout=self.timeout,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-            )
-        except subprocess.TimeoutExpired:
-            logger.warn("Ping timedout")
-            return self.Result.TIMEOUT
-
-        if result.returncode != 0:
-            logger.warn(f"Ping returned {result.returncode}")
-            logger.warn(result.stdout)
-            return self.Result.ERROR
-
-        logger.info("Target is alive")
-        return self.Result.ALIVE
+    def check_alive(self) -> Subprocess.Result:
+        return self.run()
 
     @classmethod
     def from_config(cls, host: str, config: Config) -> Self:
