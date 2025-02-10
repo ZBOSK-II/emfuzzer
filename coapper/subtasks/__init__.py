@@ -31,5 +31,9 @@ def from_config(config: Config) -> SubTask:
             from .Subprocess import Subprocess
 
             return Subprocess.from_config(name, args)
+        case "pinger":
+            from .Pinger import Pinger
+
+            return Pinger.from_config(name, args)
         case _:
             raise ValueError(f"Unknown sub-task type '{type}'")

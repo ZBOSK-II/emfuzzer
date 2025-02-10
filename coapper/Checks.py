@@ -28,7 +28,7 @@ class Checks:
         self.checks: list[Check] = []
 
     def register(self, subtask: SubTask) -> None:
-        logger.info(f"Registering {subtask.name()}")
+        logger.info(f"Registering <{subtask.name()}>")
         check = Check(
             subtask,
             self.results.register(

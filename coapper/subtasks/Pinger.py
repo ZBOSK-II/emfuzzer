@@ -1,14 +1,14 @@
 from typing import Self
 
 from ..Config import Config
-from ..subtasks.Subprocess import Subprocess
+from .Subprocess import Subprocess
 
 
 class Pinger(Subprocess):
 
-    def __init__(self, host: str, count: int, interval: int, timeout: float):
+    def __init__(self, name: str, host: str, count: int, interval: int, timeout: float):
         super().__init__(
-            name="Pinger",
+            name=name,
             timeout=timeout,
             args=[
                 "ping",
@@ -27,9 +27,10 @@ class Pinger(Subprocess):
         return self.run()
 
     @classmethod
-    def from_config(cls, host: str, config: Config) -> Self:
+    def from_config(cls, name: str, config: Config) -> Self:
         return cls(
-            host=host,
+            name=name,
+            host=config.get_str("host"),
             count=config.get_int("count"),
             interval=config.get_int("interval"),
             timeout=config.get_float("timeout"),

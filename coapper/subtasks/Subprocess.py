@@ -44,7 +44,7 @@ class Subprocess(SubTask):
             logger.warn(result.stdout)
             return self.Result.FAILURE
 
-        logger.info(f"<{self.name()}>: Operation finished")
+        logger.info(f"<{self.name()}>: Operation finished successfully")
         return self.Result.SUCCESS
 
     @classmethod
