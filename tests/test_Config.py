@@ -3,6 +3,15 @@ import pytest
 from coapper.Config import Config
 
 
+def test_throws_on_unknown_key() -> None:
+    conf = Config({"a": 1, "b": 2, "c": {"d": 3}})
+
+    with pytest.raises(KeyError):
+        conf.get_int("x")
+    with pytest.raises(KeyError):
+        conf.get_int("c", "x")
+
+
 def test_returns_int() -> None:
     conf = Config({"a": 2, "b": 3, "sub": {"x": 42}})
 
@@ -54,6 +63,24 @@ def test_throws_when_not_str() -> None:
 
     with pytest.raises(TypeError):
         conf.get_str("a")
+    with pytest.raises(TypeError):
+        conf.get_str("b")
+    with pytest.raises(TypeError):
+        conf.get_str("sub")
+
+
+def test_returns_str_list() -> None:
+    conf = Config({"a": ["x", "y", "z"], "sub": {"b": ["1", "2", "3"]}})
+
+    assert conf.get_str_list("a") == ["x", "y", "z"]
+    assert conf.get_str_list("sub", "b") == ["1", "2", "3"]
+
+
+def test_throws_when_not_str_list() -> None:
+    conf = Config({"a": 2.5, "b": [3], "sub": {"x": "z"}})
+
+    with pytest.raises(TypeError):
+        conf.get_str_list("a")
     with pytest.raises(TypeError):
         conf.get_str("b")
     with pytest.raises(TypeError):
