@@ -4,23 +4,23 @@
     "port": 5683
   },
   "case": {
-    "delay": 0.2
+    "delay": 0.2,
+    "checks": [
+      {
+        "type": "pinger",
+        "name": "ping",
+        "args": {
+          "host": "127.0.0.1",
+          "count": 2,
+          "interval": 1,
+          "timeout": 5
+        }
+      }
+    ]
   },
   "coapp": {
     "validator": {
       "timeout": 5
     }
-  },
-  "checks": [
-    {
-      "type": "pinger",
-      "name": "ping",
-      "args": {
-        "host": "127.0.0.1",
-        "count": 2,
-        "interval": 1,
-        "timeout": 5
-      }
-    }
-  ]
+  }
 }

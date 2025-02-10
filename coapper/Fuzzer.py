@@ -3,11 +3,11 @@ import logging
 import time
 
 from .Arguments import Arguments
-from .Checks import Checks
 from .coapp import Validator
 from .Config import Config
 from .net import Address, Loop
 from .Results import Results
+from .subtasks import SubTasks
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ def fuzz(args: Arguments, config: Config) -> int:
         "coapp", Validator.Result, Validator.Result.SUCCESS
     )
 
-    checks = Checks.from_config(results, config)
+    checks = SubTasks.from_config("case", "checks", results=results, config=config)
 
     with Loop(validator) as loop:
         for path in args.data:
@@ -38,7 +38,7 @@ def fuzz(args: Arguments, config: Config) -> int:
             loop.send(target, data)
 
             coapp_results.collect(key, validator.wait_for_result())
-            checks.perform_for(key)
+            checks.execute_for(key)
 
             time.sleep(config.get_float("case", "delay"))
 

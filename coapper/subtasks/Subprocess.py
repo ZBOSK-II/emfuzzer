@@ -3,12 +3,12 @@ import subprocess
 from typing import Self
 
 from ..Config import Config
-from . import SubTask
+from . import Runnable
 
 logger = logging.getLogger(__name__)
 
 
-class Subprocess(SubTask):
+class Subprocess(Runnable):
     def __init__(
         self,
         args: list[str],
@@ -22,7 +22,7 @@ class Subprocess(SubTask):
         self.timeout = timeout
         self.shell = shell
 
-    def run(self) -> SubTask.Result:
+    def run(self) -> Runnable.Result:
         logger.info(f"<{self.name()}>: Calling `{' '.join(self.args)}`")
         try:
             result = subprocess.run(

@@ -23,9 +23,6 @@ class Pinger(Subprocess):
             shell=False,
         )
 
-    def check_alive(self) -> Subprocess.Result:
-        return self.run()
-
     @classmethod
     def from_config(cls, name: str, config: Config) -> Self:
         return cls(
