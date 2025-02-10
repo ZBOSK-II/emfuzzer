@@ -4,7 +4,7 @@ from ..Config import Config
 from .Subprocess import Subprocess
 
 
-class Pinger(Subprocess):
+class PingIsStable(Subprocess):
     """
     Executes `count` pings and expects replies from all of them.
     """

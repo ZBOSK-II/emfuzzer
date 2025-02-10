@@ -36,10 +36,10 @@ def runnable_from_config(config: Config, *prefix: str) -> Runnable:
             from .Subprocess import Subprocess
 
             return Subprocess.from_config(name, args)
-        case "pinger":
-            from .Pinger import Pinger
+        case "ping_stable":
+            from .PingIsStable import PingIsStable
 
-            return Pinger.from_config(name, args)
+            return PingIsStable.from_config(name, args)
         case "ping_alive":
             from .PingIsAlive import PingIsAlive
 
