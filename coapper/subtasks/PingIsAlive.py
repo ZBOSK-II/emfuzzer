@@ -2,7 +2,7 @@ import logging
 import select
 import subprocess
 import time
-from typing import IO, Self, cast
+from typing import Self
 
 from ..Config import Config
 from . import Runnable
@@ -44,12 +44,14 @@ class PingIsAlive(Runnable):
                     process.terminate()
                     return self.Result.FAILURE
                 if rlist:
-                    char = cast(IO[str], process.stdout).read(1)
-                    logger.info(f"<{self.name()}>: {char!r}")
-                    if "\b" in char:
-                        logger.info(f"<{self.name()}>: Response received")
-                        process.terminate()
-                        return self.Result.SUCCESS
+                    match rlist[0].read(1):
+                        case "\b":
+                            logger.info(f"<{self.name()}>: Response received")
+                            process.terminate()
+                            return self.Result.SUCCESS
+                        case ".":
+                            logger.info(f"<{self.name()}>: Ping")
+
             logger.warn(f"<{self.name()}>: Ping failure!")
             process.terminate()
             return self.Result.TIMEOUT
