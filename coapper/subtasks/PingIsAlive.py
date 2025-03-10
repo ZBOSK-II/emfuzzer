@@ -32,12 +32,12 @@ class PingIsAlive(Runnable):
             bufsize=1,
         ) as process:
             start_time = time.time()
-            while time.time() - start_time < self.timeout:
+            while (elapsed_time := time.time() - start_time) < self.timeout:
                 rlist, _, xlist = select.select(
                     [process.stdout],
                     [],
                     [process.stdout],
-                    self.timeout - (time.time() - start_time),
+                    self.timeout - elapsed_time,
                 )
                 if xlist:
                     logger.warn(f"<{self.name()}>: Read failure")
