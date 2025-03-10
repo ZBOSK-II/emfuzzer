@@ -45,7 +45,8 @@ class PingIsAlive(Runnable):
                     return self.Result.FAILURE
                 if rlist:
                     char = cast(IO[str], process.stdout).read(1)
-                    if "\b" in char:  # Check for backspace character
+                    logger.info(f"<{self.name()}>: {char!r}")
+                    if "\b" in char:
                         logger.info(f"<{self.name()}>: Response received")
                         process.terminate()
                         return self.Result.SUCCESS
