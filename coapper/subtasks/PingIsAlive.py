@@ -54,6 +54,7 @@ class PingIsAlive(Runnable):
                                 response_received = True
                             case b".":
                                 if response_received:
+                                    logger.info(f"<{self.name()}>: Ping received")
                                     process.terminate()
                                     return self.Result.SUCCESS
                                 else:
