@@ -28,12 +28,11 @@ class PingIsAlive(Runnable):
             ["ping", "-f", "-i", str(self.interval), self.host],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True,
-            bufsize=1,
         ) as process:
             start_time = time.time()
-            header = ""
+            header = b""
             header_done = False
+            response_received = False
             while (elapsed_time := time.time() - start_time) < self.timeout:
                 rlist, _, xlist = select.select(
                     [process.stdout],
@@ -46,23 +45,30 @@ class PingIsAlive(Runnable):
                     process.terminate()
                     return self.Result.FAILURE
                 if rlist:
-                    match char := rlist[0].read(1):
-                        case "\b":
-                            logger.info(f"<{self.name()}>: Response received")
-                            process.terminate()
-                            return self.Result.SUCCESS
-                        case ".":
-                            if not header_done:
-                                header += char
-                            else:
-                                logger.info(f"<{self.name()}>: Ping")
-                        case "\n":
+                    char = rlist[0].read(1)
+                    if header_done:
+                        match char:
+                            case b"\b":
+                                if not response_received:
+                                    logger.info(f"<{self.name()}>: Response received")
+                                response_received = True
+                            case b".":
+                                if response_received:
+                                    process.terminate()
+                                    return self.Result.SUCCESS
+                                else:
+                                    logger.info(f"<{self.name()}>: Ping")
+                            case b"E":
+                                logger.warn(f"<{self.name()}>: error response")
+                                response_received = False
+                    else:
+                        if char == b"\n":
                             logger.info(f"<{self.name()}>: {header!r}")
                             header_done = True
-                        case _:
+                        else:
                             header += char
 
-            logger.warn(f"<{self.name()}>: Ping failure!")
+            logger.warn(f"<{self.name()}>: Ping timeout!")
             process.terminate()
             return self.Result.TIMEOUT
 
