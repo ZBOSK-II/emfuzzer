@@ -32,6 +32,8 @@ class PingIsAlive(Runnable):
             bufsize=1,
         ) as process:
             start_time = time.time()
+            header = ""
+            header_done = False
             while (elapsed_time := time.time() - start_time) < self.timeout:
                 rlist, _, xlist = select.select(
                     [process.stdout],
@@ -44,13 +46,21 @@ class PingIsAlive(Runnable):
                     process.terminate()
                     return self.Result.FAILURE
                 if rlist:
-                    match rlist[0].read(1):
+                    match char := rlist[0].read(1):
                         case "\b":
                             logger.info(f"<{self.name()}>: Response received")
                             process.terminate()
                             return self.Result.SUCCESS
                         case ".":
-                            logger.info(f"<{self.name()}>: Ping")
+                            if not header_done:
+                                header += char
+                            else:
+                                logger.info(f"<{self.name()}>: Ping")
+                        case "\n":
+                            logger.info(f"<{self.name()}>: {header!r}")
+                            header_done = True
+                        case _:
+                            header += char
 
             logger.warn(f"<{self.name()}>: Ping failure!")
             process.terminate()
