@@ -26,6 +26,19 @@
           "timeout": 30,
           "interval": 1
         }
+      },
+      {
+        "type": "subprocess",
+        "name": "coapp_board",
+        "args": {
+          "cmd": [
+            "bash",
+            "-c",
+            "coap-client-notls coap://192.168.143.83/riot/board | diff - <(echo 'nucleo-f439zi')"
+          ],
+          "timeout": 15,
+          "shell": false
+        }
       }
     ],
     "checks": [
