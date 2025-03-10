@@ -1,0 +1,48 @@
+{
+  "target": {
+    "host": "192.168.143.83",
+    "port": 5683
+  },
+  "case": {
+    "delay": 0.2,
+    "setups": [
+      {
+        "type": "subprocess",
+        "name": "reset",
+        "args": {
+          "cmd": [
+            "coap-client-notls",
+            "coap://192.168.143.75/reset"
+          ],
+          "timeout": 3,
+          "shell": false
+        }
+      },
+      {
+        "type": "ping_alive",
+        "name": "ping",
+        "args": {
+          "host": "192.168.143.83",
+          "count": 30,
+          "interval": 1
+        }
+      }
+    ],
+    "checks": [
+      {
+        "type": "ping_stable",
+        "name": "ping",
+        "args": {
+          "host": "192.168.143.83",
+          "count": 2,
+          "interval": 1
+        }
+      }
+    ]
+  },
+  "coapp": {
+    "validator": {
+      "timeout": 5
+    }
+  }
+}
