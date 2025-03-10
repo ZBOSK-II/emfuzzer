@@ -1,37 +1,63 @@
-from typing import Self
+import logging
+import select
+import subprocess
+import time
+from typing import IO, Self, cast
 
 from ..Config import Config
-from .Subprocess import Subprocess
+from . import Runnable
+
+logger = logging.getLogger(__name__)
 
 
-class PingIsAlive(Subprocess):
+class PingIsAlive(Runnable):
     """
-    Waits for first ping response (up to max `count` pings).
+    Waits for first ping response (up to timeout).
     """
 
-    def __init__(self, name: str, host: str, count: int, interval: int):
-        timeout = (count + 1) * interval
-        super().__init__(
-            name=name,
-            timeout=timeout,
-            args=[
-                "ping",
-                "-c",
-                "1",
-                "-i",
-                str(interval),
-                "-w",
-                str(timeout),
-                host,
-            ],
-            shell=False,
-        )
+    def __init__(self, name: str, host: str, interval: int, timeout: float):
+        super().__init__(name)
+
+        self.host = host
+        self.timeout = timeout
+        self.interval = interval
+
+    def run(self) -> Runnable.Result:
+        logger.info(f"<{self.name()}>: Checking is alive via ping")
+        with subprocess.Popen(
+            ["ping", "-f", "-i", str(self.interval), self.host],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+        ) as process:
+            start_time = time.time()
+            while time.time() - start_time < self.timeout:
+                rlist, _, xlist = select.select(
+                    [process.stdout],
+                    [],
+                    [process.stdout],
+                    self.timeout - (time.time() - start_time),
+                )
+                if xlist:
+                    logger.warn(f"<{self.name()}>: Read failure")
+                    process.terminate()
+                    return self.Result.FAILURE
+                if rlist:
+                    char = cast(IO[str], process.stdout).read(1)
+                    if "\b" in char:  # Check for backspace character
+                        logger.info(f"<{self.name()}>: Response received")
+                        process.terminate()
+                        return self.Result.SUCCESS
+            logger.warn(f"<{self.name()}>: Ping failure!")
+            process.terminate()
+            return self.Result.TIMEOUT
 
     @classmethod
     def from_config(cls, name: str, config: Config) -> Self:
         return cls(
             name=name,
             host=config.get_str("host"),
-            count=config.get_int("count"),
+            timeout=config.get_float("timeout"),
             interval=config.get_int("interval"),
         )

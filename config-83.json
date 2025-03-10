@@ -23,7 +23,7 @@
         "name": "ping",
         "args": {
           "host": "192.168.143.83",
-          "count": 30,
+          "timeout": 30,
           "interval": 1
         }
       }
