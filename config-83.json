@@ -36,7 +36,7 @@
             "-c",
             "coap-client-notls coap://192.168.143.83/riot/board | diff - <(echo 'nucleo-f439zi')"
           ],
-          "timeout": 15,
+          "timeout": 3,
           "shell": false
         }
       }
@@ -60,7 +60,7 @@
             "-c",
             "coap-client-notls coap://192.168.143.83/riot/board | diff - <(echo 'nucleo-f439zi')"
           ],
-          "timeout": 15,
+          "timeout": 3,
           "shell": false
         }
       }
