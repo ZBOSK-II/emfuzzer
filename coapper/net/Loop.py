@@ -6,14 +6,14 @@ import socket
 import threading
 from binascii import hexlify
 from types import TracebackType
-from typing import Optional, Self, cast, Type
+from typing import Optional, Self, TypeAlias, cast
 
 from .Address import Address
 from .Validator import Validator
 
 logger = logging.getLogger(__name__)
 
-Selectable = Type[int | socket.socket]
+Selectable: TypeAlias = int | socket.socket
 
 
 class Loop:
