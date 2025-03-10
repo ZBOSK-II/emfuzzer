@@ -40,10 +40,11 @@ class Subprocess(Runnable):
             return self.Result.ERROR
 
         if result.returncode != 0:
+            logger.warn(f"<{self.name()}>: STDOUT: {result.stdout}")
             logger.warn(f"<{self.name()}>: Operation returned {result.returncode}")
-            logger.warn(result.stdout)
             return self.Result.FAILURE
 
+        logger.info(f"<{self.name()}>: STDOUT: {result.stdout}")
         logger.info(f"<{self.name()}>: Operation finished successfully")
         return self.Result.SUCCESS
 
