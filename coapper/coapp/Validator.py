@@ -70,9 +70,12 @@ class Validator(Base):
                 lambda: self.last_result != self.Result.UNKNOWN, timeout=self.timeout
             ):
                 logger.warn("Operation timed out")
+                self.expecting_event.clear()
                 return self.Result.TIMEDOUT
 
-        return self.last_result
+        result = self.last_result
+        self.last_result = self.Result.UNKNOWN
+        return result
 
     def extra_stats(self) -> dict[str, int]:
         return {"unexpected_messages": self.unexpected_messages}
