@@ -33,9 +33,9 @@ mypy:
 
 docker:
   stage: test
-  image: docker:27.2.1
+  image: docker:28.0.1
   services:
-    - docker:27.2.1-dind
+    - docker:28.0.1-dind
   script:
     - ./build.sh
     - ./coapper.sh --help
