@@ -7,7 +7,6 @@ RUN apt-get update -q \
     autoconf=2.71-* \
     automake=1:1.16.5-* \
     build-essential=12.10ubuntu* \
-    build-essential=12.10ubuntu* \
     ca-certificates=20* \
     git=1:2.43.0-* \
     libtool=2.4.7-* \
