@@ -33,7 +33,7 @@ FROM ubuntu:24.04
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY --from=libcoap-builder /opt/libcoap /opt
+COPY --from=libcoap-builder /opt/libcoap /opt/libcoap
 ENV PATH="/opt/libcoap/bin:$PATH"
 
 # python
