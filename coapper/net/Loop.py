@@ -9,7 +9,7 @@ from types import TracebackType
 from typing import Optional, Self, TypeAlias, cast
 
 from .Address import Address
-from .Validator import Validator
+from .Consumer import Consumer
 
 logger = logging.getLogger(__name__)
 
@@ -17,13 +17,13 @@ Selectable: TypeAlias = int | socket.socket
 
 
 class Loop:
-    def __init__(self, validator: Optional[Validator]):
+    def __init__(self, consumer: Optional[Consumer]):
         self.interrupted = threading.Event()
         self.pipe = os.pipe()
         self.udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.thread = threading.Thread(target=self.__loop, name="NetworkLoop")
         self.queue: queue.Queue[tuple[Address, bytes]] = queue.Queue()
-        self.validator = validator
+        self.consumer = consumer
 
     def __loop(self) -> None:
         while not self.interrupted.is_set():
@@ -55,8 +55,8 @@ class Loop:
                 logger.info(
                     f"Received {len(data)} bytes from {addr}: {hexlify(data).decode('utf-8')}"
                 )
-                if self.validator:
-                    self.validator.validate(Address(*addr), data)
+                if self.consumer:
+                    self.consumer.on_received(Address(*addr), data)
             elif fd == self.pipe[0]:
                 os.read(self.pipe[0], 1)
 
@@ -69,8 +69,8 @@ class Loop:
             logger.info(
                 f"Sending {len(data)} bytes to {addr}: {hexlify(data).decode('utf-8')}"
             )
-            if self.validator:
-                self.validator.mark_sent(addr, data)
+            if self.consumer:
+                self.consumer.on_sent(addr, data)
             cast(socket.socket, fd).sendto(data, addr.as_tuple())
 
     def __process_xlist(self, xlist: list[Selectable]) -> None:

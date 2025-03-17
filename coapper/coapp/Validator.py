@@ -3,13 +3,13 @@ import threading
 from enum import StrEnum, auto
 
 from ..net import Address
-from ..net import Validator as Base
+from ..net import Consumer
 from .code import code_reports_success, code_to_string, decode_code
 
 logger = logging.getLogger(__name__)
 
 
-class Validator(Base):
+class Validator(Consumer):
 
     class Result(StrEnum):
         SUCCESS = auto()
@@ -30,7 +30,7 @@ class Validator(Base):
 
         self.unexpected_messages = 0
 
-    def validate(self, addr: Address, data: bytes) -> None:
+    def on_received(self, addr: Address, data: bytes) -> None:
         if not self.expecting_event.is_set():
             self.__unexpected_message()
             return
@@ -60,7 +60,7 @@ class Validator(Base):
 
         return self.Result.SUCCESS
 
-    def mark_sent(self, addr: Address, data: bytes) -> None:
+    def on_sent(self, addr: Address, data: bytes) -> None:
         self.last_result = self.Result.UNKNOWN
         self.expecting_event.set()
 
