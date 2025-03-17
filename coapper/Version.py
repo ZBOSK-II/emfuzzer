@@ -5,7 +5,7 @@ from pathlib import Path
 def __read_version() -> str:
     version_file = Path(__file__).parent / "VERSION"
     if version_file.exists():
-        return version_file.read_text()
+        return version_file.read_text().strip()
 
     try:
         result = subprocess.run(
