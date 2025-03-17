@@ -77,9 +77,11 @@ class SubTasks:
         self.tasks.append(task)
 
     def execute_for(self, key: str) -> None:
+        logger.info(f"Start {'.'.join(self.prefix)}")
         for task in self.tasks:
             logger.info(f"Executing {task.name()}")
             task.execute_for(key)
+        logger.info(f"End {'.'.join(self.prefix)}")
 
     @classmethod
     def from_config(cls, *prefix: str, results: Results, config: Config) -> Self:
