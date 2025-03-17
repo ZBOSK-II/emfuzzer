@@ -38,6 +38,8 @@ docker:
     - docker:28.0.1-dind
   before_script: []
   script:
+    - ls -al
+    - pwd
     - ./build.sh
     - ./coapper.sh --help
 
