@@ -37,8 +37,8 @@ docker:
   services:
     - docker:28.0.1-dind
   before_script:
-    - apt update
-    - apt install bash
+    - apk update
+    - apk add bash
   script:
     - ls -al
     - pwd
