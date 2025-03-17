@@ -1,5 +1,5 @@
 default:
-  image: python:3.13
+  image: python:3.12
   cache:
     paths:
       - .pip_cache
