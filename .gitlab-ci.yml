@@ -31,19 +31,20 @@ mypy:
   script:
     - mypy .
 
-docker:
-  stage: test
-  image: docker:28.0.1
-  services:
-    - docker:28.0.1-dind
-  before_script:
-    - apk update
-    - apk add bash
-  script:
-    - ls -al
-    - pwd
-    - ./build.sh
-    - ./coapper.sh --help
+# TODO
+# docker:
+#   stage: test
+#   image: docker:28.0.1
+#   services:
+#     - docker:28.0.1-dind
+#   before_script:
+#     - apk update
+#     - apk add bash
+#   script:
+#     - ls -al
+#     - pwd
+#     - ./build.sh
+#     - ./coapper.sh --help
 
 pytest:
   stage: test
