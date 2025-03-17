@@ -36,7 +36,9 @@ docker:
   image: docker:28.0.1
   services:
     - docker:28.0.1-dind
-  before_script: []
+  before_script:
+    - apt update
+    - apt install bash
   script:
     - ls -al
     - pwd
