@@ -3,3 +3,13 @@ How to run:
 
 Get help:
 `python -m coapper --help`
+
+Using Docker:
+
+Call `./build.sh`, then:
+
+`./coapper.sh --config config.json /data/*.bin`.
+
+Docker container mounts:
+ - current (working) directory
+ - `/data`
