@@ -66,6 +66,9 @@ class SubTasks:
         self.prefix = prefix
         self.tasks: list[SubTask] = []
 
+    def name(self) -> str:
+        return ".".join(self.prefix)
+
     def register(self, runnable: Runnable) -> None:
         logger.info(f"Registering <{runnable.name()}>")
         task = SubTask(
@@ -77,11 +80,11 @@ class SubTasks:
         self.tasks.append(task)
 
     def execute_for(self, key: str) -> None:
-        logger.info(f"Start {'.'.join(self.prefix)}")
+        logger.info(f"Start {self.name()}")
         for task in self.tasks:
             logger.info(f"Executing {task.name()}")
             task.execute_for(key)
-        logger.info(f"End {'.'.join(self.prefix)}")
+        logger.info(f"End {self.name()}")
 
     @classmethod
     def from_config(cls, *prefix: str, results: Results, config: Config) -> Self:

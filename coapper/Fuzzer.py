@@ -5,6 +5,7 @@ import time
 from .Arguments import Arguments
 from .coapp import Validator
 from .Config import Config
+from .monitoring import Monitoring
 from .net import Address, Loop
 from .Results import Results
 from .subtasks import SubTasks
@@ -23,6 +24,9 @@ def fuzz(args: Arguments, config: Config) -> int:
 
     setups = SubTasks.from_config("case", "setups", results=results, config=config)
     checks = SubTasks.from_config("case", "checks", results=results, config=config)
+    monitoring = Monitoring.from_config(
+        "case", "monitoring", results=results, config=config
+    )
 
     with Loop(validator) as loop:
         for path in args.data:
@@ -38,10 +42,12 @@ def fuzz(args: Arguments, config: Config) -> int:
 
             setups.execute_for(case_name)
 
-            loop.send(target, data)
+            with monitoring.monitor(case_name):
+                # TODO preinjection delay
+                loop.send(target, data)
 
-            coapp_results.collect(case_name, validator.wait_for_result())
-            checks.execute_for(case_name)
+                coapp_results.collect(case_name, validator.wait_for_result())
+                checks.execute_for(case_name)
 
             time.sleep(config.get_float("case", "delay"))
 

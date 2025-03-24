@@ -28,6 +28,7 @@
         }
       }
     ],
+    "monitoring": [],
     "checks": [
       {
         "type": "ping_stable",
