@@ -4,7 +4,10 @@
     "port": 5683
   },
   "case": {
-    "delay": 0.2,
+    "delays": {
+        "between_cases": 0.2,
+        "before_sending": 1
+    },
     "setups": [
       {
         "type": "subprocess",

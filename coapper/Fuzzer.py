@@ -1,10 +1,10 @@
 import json
 import logging
-import time
 
 from .Arguments import Arguments
 from .coapp import Validator
 from .Config import Config
+from .Delay import Delay
 from .monitoring import Monitoring
 from .net import Address, Loop
 from .Results import Results
@@ -28,6 +28,13 @@ def fuzz(args: Arguments, config: Config) -> int:
         "case", "monitoring", results=results, config=config
     )
 
+    delay_between_cases = Delay.from_config(
+        "case", "delays", "between_cases", config=config
+    )
+    delay_before_sending = Delay.from_config(
+        "case", "delays", "before_sending", config=config
+    )
+
     with Loop(validator) as loop:
         for path in args.data:
             logger.info(f"Opening {path}")
@@ -43,13 +50,13 @@ def fuzz(args: Arguments, config: Config) -> int:
             setups.execute_for(case_name)
 
             with monitoring.monitor(case_name):
-                # TODO preinjection delay
+                delay_before_sending.wait()
                 loop.send(target, data)
 
                 coapp_results.collect(case_name, validator.wait_for_result())
                 checks.execute_for(case_name)
 
-            time.sleep(config.get_float("case", "delay"))
+            delay_between_cases.wait()
 
     results.finish(validator.extra_stats())
     logger.info("Results:\n" + results.summary())
