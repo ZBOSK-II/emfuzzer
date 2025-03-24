@@ -47,7 +47,9 @@
         "name": "ledping",
         "args": {
           "command": "sudo ./ledping -p 17 -w 250",
-          "timeout": 2,
+          "start_key": "Raising edge detected, starting measurements.",
+          "start_timeout": 2,
+          "finish_timeout": 2,
           "connection": {
             "host": "192.168.143.88",
             "port": 22,

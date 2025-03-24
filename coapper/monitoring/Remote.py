@@ -14,19 +14,28 @@ class Remote(Monitor):
         self,
         name: str,
         command: str,
+        start_key: str,
         connection_config: ConnectionConfig,
-        timeout: float,
+        start_timeout: float,
+        finish_timeout: float,
     ):
         super().__init__(name)
         self.invoker = Invoker(
-            name=name, command=command, connection_config=connection_config
+            name=name,
+            command=command,
+            connection_config=connection_config,
+            start_key=start_key,
         )
-        self.timeout = timeout
+        self.start_timeout = start_timeout
+        self.finish_timeout = finish_timeout
 
     def start(self) -> bool:
         try:
             self.invoker.open()
-            return self.invoker.running
+            if not self.invoker.wait_for_start(self.start_timeout):
+                self.invoker.close()
+                return False
+            return True
         except Exception as ex:
             logging.error(f"Failed to start monitoring <{self.name()}>: {ex}")
             return False
@@ -34,7 +43,7 @@ class Remote(Monitor):
     def finish(self) -> Monitor.Result:
         try:
             self.invoker.signal(signal.SIGINT)
-            result = self.invoker.wait_for_exit(self.timeout)
+            result = self.invoker.wait_for_exit(self.finish_timeout)
             self.invoker.close()
             return self.Result.SUCCESS if (result == 0) else self.Result.FAILURE
         except TimeoutError:
@@ -48,8 +57,10 @@ class Remote(Monitor):
         return cls(
             name=name,
             command=config.get_str("command"),
+            start_key=config.get_str("start_key"),
             connection_config=ConnectionConfig.from_config(
                 config.section("connection")
             ),
-            timeout=config.get_float("timeout"),
+            start_timeout=config.get_float("start_timeout"),
+            finish_timeout=config.get_float("finish_timeout"),
         )

@@ -17,11 +17,10 @@ class Invoker:
         name: str,
         command: str,
         connection_config: ConnectionConfig,
-        init_delay: Optional[float] = None,
+        start_key: str,
     ):
         self.command = command
         self.connection_config = connection_config
-        self.init_delay = init_delay
 
         self.running = False
 
@@ -35,7 +34,7 @@ class Invoker:
         self.__pid = 0
 
         # deferred calls to delay stream retrieving
-        self.reader = Reader(self.name, self.__stdout, self.__stderr)
+        self.reader = Reader(self.name, start_key, self.__stdout, self.__stderr)
 
     def __stdout(self) -> ParamikoStream:
         assert self.__streams is not None
@@ -56,10 +55,6 @@ class Invoker:
         self.reader.start()
         logger.info(f"{self.name}: reader started")
 
-        if self.init_delay is not None:
-            time.sleep(self.init_delay)
-            logger.info(f"{self.name}: init_delay complete ({self.init_delay})")
-
         self.running = True
 
     def close(self) -> None:
@@ -69,6 +64,9 @@ class Invoker:
         self.reader.stop()
         logger.info(f"{self.name}: reader stopped")
         self.running = False
+
+    def wait_for_start(self, timeout: float) -> bool:
+        return self.running and self.reader.started_event.wait(timeout)
 
     def wait_for_exit(self, timeout: float) -> int:
         assert self.__handle is not None

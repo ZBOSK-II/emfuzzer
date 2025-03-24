@@ -12,12 +12,16 @@ type StreamFactory = Callable[[], ParamikoStream]
 
 
 class Reader:
-    def __init__(self, name: str, stdout: StreamFactory, stderr: StreamFactory):
+    def __init__(
+        self, name: str, start_key: str, stdout: StreamFactory, stderr: StreamFactory
+    ):
         self.name = name
         self.stdout = stdout
         self.stderr = stderr
         self.kill = threading.Event()
         self.threads: list[threading.Thread] = []
+        self.started_event = threading.Event()
+        self.start_key = start_key
 
     def start(self) -> None:
         # one stream per thread - ugly, but Paramiko does not properly support 'select'...
@@ -73,5 +77,8 @@ class Reader:
                 continue
             if line:
                 line_handler(line.rstrip())
+                if not self.started_event.is_set() and line.startswith(self.start_key):
+                    logger.info(f"{self.name} - start key detected, marking as started")
+                    self.started_event.set()
             else:
                 time.sleep(0.01)
