@@ -90,9 +90,9 @@ class Results:
     def to_dict(self) -> Mapping[str, Collection[Any]]:
         return (
             {"info": self.info}
-            | {k: v.to_dict() for k, v in self.data.items()}
             | {"all": self.keys}
             | {"failed": self.failed_keys()}
+            | {"groups": {k: v.to_dict() for k, v in self.data.items()}}
             | {"extra": self.extra}
         )
 
