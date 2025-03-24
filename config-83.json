@@ -41,7 +41,22 @@
         }
       }
     ],
-    "monitoring": [],
+    "monitoring": [
+      {
+        "type": "remote",
+        "name": "ledping",
+        "args": {
+          "command": "sudo ./ledping -p 17 -w 250",
+          "timeout": 2,
+          "connection": {
+            "host": "192.168.143.88",
+            "port": 22,
+            "username": "pi",
+            "password": "raspberry"
+          }
+        }
+      }
+    ],
     "checks": [
       {
         "type": "ping_stable",

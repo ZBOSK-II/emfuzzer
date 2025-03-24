@@ -35,10 +35,11 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 COPY --from=libcoap-builder /opt/libcoap /opt/libcoap
 ENV PATH="/opt/libcoap/bin:$PATH"
 
-# ping
+# apps
 RUN apt-get update -q \
     && DEBIAN_FRONTEND=noninteractive apt-get install -qy --no-install-recommends \
     iputils-ping=3:* \
+    openssh-client=1:9.2* \
     && rm -rf /var/lib/apt/lists/*
 
 # venv

@@ -37,6 +37,10 @@ def monitor_from_config(config: Config, *prefix: str) -> Monitor:
     name = ".".join(prefix) + "." + config.get_str("name")
     args = config.section("args")
     match type:
+        case "remote":
+            from .Remote import Remote
+
+            return Remote.from_config(name, args)
         case _:
             raise ValueError(f"Unknown monitor type '{type}'")
 
@@ -69,7 +73,7 @@ class Monitoring:
         return ".".join(self.prefix)
 
     def register(self, monitor: Monitor) -> None:
-        logger.info(f"Registering <{monitor.name()}")
+        logger.info(f"Registering <{monitor.name()}>")
         task = MonitorTask(
             monitor,
             self.results.register(

@@ -78,15 +78,15 @@ class Invoker:
         time_elapsed = 0.0
         while time_elapsed < timeout:
             if self.__stdout().channel.exit_status_ready():
-                return (
-                    self.__stdout().channel.recv_exit_status()
-                )  # TODO map to result here?
+                self.running = False
+                return self.__stdout().channel.recv_exit_status()
 
             time.sleep(0.05)
             time_elapsed = time.time() - t0
 
         self.close()
-        raise RuntimeError(f"Timeout, {self.__pid}")  # TODO result?
+        logger.warning(f"{self.name}: timoeut")
+        raise TimeoutError(f"Timeout, {self.__pid}")
 
     def signal(self, sig: signal.Signals) -> None:
         assert self.__handle is not None
@@ -112,19 +112,21 @@ class Invoker:
 
         command = f"echo $$; exec {self.command}"
         logger.info(f"{self.name} executing via SSH: {command}")
-        self.__streams = self.__handle.exec_command(command)
+        # get_pty - enables "live" stdout
+        self.__streams = self.__handle.exec_command(command, get_pty=True)
         self.__pid = int(self.__stdout().readline())
         logger.info(f"{self.name} started via SSH: {self.__pid}")
 
     def __close_ssh(self) -> None:
         if self.__handle:
-            kill_command = f"kill {self.__pid}"
-            logger.info(f"{self.name}: Killing remotely: '{kill_command}'")
-            _, stdout, _ = self.__handle.exec_command(kill_command)
-            while not stdout.channel.exit_status_ready():
-                # Loop until command executes
-                pass
-            logger.info(f"{self.name}: Kill done")
+            if self.running:
+                kill_command = f"kill {self.__pid}"
+                logger.info(f"{self.name}: Killing remotely: '{kill_command}'")
+                _, stdout, _ = self.__handle.exec_command(kill_command)
+                while not stdout.channel.exit_status_ready():
+                    # Loop until command executes
+                    pass
+                logger.info(f"{self.name}: Kill done")
 
             self.__handle.close()
             self.__handle = None
