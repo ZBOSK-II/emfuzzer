@@ -1,4 +1,5 @@
 import sys
+from collections import defaultdict
 from datetime import datetime
 from enum import StrEnum
 from typing import Any, Collection, Mapping
@@ -9,27 +10,34 @@ from .Version import VERSION
 
 class ResultsGroup:
 
-    def __init__(self, keys: list[str], success_key: str) -> None:
+    def __init__(self, results_names: list[str], success: str) -> None:
         self.data: dict[str, list[str]] = {}
-        for k in keys:
-            self.data[k] = []
+        for result in results_names:
+            self.data[result] = []
 
-        self.success_key = success_key
+        self.success = success
+
+        self.failed_keys: dict[str, str] = {}
 
     def collect(self, key: str, result: str) -> None:
         self.data[result].append(key)
+        if result != self.success:
+            self.failed_keys[key] = result
 
     def total(self) -> int:
         return sum(len(v) for v in self.data.values())
 
     def total_errors(self) -> int:
-        return sum(len(v) for k, v in self.data.items() if k != self.success_key)
+        return len(self.failed_keys)
 
     def summary(self, indent: str = "\t") -> str:
         return "\n".join(f"{indent}{k}: {len(v)}" for k, v in self.data.items())
 
     def to_dict(self) -> dict[str, list[str]]:
         return self.data
+
+    def to_failed_keys_dict(self) -> dict[str, str]:
+        return self.failed_keys
 
 
 class Results:
@@ -72,11 +80,19 @@ class Results:
     def total_errors(self) -> int:
         return sum(g.total_errors() for g in self.data.values())
 
+    def failed_keys(self) -> dict[str, list[str]]:
+        result = defaultdict(list)
+        for g, d in self.data.items():
+            for k, v in d.to_failed_keys_dict().items():
+                result[k].append(g + "." + v)
+        return dict(result)
+
     def to_dict(self) -> Mapping[str, Collection[Any]]:
         return (
             {"info": self.info}
             | {k: v.to_dict() for k, v in self.data.items()}
             | {"all": self.keys}
+            | {"failed": self.failed_keys()}
             | {"extra": self.extra}
         )
 
