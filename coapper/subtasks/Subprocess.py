@@ -33,7 +33,7 @@ class Subprocess(Runnable):
                 stderr=subprocess.STDOUT,
             )
         except subprocess.TimeoutExpired:
-            logger.warn(f"<{self.name()}: Operation timedout")
+            logger.warn(f"<{self.name()}: Operation timeout")
             return self.Result.TIMEOUT
         except Exception as ex:
             logger.error(f"<{self.name()}>: Operation error: {ex}")
