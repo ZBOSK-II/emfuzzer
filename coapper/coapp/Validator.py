@@ -14,9 +14,9 @@ class Validator(Consumer):
         SUCCESS = auto()
         UNKNOWN = auto()
         UNEXPECTED_ORIGIN = auto()
-        TOO_SHORT_MESSAGE = auto()
-        FAILED_OPERATIONS = auto()
-        TIMEDOUT = auto()
+        MESSAGE_TOO_SHORT = auto()
+        OPERATION_FAILURE = auto()
+        TIMEOUT = auto()
 
     def __init__(self, expected_ip: Address, timeout: float):
         self.expected_ip = expected_ip
@@ -46,7 +46,7 @@ class Validator(Consumer):
 
         if len(data) < 2:
             logger.warn("Too short message")
-            return self.Result.TOO_SHORT_MESSAGE
+            return self.Result.MESSAGE_TOO_SHORT
 
         code = decode_code(data[1])
 
@@ -54,7 +54,7 @@ class Validator(Consumer):
 
         if not code_reports_success(code):
             logger.warn("Operation reported as failed")
-            return self.Result.FAILED_OPERATIONS
+            return self.Result.OPERATION_FAILURE
 
         return self.Result.SUCCESS
 
@@ -70,7 +70,7 @@ class Validator(Consumer):
             ):
                 self.expecting = False
                 logger.warn("Operation timed out")
-                return self.Result.TIMEDOUT
+                return self.Result.TIMEOUT
             result = self.result
             self.result = self.Result.UNKNOWN
             return result
