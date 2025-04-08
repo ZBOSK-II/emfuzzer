@@ -1,3 +1,8 @@
+# Copyright (c) 2025 Warsaw University of Technology
+# This file is licensed under the MIT License.
+# See the LICENSE.txt file in the root of the repository for full details.
+
+
 def decode_code(octet: int) -> tuple[int, int]:
     clazz = (octet & 0b11100000) >> 5
     code = octet & 0xB00011111
