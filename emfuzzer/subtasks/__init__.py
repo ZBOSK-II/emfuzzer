@@ -3,32 +3,13 @@
 # See the LICENSE.txt file in the root of the repository for full details.
 
 import logging
-from abc import ABC, abstractmethod
-from enum import StrEnum, auto
 from typing import Self
 
 from ..Config import Config
 from ..Results import Results, ResultsGroup
+from .Runnable import Runnable
 
 logger = logging.getLogger(__name__)
-
-
-class Runnable(ABC):
-
-    class Result(StrEnum):
-        SUCCESS = auto()
-        FAILURE = auto()
-        TIMEOUT = auto()
-        ERROR = auto()
-
-    def __init__(self, name: str):
-        self._name = name
-
-    def name(self) -> str:
-        return self._name
-
-    @abstractmethod
-    def run(self) -> Result: ...
 
 
 def runnable_from_config(config: Config, *prefix: str) -> Runnable:

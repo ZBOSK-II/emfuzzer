@@ -8,7 +8,7 @@ from typing import Self
 
 from ..Config import Config
 from ..ssh import ConnectionConfig, Invoker
-from . import Monitor
+from .Monitor import Monitor
 
 logger = logging.getLogger(__name__)
 

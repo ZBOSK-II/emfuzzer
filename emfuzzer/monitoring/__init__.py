@@ -3,37 +3,14 @@
 # See the LICENSE.txt file in the root of the repository for full details.
 
 import logging
-from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from enum import StrEnum, auto
 from typing import Iterator, Self
 
 from ..Config import Config
 from ..Results import Results, ResultsGroup
+from .Monitor import Monitor
 
 logger = logging.getLogger(__name__)
-
-
-class Monitor(ABC):
-
-    class Result(StrEnum):
-        SUCCESS = auto()
-        NOT_STARTED = auto()
-        FAILURE = auto()
-        TIMEOUT = auto()
-        ERROR = auto()
-
-    def __init__(self, name: str):
-        self._name = name
-
-    def name(self) -> str:
-        return self._name
-
-    @abstractmethod
-    def start(self) -> bool: ...
-
-    @abstractmethod
-    def finish(self) -> Result: ...
 
 
 def monitor_from_config(config: Config, *prefix: str) -> Monitor:

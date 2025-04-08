@@ -9,7 +9,7 @@ import time
 from typing import Self
 
 from ..Config import Config
-from . import Runnable
+from .Runnable import Runnable
 
 logger = logging.getLogger(__name__)
 
