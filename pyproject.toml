@@ -1,0 +1,36 @@
+# TODO
+# [build-system]
+# requires = ["hatchling"]
+# build-backend = "hatchling.build"
+
+[project]
+name = "emfuzzer"
+# TODO description
+dynamic = ["version"]  # TODO
+# TODO dependencies
+requires-python = ">= 3.13"
+# TODO authors
+readme = "README.md"
+license = "MIT"
+license-files = ["LICEN[CS]E.*"]
+
+# TODO [project.urls]
+
+# TODO [project.scripts]
+
+# TODO [project.entry-points.
+
+[tool.mypy]
+strict = true
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+line_length = 100
+
+[tool.flake8]
+max-line-length = 100
+exclude = [
+  "__pycache__",
+  ".venv",
+]

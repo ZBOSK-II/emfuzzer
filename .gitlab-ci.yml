@@ -19,7 +19,7 @@ variables:
 isort:
   stage: check
   script:
-    - isort --profile black .
+    - isort .
 
 flake8:
   stage: check
