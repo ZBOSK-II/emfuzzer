@@ -49,14 +49,15 @@ RUN apt-get update -q \
 # venv
 RUN python -m venv /opt/venv
 
-RUN echo "#!/bin/bash" > /usr/bin/coapper \
-    && echo "PYTHONPATH=/opt /opt/venv/bin/python -P -m coapper \$@" >> /usr/bin/coapper \
-    && chmod +x /usr/bin/coapper
+RUN echo "#!/bin/bash" > /usr/bin/emfuzzer \
+    && echo "PYTHONPATH=/opt /opt/venv/bin/python -P -m emfuzzer \$@" >> /usr/bin/emfuzzer \
+    && chmod +x /usr/bin/emfuzzer
 
 # requirements
-COPY requirements.txt /opt/coapper/
-RUN /opt/venv/bin/pip install -r /opt/coapper/requirements.txt
+COPY requirements.txt /opt/emfuzzer/
+RUN /opt/venv/bin/pip install -r /opt/emfuzzer/requirements.txt
 
-# coapper
-COPY coapper /opt/coapper
-COPY VERSION.tmp /opt/coapper/VERSION
+# emfuzzer
+COPY LICENSE.txt /opt/emfuzzer/
+COPY emfuzzer /opt/emfuzzer
+COPY VERSION.tmp /opt/emfuzzer/VERSION

@@ -6,8 +6,7 @@
 **/*.log
 **/*.json
 **/*.pyc
-.git
-.gitignore
-.gitlab-ci.yml
+**/.git
+.git*
 build.sh
-coapper.sh
+emfuzzer.sh

@@ -9,4 +9,4 @@ docker run \
        -v /data:/data \
        -w "$PWD" \
        -u $(id -u):$(id -g) \
-       coapper coapper $@
+       emfuzzer emfuzzer $@

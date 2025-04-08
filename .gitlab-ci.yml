@@ -44,7 +44,7 @@ mypy:
 #     - ls -al
 #     - pwd
 #     - ./build.sh
-#     - ./coapper.sh --help
+#     - ./emfuzzer.sh --help
 
 pytest:
   stage: test

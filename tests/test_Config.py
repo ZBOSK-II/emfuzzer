@@ -4,7 +4,7 @@
 
 import pytest
 
-from coapper.Config import Config
+from emfuzzer.Config import Config
 
 
 def test_throws_on_unknown_key() -> None:

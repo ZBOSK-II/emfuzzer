@@ -39,8 +39,8 @@ def __setup_logger(prefix: str) -> None:
 
 def parse_args() -> Arguments:
     parser = argparse.ArgumentParser(
-        prog="CoAP Fuzzer",
-        description="Fuzzes CoAP target using provided data",
+        prog="emfuzzer",
+        description="Fuzzer for embedded applications (with CoAP support)",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
@@ -51,7 +51,7 @@ def parse_args() -> Arguments:
     parser.add_argument(
         "--output-prefix",
         help="Prefix to be used for saving output (logs, reports, etc.)",
-        default="coapper",
+        default="emfuzzer",
         type=str,
     )
     parser.add_argument(
