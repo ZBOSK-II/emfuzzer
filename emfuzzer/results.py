@@ -60,7 +60,7 @@ class Results:
     def register(
         self, group: str, results: type[StrEnum], success: StrEnum
     ) -> ResultsGroup:
-        g = ResultsGroup([k for k in results], success)
+        g = ResultsGroup(list(results), success)
         self.data[group] = g
         return g
 
