@@ -82,8 +82,8 @@ __MESSAGES: dict[int, tuple[str, dict[int, str]]] = {
 
 def code_message(code: tuple[int, int]) -> str:
     class_message, code_dict = __MESSAGES.get(code[0], ("UNKNOWN", {}))
-    code_message = code_dict.get(code[1], "-unknown-")
-    return f"{class_message}: {code_message}"
+    message = code_dict.get(code[1], "-unknown-")
+    return f"{class_message}: {message}"
 
 
 def code_to_string(code: tuple[int, int]) -> str:
