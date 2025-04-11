@@ -22,11 +22,11 @@ def runnable_from_config(config: Config, *prefix: str) -> Runnable:
 
             return Subprocess.from_config(name, args)
         case "ping_stable":
-            from .ping_is_stable import PingIsStable
+            from .ping import PingIsStable
 
             return PingIsStable.from_config(name, args)
         case "ping_alive":
-            from .ping_is_alive import PingIsAlive
+            from .ping import PingIsAlive
 
             return PingIsAlive.from_config(name, args)
         case _:
