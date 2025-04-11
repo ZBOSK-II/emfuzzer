@@ -5,9 +5,9 @@
 import logging
 from typing import Self
 
-from ..Config import Config
-from ..Results import Results, ResultsGroup
-from .Runnable import Runnable
+from ..config import Config
+from ..results import Results, ResultsGroup
+from .runnable import Runnable
 
 logger = logging.getLogger(__name__)
 
@@ -18,15 +18,15 @@ def runnable_from_config(config: Config, *prefix: str) -> Runnable:
     args = config.section("args")
     match type:
         case "subprocess":
-            from .Subprocess import Subprocess
+            from .subprocess import Subprocess
 
             return Subprocess.from_config(name, args)
         case "ping_stable":
-            from .PingIsStable import PingIsStable
+            from .ping_is_stable import PingIsStable
 
             return PingIsStable.from_config(name, args)
         case "ping_alive":
-            from .PingIsAlive import PingIsAlive
+            from .ping_is_alive import PingIsAlive
 
             return PingIsAlive.from_config(name, args)
         case _:

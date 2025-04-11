@@ -6,8 +6,8 @@ import logging
 import subprocess
 from typing import Self
 
-from ..Config import Config
-from .Runnable import Runnable
+from ..config import Config
+from .runnable import Runnable
 
 logger = logging.getLogger(__name__)
 

@@ -4,8 +4,8 @@
 
 from typing import Self
 
-from ..Config import Config
-from .Subprocess import Subprocess
+from ..config import Config
+from .subprocess import Subprocess
 
 
 class PingIsStable(Subprocess):

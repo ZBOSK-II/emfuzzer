@@ -5,13 +5,13 @@
 import json
 import logging
 
-from .Arguments import Arguments
+from .arguments import Arguments
 from .coapp import Validator
-from .Config import Config
-from .Delay import Delay
+from .config import Config
+from .delay import Delay
 from .monitoring import Monitoring
 from .net import Address, Loop
-from .Results import Results
+from .results import Results
 from .subtasks import SubTasks
 
 logger = logging.getLogger(__name__)

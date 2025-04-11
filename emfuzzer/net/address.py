@@ -5,7 +5,7 @@
 from dataclasses import dataclass
 from typing import Self
 
-from ..Config import Config
+from ..config import Config
 
 
 @dataclass

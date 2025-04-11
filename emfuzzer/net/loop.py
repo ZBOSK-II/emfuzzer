@@ -12,8 +12,8 @@ from binascii import hexlify
 from types import TracebackType
 from typing import Optional, Self, TypeAlias, cast
 
-from .Address import Address
-from .Consumer import Consumer
+from .address import Address
+from .consumer import Consumer
 
 logger = logging.getLogger(__name__)
 

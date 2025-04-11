@@ -4,7 +4,7 @@
 
 import pytest
 
-from emfuzzer.Config import Config
+from emfuzzer.config import Config
 
 
 def test_throws_on_unknown_key() -> None:

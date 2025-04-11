@@ -6,9 +6,9 @@ import logging
 import signal
 from typing import Self
 
-from ..Config import Config
+from ..config import Config
 from ..ssh import ConnectionConfig, Invoker
-from .Monitor import Monitor
+from .monitor import Monitor
 
 logger = logging.getLogger(__name__)
 

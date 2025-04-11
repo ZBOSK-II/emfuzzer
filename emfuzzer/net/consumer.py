@@ -4,7 +4,7 @@
 
 from typing import Protocol
 
-from .Address import Address
+from .address import Address
 
 
 class Consumer(Protocol):

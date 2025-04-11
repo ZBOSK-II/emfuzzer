@@ -8,10 +8,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from .Arguments import Arguments
-from .Config import Config
-from .Fuzzer import fuzz
-from .Version import VERSION
+from .arguments import Arguments
+from .config import Config
+from .fuzzer import fuzz
+from .version import VERSION
 
 
 def __parse_data(parser: argparse.ArgumentParser, data: list[str]) -> list[Path]:

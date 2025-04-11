@@ -8,8 +8,8 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Any, Collection, Mapping
 
-from .Config import Config
-from .Version import VERSION
+from .config import Config
+from .version import VERSION
 
 
 class ResultsGroup:

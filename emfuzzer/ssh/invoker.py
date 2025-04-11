@@ -9,8 +9,8 @@ from typing import Optional
 
 import paramiko
 
-from .ConnectionConfig import ConnectionConfig
-from .Reader import ParamikoStream, Reader
+from .connectionconfig import ConnectionConfig
+from .reader import ParamikoStream, Reader
 
 logger = logging.getLogger(__name__)
 

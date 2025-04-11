@@ -6,7 +6,7 @@ import logging
 import time
 from typing import Self
 
-from .Config import Config
+from .config import Config
 
 logger = logging.getLogger(__name__)
 

@@ -6,9 +6,9 @@ import logging
 from contextlib import contextmanager
 from typing import Iterator, Self
 
-from ..Config import Config
-from ..Results import Results, ResultsGroup
-from .Monitor import Monitor
+from ..config import Config
+from ..results import Results, ResultsGroup
+from .monitor import Monitor
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ def monitor_from_config(config: Config, *prefix: str) -> Monitor:
     args = config.section("args")
     match type:
         case "remote":
-            from .Remote import Remote
+            from .remote import Remote
 
             return Remote.from_config(name, args)
         case _:
