@@ -38,3 +38,45 @@ exclude = [
 [tool.pytest.ini_options]
 pythonpath = "."
 testpaths = "tests"
+
+[tool.pylint.main]
+ignore = [
+  "__pycache__",
+  ".venv",
+  ".git",
+]
+jobs = 0
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint.logging]
+logging-format-style = "new"
+
+[tool.pylint."messages control"]
+disable = [
+  "missing-function-docstring",
+  "missing-module-docstring", # TODO
+  "missing-class-docstring", # TODO ?
+  "logging-fstring-interpolation",
+#  "raw-checker-failed",
+  #"bad-inline-option",
+  #"locally-disabled",
+  #"file-ignored",
+  #"suppressed-message",
+  #"useless-suppression",
+  #"deprecated-pragma",
+  #"use-symbolic-message-instead",
+  #"use-implicit-booleaness-not-comparison-to-string",
+  #"use-implicit-booleaness-not-comparison-to-zero",
+]
+enable = [
+  "useless-suppression",
+]
+
+[tool.pylint.similarities]
+# TODO
+min-similarity-lines = 5
+
+[tool.pylint.imports]
+allow-reexport-from-package = true

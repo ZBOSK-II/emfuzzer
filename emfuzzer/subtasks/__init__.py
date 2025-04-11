@@ -18,15 +18,16 @@ def runnable_from_config(config: Config, *prefix: str) -> Runnable:
     args = config.section("args")
     match runnable_type:
         case "subprocess":
+            # pylint: disable=import-outside-toplevel
             from .subprocess import Subprocess
 
             return Subprocess.from_config(name, args)
         case "ping_stable":
-            from .ping import PingIsStable
+            from .ping import PingIsStable  # pylint: disable=import-outside-toplevel
 
             return PingIsStable.from_config(name, args)
         case "ping_alive":
-            from .ping import PingIsAlive
+            from .ping import PingIsAlive  # pylint: disable=import-outside-toplevel
 
             return PingIsAlive.from_config(name, args)
         case _:

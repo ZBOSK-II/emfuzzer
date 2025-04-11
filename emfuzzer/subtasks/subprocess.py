@@ -40,7 +40,7 @@ class Subprocess(Runnable):
         except subprocess.TimeoutExpired:
             logger.warning(f"<{self.name()}: Operation timeout")
             return self.Result.TIMEOUT
-        except Exception as ex:
+        except Exception as ex:  # pylint: disable=broad-exception-caught
             logger.error(f"<{self.name()}>: Operation error: {ex}")
             return self.Result.ERROR
 

@@ -19,20 +19,21 @@ class Config:
             try:
                 config.section(*subpath)
             except KeyError:
-                raise KeyError(path, *subpath)
+                raise KeyError(path, *subpath) from None
         return config
 
     def _get_value(self, path: str, *subpath: str) -> Any:
         if subpath:
             try:
+                # pylint: disable=protected-access
                 return self.section(path)._get_value(*subpath)
             except KeyError:
-                raise KeyError(path, *subpath)
+                raise KeyError(path, *subpath) from None
         return self._obj[path]
 
     def get_int(self, path: str, *subpath: str) -> int:
         value = self._get_value(path, *subpath)
-        if type(value) is not int:
+        if not isinstance(value, int):
             raise TypeError("not an int", path, *subpath)
         return value
 
@@ -50,23 +51,23 @@ class Config:
 
     def get_str(self, path: str, *subpath: str) -> str:
         value = self._get_value(path, *subpath)
-        if type(value) is not str:
+        if not isinstance(value, str):
             raise TypeError("not an str", path, *subpath)
         return value
 
     def get_config_list(self, path: str, *subpath: str) -> list[Self]:
         value = self._get_value(path, *subpath)
-        if type(value) is not list:
+        if not isinstance(value, list):
             raise TypeError("not an list", path, *subpath)
-        if any(type(x) is not dict for x in value):
+        if any(not isinstance(x, dict) for x in value):
             raise TypeError("not all elements are dict", path, *subpath)
         return [self.__class__(v) for v in value]
 
     def get_str_list(self, path: str, *subpath: str) -> list[str]:
         value = self._get_value(path, *subpath)
-        if type(value) is not list:
+        if not isinstance(value, list):
             raise TypeError("not an list", path, *subpath)
-        if any(type(x) is not str for x in value):
+        if any(not isinstance(x, str) for x in value):
             raise TypeError("not all elements are str", path, *subpath)
         return value
 

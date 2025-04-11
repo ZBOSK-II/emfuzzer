@@ -19,7 +19,7 @@ def monitor_from_config(config: Config, *prefix: str) -> Monitor:
     args = config.section("args")
     match monitor_type:
         case "remote":
-            from .remote import Remote
+            from .remote import Remote  # pylint: disable=import-outside-toplevel
 
             return Remote.from_config(name, args)
         case _:

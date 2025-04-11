@@ -17,6 +17,7 @@ from .subtasks import SubTasks
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=too-many-locals
 def fuzz(args: Arguments, config: Config) -> int:
     target = Address.from_config(config.section("target"))
     validator = Validator(target, config.get_float("coapp", "validator", "timeout"))
@@ -45,7 +46,7 @@ def fuzz(args: Arguments, config: Config) -> int:
             with path.open("rb") as file:
                 data = file.read()
             if len(data) == 0:
-                logger.warn(f"No data found, skipping {path}")
+                logger.warning(f"No data found, skipping {path}")
                 continue
 
             case_name = str(path)
@@ -63,7 +64,7 @@ def fuzz(args: Arguments, config: Config) -> int:
             delay_between_cases.wait()
 
     results.finish(validator.extra_stats())
-    logger.info("Results:\n" + results.summary())
+    logger.info(f"Results:\n {results.summary()}")
 
     with open(args.output_prefix + ".json", "w", encoding="utf-8") as f:
         json.dump(results.to_dict(), f, indent=2)

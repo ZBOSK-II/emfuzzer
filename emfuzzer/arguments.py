@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Protocol
 
 
-class Arguments(Protocol):
+class Arguments(Protocol):  # pylint: disable=too-few-public-methods
     data: list[Path]
     output_prefix: str
     config: Path

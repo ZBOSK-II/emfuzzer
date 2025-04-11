@@ -31,6 +31,11 @@ mypy:
   script:
     - mypy .
 
+pylint:
+  stage: check
+  script:
+    - pylint .
+
 # TODO
 # docker:
 #   stage: test

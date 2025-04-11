@@ -15,6 +15,7 @@ from .reader import ParamikoStream, Reader
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=too-many-instance-attributes
 class Invoker:
     def __init__(
         self,

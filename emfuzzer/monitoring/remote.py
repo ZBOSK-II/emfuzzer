@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class Remote(Monitor):
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self,
         name: str,
@@ -40,7 +41,7 @@ class Remote(Monitor):
                 self.invoker.close()
                 return False
             return True
-        except Exception as ex:
+        except Exception as ex:  # pylint: disable=broad-exception-caught
             logging.error(f"Failed to start monitoring <{self.name()}>: {ex}")
             return False
 
@@ -52,7 +53,7 @@ class Remote(Monitor):
             return self.Result.SUCCESS if (result == 0) else self.Result.FAILURE
         except TimeoutError:
             return self.Result.TIMEOUT
-        except Exception as ex:
+        except Exception as ex:  # pylint: disable=broad-exception-caught
             logging.error(f"Failed to finish monitoring <{self.name()}>: {ex}")
             return self.Result.ERROR
 

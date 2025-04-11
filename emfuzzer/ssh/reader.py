@@ -11,6 +11,7 @@ import paramiko
 
 logger = logging.getLogger(__name__)
 
+# pylint: disable=unsubscriptable-object
 type ParamikoStream = paramiko.ChannelFile[bytes]
 type StreamFactory = Callable[[], ParamikoStream]
 

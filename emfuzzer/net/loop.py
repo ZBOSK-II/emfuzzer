@@ -55,7 +55,7 @@ class Loop:
     def __process_rlist(self, rlist: list[Selectable]) -> None:
         for fd in rlist:
             if fd == self.udp:
-                data, addr = self.udp.recvfrom(1024)  # TODO
+                data, addr = self.udp.recvfrom(1024)  # TODO pylint: disable=fixme
                 logger.info(
                     f"Received {len(data)} bytes from {addr}: {hexlify(data).decode('utf-8')}"
                 )
@@ -80,7 +80,6 @@ class Loop:
     def __process_xlist(self, xlist: list[Selectable]) -> None:
         for fd in xlist:
             logger.error(f"Error state on {fd}")
-        # TODO anything else?
 
     def start(self) -> None:
         logger.info("Starting network thread")
