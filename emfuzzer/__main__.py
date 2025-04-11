@@ -23,10 +23,10 @@ def __parse_data(parser: argparse.ArgumentParser, data: list[str]) -> list[Path]
 
 
 def __setup_logger(prefix: str) -> None:
-    format = "%(asctime)s [%(levelname)8s](%(name)20s): %(message)s"
+    log_format = "%(asctime)s [%(levelname)8s](%(name)20s): %(message)s"
     logging.basicConfig(
         level=logging.DEBUG,
-        format=format,
+        format=log_format,
     )
 
     root_logger = logging.getLogger()

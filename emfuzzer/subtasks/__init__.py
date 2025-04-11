@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 def runnable_from_config(config: Config, *prefix: str) -> Runnable:
-    type = config.get_str("type")
+    runnable_type = config.get_str("type")
     name = ".".join(prefix) + "." + config.get_str("name")
     args = config.section("args")
-    match type:
+    match runnable_type:
         case "subprocess":
             from .subprocess import Subprocess
 
@@ -30,7 +30,7 @@ def runnable_from_config(config: Config, *prefix: str) -> Runnable:
 
             return PingIsAlive.from_config(name, args)
         case _:
-            raise ValueError(f"Unknown sub-task type '{type}'")
+            raise ValueError(f"Unknown sub-task type '{runnable_type}'")
 
 
 class SubTask:

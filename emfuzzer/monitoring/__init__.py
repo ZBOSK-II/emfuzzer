@@ -14,16 +14,16 @@ logger = logging.getLogger(__name__)
 
 
 def monitor_from_config(config: Config, *prefix: str) -> Monitor:
-    type = config.get_str("type")
+    monitor_type = config.get_str("type")
     name = ".".join(prefix) + "." + config.get_str("name")
     args = config.section("args")
-    match type:
+    match monitor_type:
         case "remote":
             from .remote import Remote
 
             return Remote.from_config(name, args)
         case _:
-            raise ValueError(f"Unknown monitor type '{type}'")
+            raise ValueError(f"Unknown monitor type '{monitor_type}'")
 
 
 class MonitorTask:
