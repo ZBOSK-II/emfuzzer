@@ -49,4 +49,4 @@ mypy:
 pytest:
   stage: test
   script:
-    - python -m pytest
+    - pytest
