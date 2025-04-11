@@ -46,7 +46,7 @@ class PingIsAlive(Runnable):
                     self.timeout - elapsed_time,
                 )
                 if xlist:
-                    logger.warn(f"<{self.name()}>: Read failure")
+                    logger.warning(f"<{self.name()}>: Read failure")
                     process.terminate()
                     return self.Result.FAILURE
                 if rlist:
@@ -65,7 +65,7 @@ class PingIsAlive(Runnable):
                                 else:
                                     logger.info(f"<{self.name()}>: Ping")
                             case b"E":
-                                logger.warn(f"<{self.name()}>: error response")
+                                logger.warning(f"<{self.name()}>: error response")
                                 response_received = False
                     else:
                         if char == b"\n":
@@ -74,7 +74,7 @@ class PingIsAlive(Runnable):
                         else:
                             header += char
 
-            logger.warn(f"<{self.name()}>: Ping timeout!")
+            logger.warning(f"<{self.name()}>: Ping timeout!")
             process.terminate()
             return self.Result.TIMEOUT
 

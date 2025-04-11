@@ -38,15 +38,15 @@ class Subprocess(Runnable):
                 check=False,
             )
         except subprocess.TimeoutExpired:
-            logger.warn(f"<{self.name()}: Operation timeout")
+            logger.warning(f"<{self.name()}: Operation timeout")
             return self.Result.TIMEOUT
         except Exception as ex:
             logger.error(f"<{self.name()}>: Operation error: {ex}")
             return self.Result.ERROR
 
         if result.returncode != 0:
-            logger.warn(f"<{self.name()}>: STDOUT: {result.stdout!r}")
-            logger.warn(f"<{self.name()}>: Operation returned {result.returncode}")
+            logger.warning(f"<{self.name()}>: STDOUT: {result.stdout!r}")
+            logger.warning(f"<{self.name()}>: Operation returned {result.returncode}")
             return self.Result.FAILURE
 
         logger.info(f"<{self.name()}>: STDOUT: {result.stdout!r}")

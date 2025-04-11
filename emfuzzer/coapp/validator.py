@@ -43,13 +43,13 @@ class Validator(Consumer):
 
     def check_message(self, addr: Address, data: bytes) -> Result:
         if addr != self.expected_ip:
-            logger.warn(
+            logger.warning(
                 f"Message received from unexpected origin: {addr} vs {self.expected_ip}"
             )
             return self.Result.UNEXPECTED_ORIGIN
 
         if len(data) < 2:
-            logger.warn("Too short message")
+            logger.warning("Too short message")
             return self.Result.MESSAGE_TOO_SHORT
 
         code = decode_code(data[1])
@@ -57,7 +57,7 @@ class Validator(Consumer):
         logger.info(f"Received {code_to_string(code)}")
 
         if not code_reports_success(code):
-            logger.warn("Operation reported as failed")
+            logger.warning("Operation reported as failed")
             return self.Result.OPERATION_FAILURE
 
         return self.Result.SUCCESS
@@ -73,7 +73,7 @@ class Validator(Consumer):
                 lambda: self.result != self.Result.UNKNOWN, timeout=self.timeout
             ):
                 self.expecting = False
-                logger.warn("Operation timed out")
+                logger.warning("Operation timed out")
                 return self.Result.TIMEOUT
             result = self.result
             self.result = self.Result.UNKNOWN
@@ -83,5 +83,5 @@ class Validator(Consumer):
         return {"unexpected_messages": self.unexpected_messages}
 
     def __unexpected_message(self) -> None:
-        logger.warn("Message unexpected at this stage")
+        logger.warning("Message unexpected at this stage")
         self.unexpected_messages += 1
