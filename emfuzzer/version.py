@@ -24,6 +24,7 @@ def __read_version() -> str:
             timeout=2,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
+            check=False,
         )
     except subprocess.TimeoutExpired:
         return "Unknown"

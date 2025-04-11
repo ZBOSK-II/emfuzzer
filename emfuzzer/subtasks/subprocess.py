@@ -35,6 +35,7 @@ class Subprocess(Runnable):
                 shell=self.shell,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
+                check=False,
             )
         except subprocess.TimeoutExpired:
             logger.warn(f"<{self.name()}: Operation timeout")
