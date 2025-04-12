@@ -689,4 +689,4 @@ dev = ["black", "flake8", "flake8-pyproject", "isort", "mypy", "mypy_extensions"
 [metadata]
 lock-version = "2.1"
 python-versions = ">= 3.13"
-content-hash = "0e1f193a057b4e173e65e777e3da7ba2843817fef5176e3fe6d8a51cad683910"
+content-hash = "dd58e009f94c82644f2f30a98db5331ec81eee80b48c1f4d0f6cc3dd6499b6bf"
