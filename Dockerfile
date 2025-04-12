@@ -18,10 +18,12 @@ RUN apt-get update -q \
     pkg-config=1.8.1-* \
     && rm -rf /var/lib/apt/lists/*
 
+WORKDIR /builddir
+
 # libcoap
 RUN git clone --branch v4.3.5 --depth=1 https://github.com/obgm/libcoap.git
 
-WORKDIR libcoap
+WORKDIR /builddir/libcoap
 
 RUN ./autogen.sh \
     && ./configure \
