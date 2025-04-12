@@ -1,8 +1,10 @@
 __pycache__
 .mypy_cache
-.pytest_cache
 .pip_cache
+.poetry
+.pytest_cache
 .venv
-*.log
 *.json
+*.log
 *.pyc
+/dist
