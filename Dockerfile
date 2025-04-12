@@ -2,7 +2,7 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
-FROM debian:bookworm as libcoap-builder
+FROM debian:bookworm AS libcoap-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -32,7 +32,7 @@ RUN ./autogen.sh \
     && make \
     && make install
 
-FROM python:3.13-slim-bookworm as poetry-builder
+FROM python:3.13-slim-bookworm AS poetry-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
