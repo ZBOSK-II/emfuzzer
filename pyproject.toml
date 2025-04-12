@@ -61,6 +61,7 @@ max-line-length = 100
 exclude = [
   "__pycache__",
   ".venv",
+  ".poetry",
 ]
 
 [tool.pytest.ini_options]
@@ -72,6 +73,7 @@ ignore = [
   "__pycache__",
   ".venv",
   ".git",
+  ".poetry",
 ]
 jobs = 0
 
