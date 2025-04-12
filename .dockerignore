@@ -10,3 +10,4 @@
 .git*
 build.sh
 emfuzzer.sh
+dist

@@ -32,12 +32,30 @@ RUN ./autogen.sh \
     && make \
     && make install
 
+FROM python:3.13-slim-bookworm as poetry-builder
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ENV POETRY_VERSION=2.1.2
+ENV POETRY_VENV=/opt/poetry-venv
+
+RUN python3 -m venv ${POETRY_VENV} \
+    && ${POETRY_VENV}/bin/pip install -U pip setuptools \
+    && ${POETRY_VENV}/bin/pip install poetry==${POETRY_VERSION}
+
+WORKDIR /emfuzzer
+
+COPY . /emfuzzer
+RUN $POETRY_VENV/bin/poetry build --no-interaction
+
+# final image
 FROM python:3.13-slim-bookworm
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY --from=libcoap-builder /opt/libcoap /opt/libcoap
-ENV PATH="/opt/libcoap/bin:$PATH"
+ENV EMFUZZER_VENV=/opt/emfuzzer-venv
+
+RUN python -m venv ${EMFUZZER_VENV}
 
 # apps
 RUN apt-get update -q \
@@ -46,18 +64,14 @@ RUN apt-get update -q \
     openssh-client=1:9.2* \
     && rm -rf /var/lib/apt/lists/*
 
-# venv
-RUN python -m venv /opt/venv
+# libcoapp from builder
+COPY --from=libcoap-builder /opt/libcoap /opt/libcoap
+ENV PATH="/opt/libcoap/bin:$PATH"
 
-RUN echo "#!/bin/bash" > /usr/bin/emfuzzer \
-    && echo "PYTHONPATH=/opt /opt/venv/bin/python -P -m emfuzzer \$@" >> /usr/bin/emfuzzer \
-    && chmod +x /usr/bin/emfuzzer
+# empfuzzer from poetry
+WORKDIR /emfuzzer
+COPY --from=poetry-builder /emfuzzer/dist/emfuzzer*.whl /emfuzzer
+RUN ${EMFUZZER_VENV}/bin/pip install emfuzzer*.whl \
+  && ln -sr ${EMFUZZER_VENV}/bin/emfuzzer /usr/bin
 
-# requirements
-COPY requirements.txt /opt/emfuzzer/
-RUN /opt/venv/bin/pip install -r /opt/emfuzzer/requirements.txt
-
-# emfuzzer
-COPY LICENSE.txt /opt/emfuzzer/
-COPY emfuzzer /opt/emfuzzer
-COPY VERSION.tmp /opt/emfuzzer/VERSION
+CMD ["emfuzzer"]

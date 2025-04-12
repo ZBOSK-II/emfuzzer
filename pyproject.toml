@@ -20,7 +20,8 @@ license-files = ["LICEN[CS]E.*"]
 
 # TODO [project.urls]
 
-# TODO [project.scripts]
+[project.scripts]
+emfuzzer = "emfuzzer.__main__:main"
 
 # TODO [project.entry-points.
 

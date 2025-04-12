@@ -2,6 +2,7 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+import importlib.metadata
 import subprocess
 from pathlib import Path
 
@@ -10,6 +11,11 @@ def __read_version() -> str:
     version_file = Path(__file__).parent / "VERSION"
     if version_file.exists():
         return version_file.read_text().strip()
+
+    try:
+        return importlib.metadata.version(__name__.split(".")[0])
+    except importlib.metadata.PackageNotFoundError:
+        pass
 
     try:
         result = subprocess.run(
