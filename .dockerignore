@@ -6,8 +6,10 @@
 **/*.log
 **/*.json
 **/*.pyc
-**/.git
-.git*
+.gitlab*
 build.sh
 emfuzzer.sh
 dist
+.poetry
+Dockerfile
+

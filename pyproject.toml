@@ -31,6 +31,7 @@ requires-poetry = ">=2.1.2"
 
 [tool.poetry.requires-plugins]
 poetry-git-version-plugin = ">=2.0.1"
+poetry-plugin-export = ">=1.9"
 
 [tool.poetry-git-version-plugin]
 release_type = "dev"

@@ -43,10 +43,15 @@ RUN python3 -m venv ${POETRY_VENV} \
     && ${POETRY_VENV}/bin/pip install -U pip setuptools \
     && ${POETRY_VENV}/bin/pip install poetry==${POETRY_VERSION}
 
+ENV POETRY=${POETRY_VENV}/bin/poetry
+
 WORKDIR /emfuzzer
 
 COPY . /emfuzzer
-RUN $POETRY_VENV/bin/poetry build --no-interaction
+RUN ${POETRY} install --no-interaction --no-root
+RUN ${POETRY} build --no-interaction
+# export freezed requirements
+RUN ${POETRY} export --without-hashes --no-interaction > dist/requirements.txt
 
 # final image
 FROM python:3.13-slim-bookworm
@@ -70,8 +75,9 @@ ENV PATH="/opt/libcoap/bin:$PATH"
 
 # empfuzzer from poetry
 WORKDIR /emfuzzer
-COPY --from=poetry-builder /emfuzzer/dist/emfuzzer*.whl /emfuzzer
-RUN ${EMFUZZER_VENV}/bin/pip install emfuzzer*.whl \
+COPY --from=poetry-builder /emfuzzer/dist /emfuzzer
+RUN ${EMFUZZER_VENV}/bin/pip install -r requirements.txt \
+  && ${EMFUZZER_VENV}/bin/pip install emfuzzer*.whl \
   && ln -sr ${EMFUZZER_VENV}/bin/emfuzzer /usr/bin
 
 CMD ["emfuzzer"]
