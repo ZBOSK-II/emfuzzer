@@ -7,8 +7,15 @@
 name = "emfuzzer"
 # TODO description
 dynamic = ["version"]  # TODO
-# TODO dependencies
 requires-python = ">= 3.13"
+dependencies = [
+  "PyNaCl==1.5.0",
+  "bcrypt==4.3.0",
+  "cffi==1.17.1",
+  "cryptography==43.0.1",
+  "paramiko==3.5.1",
+  "pycparser==2.22",
+]
 # TODO authors
 readme = "README.md"
 license = "MIT"
@@ -19,6 +26,21 @@ license-files = ["LICEN[CS]E.*"]
 # TODO [project.scripts]
 
 # TODO [project.entry-points.
+
+[project.optional-dependencies]
+dev = [
+  "black==24.10.0",
+  "flake8-pyproject==1.2.3",
+  "flake8==7.1.1",
+  "isort==5.13.2",
+  "mypy==1.14.0",
+  "mypy_extensions==1.0.0",
+  "pycodestyle==2.12.1",
+  "pyflakes==3.2.0",
+  "pylint==3.3.6",
+  "pytest==8.3.4",
+  "types_paramiko==3.5.0.20240928",
+]
 
 [tool.mypy]
 strict = true
@@ -59,16 +81,6 @@ disable = [
   "missing-module-docstring", # TODO
   "missing-class-docstring", # TODO ?
   "logging-fstring-interpolation",
-#  "raw-checker-failed",
-  #"bad-inline-option",
-  #"locally-disabled",
-  #"file-ignored",
-  #"suppressed-message",
-  #"useless-suppression",
-  #"deprecated-pragma",
-  #"use-symbolic-message-instead",
-  #"use-implicit-booleaness-not-comparison-to-string",
-  #"use-implicit-booleaness-not-comparison-to-zero",
 ]
 enable = [
   "useless-suppression",
