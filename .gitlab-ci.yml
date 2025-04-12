@@ -7,6 +7,7 @@ default:
     - python --version ; pip --version  # For debugging
     - pip install poetry==2.1.2
     - poetry install --only=dev
+    - poetry install --no-root
     - eval $(poetry env activate)
 
 stages:
