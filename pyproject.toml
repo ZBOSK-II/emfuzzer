@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [project]
 name = "emfuzzer"
 # TODO description
-dynamic = ["version"]  # TODO
+version = "0.0.0"  # set by poetry
 requires-python = ">= 3.13"
 dependencies = [
   "PyNaCl==1.5.0",
@@ -46,7 +46,14 @@ dev = [
 
 [tool.poetry]
 packages = [{include = "emfuzzer"}]
-package-mode = false  # TODO
+requires-poetry = ">=2.1.2"
+
+[tool.poetry.requires-plugins]
+poetry-git-version-plugin = ">=2.0.1"
+
+[tool.poetry-git-version-plugin]
+release_type = "dev"
+local = true
 
 [tool.mypy]
 strict = true
