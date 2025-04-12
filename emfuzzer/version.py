@@ -13,7 +13,7 @@ def __read_version() -> str:
         return version_file.read_text().strip()
 
     try:
-        return importlib.metadata.version(__name__.split(".")[0])
+        return importlib.metadata.version(__name__.split(".", maxsplit=1)[0])
     except importlib.metadata.PackageNotFoundError:
         pass
 
