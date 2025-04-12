@@ -1,7 +1,6 @@
-# TODO
-# [build-system]
-# requires = ["hatchling"]
-# build-backend = "hatchling.build"
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "emfuzzer"
@@ -17,8 +16,11 @@ dependencies = [
   "pycparser==2.22",
 ]
 # TODO authors
+authors = [
+    {name = "Konrad Grochowski",email = "Konrad.Grochowski@pw.edu.pl"},
+]
 readme = "README.md"
-license = "MIT"
+license = { text = "MIT" }
 license-files = ["LICEN[CS]E.*"]
 
 # TODO [project.urls]
@@ -41,6 +43,10 @@ dev = [
   "pytest==8.3.4",
   "types_paramiko==3.5.0.20240928",
 ]
+
+[tool.poetry]
+packages = [{include = "emfuzzer"}]
+package-mode = false  # TODO
 
 [tool.mypy]
 strict = true

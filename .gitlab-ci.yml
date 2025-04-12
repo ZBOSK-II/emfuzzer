@@ -5,9 +5,9 @@ default:
       - .pip_cache
   before_script:
     - python --version ; pip --version  # For debugging
-    - python -m venv .venv
-    - source .venv/bin/activate
-    - pip install -r requirements-dev.txt
+    - pip install poetry==2.1.2
+    - poetry install --extras=dev --no-root
+    - eval $(poetry env activate)
 
 stages:
   - check
