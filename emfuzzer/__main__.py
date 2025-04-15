@@ -46,19 +46,24 @@ def parse_args() -> Arguments:
     parser.add_argument(
         "data",
         nargs="+",
-        help="List of files containing binary data to send to the target",
+        help="list of files containing binary data to send to the target",
     )
     parser.add_argument(
         "--output-prefix",
-        help="Prefix to be used for saving output (logs, reports, etc.)",
+        help="prefix to be used for saving output (logs, reports, etc.)",
         default="emfuzzer",
         type=str,
     )
     parser.add_argument(
         "--config",
-        help="Path to the configuration file",
+        help="path to the configuration file",
         default="default-config.json",
         type=Path,
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=VERSION,
     )
 
     args = parser.parse_args()
