@@ -3,7 +3,8 @@
 # See the LICENSE.txt file in the root of the repository for full details.
 
 import logging
-from typing import Self
+from contextlib import contextmanager
+from typing import Iterator, Self
 
 from ..config import Config
 from ..context import Context
@@ -17,21 +18,24 @@ def runnable_from_config(config: Config, context: Context, *prefix: str) -> Runn
     runnable_type = config.get_str("type")
     name = ".".join(prefix) + "." + config.get_str("name")
     args = config.section("args")
-    _ = context  # CLEANUP
     match runnable_type:
         case "subprocess":
             # pylint: disable=import-outside-toplevel
             from .subprocess import Subprocess
 
-            return Subprocess.from_config(name, args)
+            return Subprocess.from_config(name, args, context)
         case "ping_stable":
             from .ping import PingIsStable  # pylint: disable=import-outside-toplevel
 
-            return PingIsStable.from_config(name, args)
+            return PingIsStable.from_config(name, args, context)
         case "ping_alive":
             from .ping import PingIsAlive  # pylint: disable=import-outside-toplevel
 
             return PingIsAlive.from_config(name, args)
+        case "remote":
+            from .remote import Remote  # pylint: disable=import-outside-toplevel
+
+            return Remote.from_config(name, args)
         case _:
             raise ValueError(f"Unknown sub-task type '{runnable_type}'")
 
@@ -40,12 +44,22 @@ class SubTask:
     def __init__(self, runnable: Runnable, results: ResultsGroup):
         self.runnable = runnable
         self.results = results
+        self.started = False
 
     def name(self) -> str:
         return self.runnable.name()
 
+    def start(self) -> None:
+        self.started = self.runnable.start()
+
+    def finish_for(self, key: str) -> None:
+        result = self.runnable.finish() if self.started else Runnable.Result.NOT_STARTED
+        self.results.collect(key, result)
+        self.started = False
+
     def execute_for(self, key: str) -> None:
-        self.results.collect(key, self.runnable.run())
+        self.start()
+        self.finish_for(key)
 
 
 class SubTasks:
@@ -73,6 +87,28 @@ class SubTasks:
             logger.info(f"Executing {task.name()}")
             task.execute_for(key)
         logger.info(f"End {self.name()}")
+
+    @contextmanager
+    def monitor(self, key: str) -> Iterator[None]:
+        try:
+            self.start_all()
+            yield
+        finally:
+            self.finish_all_for(key)
+
+    def start_all(self) -> None:
+        logger.info(f"Starting {self.name()}")
+        for task in self.tasks:
+            logger.info(f"Starting {task.name()}")
+            task.start()
+        logger.info(f"All {self.name()} started")
+
+    def finish_all_for(self, key: str) -> None:
+        logger.info(f"Finishing {self.name()}")
+        for task in self.tasks:
+            logger.info(f"Finishing {task.name()}")
+            task.finish_for(key)
+        logger.info(f"All {self.name()} finished")
 
     @classmethod
     def from_config(cls, *prefix: str, results: Results, context: Context) -> Self:

@@ -4,7 +4,7 @@
 
 from abc import ABC, abstractmethod
 from types import TracebackType
-from typing import Self
+from typing import Self, cast
 
 from .config import Config
 
@@ -27,9 +27,9 @@ class Context:
     def config_root(self) -> Config:
         return self._config
 
-    def worker(self, worker: type[Worker]) -> Worker:
+    def worker[T: Worker](self, worker: type[T]) -> T:
         if instance := self._workers.get(worker):
-            return instance
+            return cast(T, instance)
 
         instance = worker()
         instance.start()

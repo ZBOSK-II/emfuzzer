@@ -6,11 +6,12 @@ import logging
 import select
 import subprocess
 import time
-from typing import Self
+from typing import Optional, Self
 
 from ..config import Config
+from ..context import Context
 from .runnable import Runnable
-from .subprocess import Subprocess
+from .subprocess import Reader, Subprocess
 
 logger = logging.getLogger(__name__)
 
@@ -26,56 +27,72 @@ class PingIsAlive(Runnable):
         self.host = host
         self.timeout = timeout
         self.interval = interval
+        self.process: Optional[subprocess.Popen[bytes]] = None
 
-    def run(self) -> Runnable.Result:
-        logger.info(f"<{self.name()}>: Checking is alive via ping")
-        with subprocess.Popen(
-            ["ping", "-f", "-i", str(self.interval), self.host],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        ) as process:
-            start_time = time.time()
-            header = b""
-            header_done = False
-            response_received = False
-            while (elapsed_time := time.time() - start_time) < self.timeout:
-                rlist, _, xlist = select.select(
-                    [process.stdout],
-                    [],
-                    [process.stdout],
-                    self.timeout - elapsed_time,
-                )
-                if xlist:
-                    logger.warning(f"<{self.name()}>: Read failure")
-                    process.terminate()
-                    return self.Result.FAILURE
-                if rlist:
-                    char = rlist[0].read(1)
-                    if header_done:
-                        match char:
-                            case b"\b":
-                                if not response_received:
-                                    logger.info(f"<{self.name()}>: Response received")
-                                response_received = True
-                            case b".":
-                                if response_received:
-                                    logger.info(f"<{self.name()}>: Ping received")
-                                    process.terminate()
-                                    return self.Result.SUCCESS
-                                logger.info(f"<{self.name()}>: Ping")
-                            case b"E":
-                                logger.warning(f"<{self.name()}>: error response")
-                                response_received = False
+    def start(self) -> bool:
+        try:
+            logger.info(f"<{self.name()}>: Starting ping alive check")
+            self.process = subprocess.Popen(  # pylint: disable=consider-using-with
+                ["ping", "-f", "-i", str(self.interval), self.host],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+        except Exception as ex:  # pylint: disable=broad-exception-caught
+            logger.error(f"<{self.name()}>: Operation error: {ex}")
+            return False
+
+        assert self.process.stdout is not None
+        assert self.process.stderr is not None
+
+        return True
+
+    def finish(self) -> Runnable.Result:
+        assert self.process is not None
+        assert self.process.stdout is not None
+        assert self.process.stderr is not None
+
+        start_time = time.time()
+        header = b""
+        header_done = False
+        response_received = False
+        while (elapsed_time := time.time() - start_time) < self.timeout:
+            rlist, _, xlist = select.select(
+                [self.process.stdout],
+                [],
+                [self.process.stdout],
+                self.timeout - elapsed_time,
+            )
+            if xlist:
+                logger.warning(f"<{self.name()}>: Read failure")
+                self.process.terminate()
+                return self.Result.FAILURE
+            if rlist:
+                char = rlist[0].read(1)
+                if header_done:
+                    match char:
+                        case b"\b":
+                            if not response_received:
+                                logger.info(f"<{self.name()}>: Response received")
+                            response_received = True
+                        case b".":
+                            if response_received:
+                                logger.info(f"<{self.name()}>: Ping received")
+                                self.process.terminate()
+                                return self.Result.SUCCESS
+                            logger.info(f"<{self.name()}>: Ping")
+                        case b"E":
+                            logger.warning(f"<{self.name()}>: error response")
+                            response_received = False
+                else:
+                    if char == b"\n":
+                        logger.info(f"<{self.name()}>: {header!r}")
+                        header_done = True
                     else:
-                        if char == b"\n":
-                            logger.info(f"<{self.name()}>: {header!r}")
-                            header_done = True
-                        else:
-                            header += char
+                        header += char
 
-            logger.warning(f"<{self.name()}>: Ping timeout!")
-            process.terminate()
-            return self.Result.TIMEOUT
+        logger.warning(f"<{self.name()}>: Ping timeout!")
+        self.process.terminate()
+        return self.Result.TIMEOUT
 
     @classmethod
     def from_config(cls, name: str, config: Config) -> Self:
@@ -92,11 +109,13 @@ class PingIsStable(Subprocess):
     Executes `count` pings and expects replies from all of them.
     """
 
-    def __init__(self, name: str, host: str, count: int, interval: int):
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
+    def __init__(self, name: str, host: str, count: int, interval: int, reader: Reader):
         timeout = (count + 1) * interval
         super().__init__(
             name=name,
-            timeout=timeout,
+            finish_timeout=timeout,
+            finish_signal=None,
             args=[
                 "ping",
                 "-c",
@@ -108,13 +127,15 @@ class PingIsStable(Subprocess):
                 host,
             ],
             shell=False,
+            reader=reader,
         )
 
     @classmethod
-    def from_config(cls, name: str, config: Config) -> Self:
+    def from_config(cls, name: str, config: Config, context: Context) -> Self:
         return cls(
             name=name,
             host=config.get_str("host"),
             count=config.get_int("count"),
             interval=config.get_int("interval"),
+            reader=context.worker(Reader),
         )

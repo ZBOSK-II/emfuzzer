@@ -5,8 +5,8 @@
   },
   "case": {
     "delays": {
-        "between_cases": 0.2,
-        "before_sending": 1
+      "between_cases": 0.2,
+      "before_sending": 1
     },
     "setups": [
       {
@@ -17,7 +17,8 @@
             "coap-client-notls",
             "coap://192.168.143.75/reset"
           ],
-          "timeout": 3,
+          "finish_timeout": 3,
+          "finish_signal": "NONE",
           "shell": false
         }
       },
@@ -39,7 +40,8 @@
             "-c",
             "coap-client-notls coap://192.168.143.83/riot/board | diff - <(echo 'nucleo-f439zi')"
           ],
-          "timeout": 3,
+          "finish_timeout": 3,
+          "finish_signal": "NONE",
           "shell": false
         }
       }
@@ -81,7 +83,8 @@
             "-c",
             "coap-client-notls coap://192.168.143.83/riot/board | diff - <(echo 'nucleo-f439zi')"
           ],
-          "timeout": 3,
+          "finish_timeout": 3,
+          "finish_signal": "NONE",
           "shell": false
         }
       }

@@ -8,12 +8,12 @@ from typing import Self
 
 from ..config import Config
 from ..ssh import ConnectionConfig, Invoker
-from .monitor import Monitor
+from .runnable import Runnable
 
 logger = logging.getLogger(__name__)
 
 
-class Remote(Monitor):
+class Remote(Runnable):
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self,
@@ -45,7 +45,7 @@ class Remote(Monitor):
             logging.error(f"Failed to start monitoring <{self.name()}>: {ex}")
             return False
 
-    def finish(self) -> Monitor.Result:
+    def finish(self) -> Runnable.Result:
         try:
             self.invoker.signal(signal.SIGINT)
             result = self.invoker.wait_for_exit(self.finish_timeout)

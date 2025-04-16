@@ -10,6 +10,7 @@ class Runnable(ABC):
 
     class Result(StrEnum):
         SUCCESS = auto()
+        NOT_STARTED = auto()
         FAILURE = auto()
         TIMEOUT = auto()
         ERROR = auto()
@@ -21,4 +22,7 @@ class Runnable(ABC):
         return self._name
 
     @abstractmethod
-    def run(self) -> Result: ...
+    def start(self) -> bool: ...
+
+    @abstractmethod
+    def finish(self) -> Result: ...

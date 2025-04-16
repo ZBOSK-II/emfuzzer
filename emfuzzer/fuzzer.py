@@ -10,7 +10,6 @@ from .coapp import Validator
 from .config import Config
 from .context import Context
 from .delay import Delay
-from .monitoring import Monitoring
 from .net import Address, Loop
 from .results import Results
 from .subtasks import SubTasks
@@ -35,7 +34,7 @@ def fuzz(args: Arguments, config: Config) -> int:
         checks = SubTasks.from_config(
             "case", "checks", results=results, context=context
         )
-        monitoring = Monitoring.from_config(
+        monitoring = SubTasks.from_config(
             "case",
             "monitoring",
             results=results,
