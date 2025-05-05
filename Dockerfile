@@ -2,6 +2,9 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+#
+# libcoap builder
+#
 FROM debian:bookworm AS libcoap-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -34,6 +37,9 @@ RUN ./autogen.sh \
     && make \
     && make install
 
+#
+# poetry builder
+#
 FROM python:3.13-slim-bookworm AS poetry-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -55,14 +61,12 @@ RUN ${POETRY} build --no-interaction
 # export freezed requirements
 RUN ${POETRY} export --no-interaction > dist/requirements.txt
 
-# final image
-FROM python:3.13-slim-bookworm
+#
+# installation base
+#
+FROM python:3.13-slim-bookworm AS install-base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-ENV EMFUZZER_VENV=/opt/emfuzzer-venv
-
-RUN python -m venv ${EMFUZZER_VENV}
 
 # apps
 RUN apt-get update -q \
@@ -74,6 +78,35 @@ RUN apt-get update -q \
 # libcoapp from builder
 COPY --from=libcoap-builder /opt/libcoap /opt/libcoap
 ENV PATH="/opt/libcoap/bin:$PATH"
+
+ENV POETRY_VENV=/opt/poetry-venv
+COPY --from=poetry-builder ${POETRY_VENV}/ /opt/poetry-venv/
+
+#
+# development image
+#
+FROM install-base AS emfuzzer-dev
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ENV POETRY_VENV=/opt/poetry-venv
+ENV POETRY=${POETRY_VENV}/bin/poetry
+
+ENV PATH="${POETRY_VENV}/bin:$PATH"
+
+ADD pyproject.toml .
+RUN ${POETRY} install --no-root --no-interaction --with=dev
+
+#
+# final image
+#
+FROM install-base
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ENV EMFUZZER_VENV=/opt/emfuzzer-venv
+
+RUN python -m venv ${EMFUZZER_VENV}
 
 # empfuzzer from poetry
 WORKDIR /emfuzzer
