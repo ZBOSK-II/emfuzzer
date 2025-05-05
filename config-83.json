@@ -58,7 +58,10 @@
           "command": "sudo ./ledping -p 17 -w 250",
           "start_key": "Rising edge detected, starting measurements.",
           "start_timeout": 2,
-          "finish_timeout": 2,
+            "finish": {
+                "timeout": 2,
+                "signal": "SIGINT"
+            },
           "connection": {
             "host": "192.168.143.88",
             "port": 22,

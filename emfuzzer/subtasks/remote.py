@@ -3,12 +3,12 @@
 # See the LICENSE.txt file in the root of the repository for full details.
 
 import logging
-import signal
 from typing import Self
 
 from ..config import Config
 from ..ssh import ConnectionConfig, Invoker
 from .runnable import Runnable
+from .subprocess import FinishConfig
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class Remote(Runnable):
         start_key: str,
         connection_config: ConnectionConfig,
         start_timeout: float,
-        finish_timeout: float,
+        finish_config: FinishConfig,
     ):
         super().__init__(name)
         self.invoker = Invoker(
@@ -32,7 +32,7 @@ class Remote(Runnable):
             start_key=start_key,
         )
         self.start_timeout = start_timeout
-        self.finish_timeout = finish_timeout
+        self.finish_config = finish_config
 
     def start(self) -> bool:
         try:
@@ -47,8 +47,9 @@ class Remote(Runnable):
 
     def finish(self) -> Runnable.Result:
         try:
-            self.invoker.signal(signal.SIGINT)
-            result = self.invoker.wait_for_exit(self.finish_timeout)
+            if self.finish_config.signal:
+                self.invoker.signal(self.finish_config.signal)
+            result = self.invoker.wait_for_exit(self.finish_config.timeout)
             self.invoker.close()
             return self.Result.SUCCESS if (result == 0) else self.Result.FAILURE
         except TimeoutError:
@@ -67,5 +68,5 @@ class Remote(Runnable):
                 config.section("connection")
             ),
             start_timeout=config.get_float("start_timeout"),
-            finish_timeout=config.get_float("finish_timeout"),
+            finish_config=FinishConfig.from_config(config.section("finish")),
         )
