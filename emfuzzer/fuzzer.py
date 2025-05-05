@@ -8,6 +8,7 @@ import logging
 from .arguments import Arguments
 from .coapp import Validator
 from .config import Config
+from .context import Context
 from .delay import Delay
 from .monitoring import Monitoring
 from .net import Address, Loop
@@ -27,41 +28,50 @@ def fuzz(args: Arguments, config: Config) -> int:
         "coapp", Validator.Result, Validator.Result.SUCCESS
     )
 
-    setups = SubTasks.from_config("case", "setups", results=results, config=config)
-    checks = SubTasks.from_config("case", "checks", results=results, config=config)
-    monitoring = Monitoring.from_config(
-        "case", "monitoring", results=results, config=config
-    )
+    with Context() as context:
+        setups = SubTasks.from_config(
+            "case", "setups", results=results, config=config, context=context
+        )
+        checks = SubTasks.from_config(
+            "case", "checks", results=results, config=config, context=context
+        )
+        monitoring = Monitoring.from_config(
+            "case",
+            "monitoring",
+            results=results,
+            config=config,
+            context=context,
+        )
 
-    delay_between_cases = Delay.from_config(
-        "case", "delays", "between_cases", config=config
-    )
-    delay_before_sending = Delay.from_config(
-        "case", "delays", "before_sending", config=config
-    )
+        delay_between_cases = Delay.from_config(
+            "case", "delays", "between_cases", config=config
+        )
+        delay_before_sending = Delay.from_config(
+            "case", "delays", "before_sending", config=config
+        )
 
-    with Loop(validator) as loop:
-        for path in args.data:
-            logger.info(f"Opening {path}")
-            with path.open("rb") as file:
-                data = file.read()
-            if len(data) == 0:
-                logger.warning(f"No data found, skipping {path}")
-                continue
+        with Loop(validator) as loop:
+            for path in args.data:
+                logger.info(f"Opening {path}")
+                with path.open("rb") as file:
+                    data = file.read()
+                if len(data) == 0:
+                    logger.warning(f"No data found, skipping {path}")
+                    continue
 
-            case_name = str(path)
-            results.add_key(case_name)
+                case_name = str(path)
+                results.add_key(case_name)
 
-            setups.execute_for(case_name)
+                setups.execute_for(case_name)
 
-            with monitoring.monitor(case_name):
-                delay_before_sending.wait()
-                loop.send(target, data)
+                with monitoring.monitor(case_name):
+                    delay_before_sending.wait()
+                    loop.send(target, data)
 
-                coapp_results.collect(case_name, validator.wait_for_result())
-                checks.execute_for(case_name)
+                    coapp_results.collect(case_name, validator.wait_for_result())
+                    checks.execute_for(case_name)
 
-            delay_between_cases.wait()
+                delay_between_cases.wait()
 
     results.finish(validator.extra_stats())
     logger.info(f"Results:\n {results.summary()}")

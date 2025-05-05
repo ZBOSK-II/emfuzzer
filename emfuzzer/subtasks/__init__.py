@@ -6,16 +6,18 @@ import logging
 from typing import Self
 
 from ..config import Config
+from ..context import Context
 from ..results import Results, ResultsGroup
 from .runnable import Runnable
 
 logger = logging.getLogger(__name__)
 
 
-def runnable_from_config(config: Config, *prefix: str) -> Runnable:
+def runnable_from_config(config: Config, context: Context, *prefix: str) -> Runnable:
     runnable_type = config.get_str("type")
     name = ".".join(prefix) + "." + config.get_str("name")
     args = config.section("args")
+    _ = context  # CLEANUP
     match runnable_type:
         case "subprocess":
             # pylint: disable=import-outside-toplevel
@@ -73,8 +75,10 @@ class SubTasks:
         logger.info(f"End {self.name()}")
 
     @classmethod
-    def from_config(cls, *prefix: str, results: Results, config: Config) -> Self:
+    def from_config(
+        cls, *prefix: str, results: Results, config: Config, context: Context
+    ) -> Self:
         tasks = cls(results, *prefix)
         for conf in config.get_config_list(*prefix):
-            tasks.register(runnable_from_config(conf, *prefix))
+            tasks.register(runnable_from_config(conf, context, *prefix))
         return tasks

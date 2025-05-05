@@ -7,16 +7,18 @@ from contextlib import contextmanager
 from typing import Iterator, Self
 
 from ..config import Config
+from ..context import Context
 from ..results import Results, ResultsGroup
 from .monitor import Monitor
 
 logger = logging.getLogger(__name__)
 
 
-def monitor_from_config(config: Config, *prefix: str) -> Monitor:
+def monitor_from_config(config: Config, context: Context, *prefix: str) -> Monitor:
     monitor_type = config.get_str("type")
     name = ".".join(prefix) + "." + config.get_str("name")
     args = config.section("args")
+    _ = context  # CLEANUP
     match monitor_type:
         case "remote":
             from .remote import Remote  # pylint: disable=import-outside-toplevel
@@ -86,8 +88,10 @@ class Monitoring:
         logger.info(f"All {self.name()} finished")
 
     @classmethod
-    def from_config(cls, *prefix: str, results: Results, config: Config) -> Self:
+    def from_config(
+        cls, *prefix: str, results: Results, config: Config, context: Context
+    ) -> Self:
         tasks = cls(results, *prefix)
         for conf in config.get_config_list(*prefix):
-            tasks.register(monitor_from_config(conf, *prefix))
+            tasks.register(monitor_from_config(conf, context, *prefix))
         return tasks
