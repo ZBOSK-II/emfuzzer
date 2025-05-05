@@ -28,18 +28,17 @@ def fuzz(args: Arguments, config: Config) -> int:
         "coapp", Validator.Result, Validator.Result.SUCCESS
     )
 
-    with Context() as context:
+    with Context(config) as context:
         setups = SubTasks.from_config(
-            "case", "setups", results=results, config=config, context=context
+            "case", "setups", results=results, context=context
         )
         checks = SubTasks.from_config(
-            "case", "checks", results=results, config=config, context=context
+            "case", "checks", results=results, context=context
         )
         monitoring = Monitoring.from_config(
             "case",
             "monitoring",
             results=results,
-            config=config,
             context=context,
         )
 

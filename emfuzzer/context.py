@@ -6,6 +6,8 @@ from abc import ABC, abstractmethod
 from types import TracebackType
 from typing import Self
 
+from .config import Config
+
 
 class Worker(ABC):
     @abstractmethod
@@ -17,8 +19,13 @@ class Worker(ABC):
 
 class Context:
 
-    def __init__(self) -> None:
+    def __init__(self, config: Config) -> None:
         self._workers: dict[type[Worker], Worker] = {}
+        self._config = config
+
+    @property
+    def config(self) -> Config:
+        return self._config
 
     def worker(self, worker: type[Worker]) -> Worker:
         if instance := self._workers.get(worker):
