@@ -9,6 +9,8 @@ import select
 import signal
 import subprocess
 import threading
+from dataclasses import dataclass
+from signal import Signals
 from typing import IO, Optional, Self
 
 from ..config import Config
@@ -16,6 +18,27 @@ from ..context import Context, Worker
 from .runnable import Runnable
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class FinishConfig:
+    timeout: float
+    signal: Optional[Signals]
+
+    @staticmethod
+    def _signal_from_name(name: str) -> Optional[Signals]:
+        match name:
+            case "NONE":
+                return None
+            case _:
+                return Signals[name]
+
+    @classmethod
+    def from_config(cls, config: Config) -> Self:
+        return cls(
+            config.get_float("timeout"),
+            cls._signal_from_name(config.get_str("signal")),
+        )
 
 
 class Stream:
@@ -145,16 +168,14 @@ class Subprocess(Runnable):
         name: str,
         args: list[str],
         shell: bool,
-        finish_timeout: float,
-        finish_signal: Optional[signal.Signals],
+        finish_config: FinishConfig,
         reader: Reader,
     ):
         super().__init__(name)
 
         self.args = args
         self.shell = shell
-        self.finish_timeout = finish_timeout
-        self.finish_signal = finish_signal
+        self.finish_config = finish_config
 
         self.reader = reader
 
@@ -196,12 +217,14 @@ class Subprocess(Runnable):
     def _finish_process(self) -> Runnable.Result:
         assert self.process is not None
 
-        if self.finish_signal:
-            logger.info(f"<{self.name()}>: Sending signal {self.finish_signal.name}")
-            self.process.send_signal(self.finish_signal)
+        if self.finish_config.signal:
+            logger.info(
+                f"<{self.name()}>: Sending signal {self.finish_config.signal.name}"
+            )
+            self.process.send_signal(self.finish_config.signal)
 
         try:
-            self.process.wait(timeout=self.finish_timeout)
+            self.process.wait(timeout=self.finish_config.timeout)
         except subprocess.TimeoutExpired:
             logger.warning(f"<{self.name()}>: Operation timeout")
             return self.Result.TIMEOUT
@@ -231,7 +254,6 @@ class Subprocess(Runnable):
             name=name,
             args=config.get_str_list("cmd"),
             shell=config.get_bool("shell"),
-            finish_timeout=config.get_float("finish_timeout"),
-            finish_signal=cls._signal_from_name(config.get_str("finish_signal")),
+            finish_config=FinishConfig.from_config(config.section("finish")),
             reader=context.worker(Reader),
         )

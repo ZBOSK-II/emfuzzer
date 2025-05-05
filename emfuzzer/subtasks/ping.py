@@ -11,7 +11,7 @@ from typing import Optional, Self
 from ..config import Config
 from ..context import Context
 from .runnable import Runnable
-from .subprocess import Reader, Subprocess
+from .subprocess import FinishConfig, Reader, Subprocess
 
 logger = logging.getLogger(__name__)
 
@@ -114,8 +114,7 @@ class PingIsStable(Subprocess):
         timeout = (count + 1) * interval
         super().__init__(
             name=name,
-            finish_timeout=timeout,
-            finish_signal=None,
+            finish_config=FinishConfig(timeout, None),
             args=[
                 "ping",
                 "-c",

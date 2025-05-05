@@ -17,8 +17,10 @@
             "coap-client-notls",
             "coap://192.168.143.75/reset"
           ],
-          "finish_timeout": 3,
-          "finish_signal": "NONE",
+          "finish": {
+            "timeout": 3,
+            "signal": "NONE"
+          },
           "shell": false
         }
       },
@@ -40,8 +42,10 @@
             "-c",
             "coap-client-notls coap://192.168.143.83/riot/board | diff - <(echo 'nucleo-f439zi')"
           ],
-          "finish_timeout": 3,
-          "finish_signal": "NONE",
+          "finish": {
+            "timeout": 3,
+            "signal": "NONE"
+          },
           "shell": false
         }
       }
@@ -83,8 +87,10 @@
             "-c",
             "coap-client-notls coap://192.168.143.83/riot/board | diff - <(echo 'nucleo-f439zi')"
           ],
-          "finish_timeout": 3,
-          "finish_signal": "NONE",
+          "finish": {
+            "timeout": 3,
+            "signal": "NONE"
+          },
           "shell": false
         }
       }
