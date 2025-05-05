@@ -24,7 +24,7 @@ class Context:
         self._config = config
 
     @property
-    def config(self) -> Config:
+    def config_root(self) -> Config:
         return self._config
 
     def worker(self, worker: type[Worker]) -> Worker:
