@@ -53,7 +53,7 @@ COPY . /emfuzzer
 RUN ${POETRY} install --no-interaction --no-root
 RUN ${POETRY} build --no-interaction
 # export freezed requirements
-RUN ${POETRY} export --without-hashes --no-interaction > dist/requirements.txt
+RUN ${POETRY} export --no-interaction > dist/requirements.txt
 
 # final image
 FROM python:3.13-slim-bookworm
