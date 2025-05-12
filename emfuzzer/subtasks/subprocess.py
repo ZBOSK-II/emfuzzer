@@ -11,7 +11,7 @@ from typing import Optional, Self
 
 from ..config import Config
 from ..context import Context
-from ..io import IOReader
+from ..io import IOLoop
 from ..io.streams import StreamLogger
 from .runnable import Runnable
 
@@ -48,7 +48,7 @@ class Subprocess(Runnable):
         args: list[str],
         shell: bool,
         finish_config: FinishConfig,
-        reader: IOReader,
+        io: IOLoop,
     ):
         super().__init__(name)
 
@@ -56,7 +56,7 @@ class Subprocess(Runnable):
         self.shell = shell
         self.finish_config = finish_config
 
-        self.reader = reader
+        self.io = io
 
         self.process: Optional[subprocess.Popen[bytes]] = None
 
@@ -76,12 +76,8 @@ class Subprocess(Runnable):
 
         assert self.process.stdout is not None
         assert self.process.stderr is not None
-        self.reader.register(
-            StreamLogger(f"<{self.name()}> - STDOUT", self.process.stdout)
-        )
-        self.reader.register(
-            StreamLogger(f"<{self.name()}> - STDERR", self.process.stderr)
-        )
+        self.io.register(StreamLogger(f"<{self.name()}> - STDOUT", self.process.stdout))
+        self.io.register(StreamLogger(f"<{self.name()}> - STDERR", self.process.stderr))
         return True
 
     def finish(self) -> Runnable.Result:
@@ -92,8 +88,8 @@ class Subprocess(Runnable):
         result = self._finish_process()
 
         self.process.terminate()
-        self.reader.close(self.process.stdout)
-        self.reader.close(self.process.stderr)
+        self.io.close(self.process.stdout)
+        self.io.close(self.process.stderr)
 
         return result
 
@@ -138,5 +134,5 @@ class Subprocess(Runnable):
             args=config.get_str_list("cmd"),
             shell=config.get_bool("shell"),
             finish_config=FinishConfig.from_config(config.section("finish")),
-            reader=context.worker(IOReader),
+            io=context.worker(IOLoop),
         )

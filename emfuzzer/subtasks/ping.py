@@ -8,7 +8,7 @@ from typing import IO, Self
 
 from ..config import Config
 from ..context import Context
-from ..io import IOReader
+from ..io import IOLoop
 from ..io.streams import InputStream
 from .subprocess import FinishConfig, Subprocess
 
@@ -57,9 +57,7 @@ class PingIsAlive(Subprocess):
     """
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
-    def __init__(
-        self, name: str, host: str, interval: int, timeout: float, reader: IOReader
-    ):
+    def __init__(self, name: str, host: str, interval: int, timeout: float, io: IOLoop):
 
         super().__init__(
             name=name,
@@ -72,7 +70,7 @@ class PingIsAlive(Subprocess):
                 host,
             ],
             shell=False,
-            reader=reader,
+            io=io,
         )
 
         self.stream: PingIsAliveStream | None = None
@@ -85,7 +83,7 @@ class PingIsAlive(Subprocess):
         assert self.process.stdout is not None
 
         self.stream = PingIsAliveStream(self.name(), self.process.stdout, self.process)
-        self.reader.register(self.stream)  # overrides registration done by parent
+        self.io.register(self.stream)  # overrides registration done by parent
 
         return True
 
@@ -96,7 +94,7 @@ class PingIsAlive(Subprocess):
             host=config.get_str("host"),
             timeout=config.get_float("timeout"),
             interval=config.get_int("interval"),
-            reader=context.worker(IOReader),
+            io=context.worker(IOLoop),
         )
 
 
@@ -106,9 +104,7 @@ class PingIsStable(Subprocess):
     """
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
-    def __init__(
-        self, name: str, host: str, count: int, interval: int, reader: IOReader
-    ):
+    def __init__(self, name: str, host: str, count: int, interval: int, io: IOLoop):
         timeout = (count + 1) * interval
         super().__init__(
             name=name,
@@ -124,7 +120,7 @@ class PingIsStable(Subprocess):
                 host,
             ],
             shell=False,
-            reader=reader,
+            io=io,
         )
 
     @classmethod
@@ -134,5 +130,5 @@ class PingIsStable(Subprocess):
             host=config.get_str("host"),
             count=config.get_int("count"),
             interval=config.get_int("interval"),
-            reader=context.worker(IOReader),
+            io=context.worker(IOLoop),
         )

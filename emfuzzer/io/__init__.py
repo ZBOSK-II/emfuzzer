@@ -40,7 +40,7 @@ class Selectable(ABC):
     def is_closed(self) -> bool: ...
 
 
-class IOReader(Worker):
+class IOLoop(Worker):
 
     def __init__(self) -> None:
         self._thread = threading.Thread(name="io-reader", target=self._process)
