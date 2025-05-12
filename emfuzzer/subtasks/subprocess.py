@@ -57,7 +57,7 @@ class Subprocess(Runnable):
 
         self.reader = reader
 
-        self.process: Optional[subprocess.Popen[str]] = None
+        self.process: Optional[subprocess.Popen[bytes]] = None
 
     def start(self) -> bool:
         try:
@@ -66,7 +66,7 @@ class Subprocess(Runnable):
                 self.args,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True,
+                text=False,
                 shell=self.shell,
             )
         except Exception as ex:  # pylint: disable=broad-exception-caught

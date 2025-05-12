@@ -15,18 +15,18 @@ logger = logging.getLogger(__name__)
 
 
 class Stream:
-    def __init__(self, name: str, stream: IO[str]):
+    def __init__(self, name: str, stream: IO[bytes]):
         self.name = name
         self.stream = stream
 
-        self._buffer = ""
+        self._buffer = bytearray()
 
     def read(self) -> None:
         for b in self.stream.read(1024):
-            if b == "\n":
+            if b == b"\n"[0]:
                 self._flush()
             else:
-                self._buffer += b
+                self._buffer.append(b)
 
     def close(self) -> None:
         self.stream.close()
@@ -38,8 +38,8 @@ class Stream:
         return self.stream.closed
 
     def _flush(self) -> None:
-        logger.info(f"{self.name}: {self._buffer.rstrip()}")
-        self._buffer = ""
+        logger.info(f"{self.name}: {bytes(self._buffer.rstrip())}")
+        self._buffer.clear()
 
 
 class IOReader(Worker):
@@ -50,7 +50,7 @@ class IOReader(Worker):
         self._interrupt_pipe = os.pipe()
         self._streams: dict[int, Stream] = {}
         self._register_queue: queue.Queue[Stream] = queue.Queue()
-        self._close_queue: queue.Queue[IO[str]] = queue.Queue()
+        self._close_queue: queue.Queue[IO[bytes]] = queue.Queue()
 
     def start(self) -> None:
         logger.info("Starting subprocess read thread")
@@ -65,11 +65,11 @@ class IOReader(Worker):
             stream.close()
         logger.info("Stopped subprocess read thread")
 
-    def register(self, name: str, stream: IO[str]) -> None:
+    def register(self, name: str, stream: IO[bytes]) -> None:
         self._register_queue.put(Stream(name, stream))
         self._wake_select()
 
-    def close(self, stream: IO[str]) -> None:
+    def close(self, stream: IO[bytes]) -> None:
         self._close_queue.put(stream)
         self._wake_select()
 
