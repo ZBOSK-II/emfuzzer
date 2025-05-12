@@ -10,8 +10,9 @@ from typing import Optional, Self
 
 from ..config import Config
 from ..context import Context
+from ..io import IOReader
 from .runnable import Runnable
-from .subprocess import FinishConfig, Reader, Subprocess
+from .subprocess import FinishConfig, Subprocess
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +111,9 @@ class PingIsStable(Subprocess):
     """
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
-    def __init__(self, name: str, host: str, count: int, interval: int, reader: Reader):
+    def __init__(
+        self, name: str, host: str, count: int, interval: int, reader: IOReader
+    ):
         timeout = (count + 1) * interval
         super().__init__(
             name=name,
@@ -136,5 +139,5 @@ class PingIsStable(Subprocess):
             host=config.get_str("host"),
             count=config.get_int("count"),
             interval=config.get_int("interval"),
-            reader=context.worker(Reader),
+            reader=context.worker(IOReader),
         )
