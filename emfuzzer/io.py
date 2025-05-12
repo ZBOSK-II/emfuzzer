@@ -7,26 +7,43 @@ import os
 import queue
 import select
 import threading
-from typing import IO
+from abc import ABC, abstractmethod
+from typing import IO, Protocol
 
 from .context import Worker
 
 logger = logging.getLogger(__name__)
 
 
-class Stream:
+# pylint: disable=too-few-public-methods
+class Closeable(Protocol):
+    def close(self) -> None: ...
+
+
+class Selectable(ABC):
+    def __init__(self, name: str):
+        self._name = name
+
+    def name(self) -> str:
+        return self._name
+
+    @abstractmethod
+    def fileno(self) -> int: ...
+
+    @abstractmethod
+    def read(self) -> None: ...
+
+    @abstractmethod
+    def close(self) -> None: ...
+
+    @abstractmethod
+    def is_closed(self) -> bool: ...
+
+
+class InputStream(Selectable):
     def __init__(self, name: str, stream: IO[bytes]):
-        self.name = name
+        super().__init__(name)
         self.stream = stream
-
-        self._buffer = bytearray()
-
-    def read(self) -> None:
-        for b in self.stream.read(1024):
-            if b == b"\n"[0]:
-                self._flush()
-            else:
-                self._buffer.append(b)
 
     def close(self) -> None:
         self.stream.close()
@@ -37,8 +54,22 @@ class Stream:
     def is_closed(self) -> bool:
         return self.stream.closed
 
+
+class StreamLogger(InputStream):
+    def __init__(self, name: str, stream: IO[bytes]):
+        super().__init__(name, stream)
+
+        self._buffer = bytearray()
+
+    def read(self) -> None:
+        for b in self.stream.read(1024):
+            if b == b"\n"[0]:
+                self._flush()
+            else:
+                self._buffer.append(b)
+
     def _flush(self) -> None:
-        logger.info(f"{self.name}: {bytes(self._buffer.rstrip())}")
+        logger.info(f"{self.name()}: {bytes(self._buffer.rstrip())!r}")
         self._buffer.clear()
 
 
@@ -48,9 +79,9 @@ class IOReader(Worker):
         self._thread = threading.Thread(name="io-reader", target=self._process)
         self._stop_request = threading.Event()
         self._interrupt_pipe = os.pipe()
-        self._streams: dict[int, Stream] = {}
-        self._register_queue: queue.Queue[Stream] = queue.Queue()
-        self._close_queue: queue.Queue[IO[bytes]] = queue.Queue()
+        self._selectables: dict[int, Selectable] = {}
+        self._register_queue: queue.Queue[Selectable] = queue.Queue()
+        self._close_queue: queue.Queue[Closeable] = queue.Queue()
 
     def start(self) -> None:
         logger.info("Starting subprocess read thread")
@@ -61,16 +92,19 @@ class IOReader(Worker):
         self._stop_request.set()
         self._wake_select()
         self._thread.join()
-        for stream in self._streams.values():
-            stream.close()
+        for selectable in self._selectables.values():
+            selectable.close()
         logger.info("Stopped subprocess read thread")
 
-    def register(self, name: str, stream: IO[bytes]) -> None:
-        self._register_queue.put(Stream(name, stream))
+    def log_stream(self, name: str, stream: IO[bytes]) -> None:
+        self.register(StreamLogger(name, stream))
+
+    def register(self, selectable: Selectable) -> None:
+        self._register_queue.put(selectable)
         self._wake_select()
 
-    def close(self, stream: IO[bytes]) -> None:
-        self._close_queue.put(stream)
+    def close(self, closeable: Closeable) -> None:
+        self._close_queue.put(closeable)
         self._wake_select()
 
     def _process(self) -> None:
@@ -90,30 +124,32 @@ class IOReader(Worker):
 
     def _build_rlist(self) -> list[int]:
         return [self._interrupt_pipe[0]] + [
-            stream.fileno() for stream in self._streams.values()
+            selectable.fileno() for selectable in self._selectables.values()
         ]
 
     def _process_register_queue(self) -> None:
         while not self._register_queue.empty():
             try:
-                stream = self._register_queue.get_nowait()
+                selectable = self._register_queue.get_nowait()
             except queue.Empty:
                 return
 
-            self._streams[stream.fileno()] = stream
+            self._selectables[selectable.fileno()] = selectable
 
     def _process_close_queue(self) -> None:
         while not self._close_queue.empty():
             try:
-                stream = self._close_queue.get_nowait()
+                closeable = self._close_queue.get_nowait()
             except queue.Empty:
                 return
 
-            stream.close()
+            closeable.close()
 
     def _clean_closed(self) -> None:
-        self._streams = {
-            fd: stream for fd, stream in self._streams.items() if not stream.is_closed()
+        self._selectables = {
+            fd: selectable
+            for fd, selectable in self._selectables.items()
+            if not selectable.is_closed()
         }
 
     def _process_rlist(self, rlist: list[int]) -> None:
@@ -124,10 +160,10 @@ class IOReader(Worker):
                 self._process_fd(fd)
 
     def _process_fd(self, fd: int) -> None:
-        stream = self._streams.get(fd)
-        if stream is None:
+        selectable = self._selectables.get(fd)
+        if selectable is None:
             logger.warning(f"Processing of non-existing fd: {fd}")
             return
 
-        if not stream.is_closed():
-            stream.read()
+        if not selectable.is_closed():
+            selectable.read()

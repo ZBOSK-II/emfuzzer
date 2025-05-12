@@ -75,8 +75,8 @@ class Subprocess(Runnable):
 
         assert self.process.stdout is not None
         assert self.process.stderr is not None
-        self.reader.register(f"<{self.name()}> - STDOUT", self.process.stdout)
-        self.reader.register(f"<{self.name()}> - STDERR", self.process.stderr)
+        self.reader.log_stream(f"<{self.name()}> - STDOUT", self.process.stdout)
+        self.reader.log_stream(f"<{self.name()}> - STDERR", self.process.stderr)
         return True
 
     def finish(self) -> Runnable.Result:
