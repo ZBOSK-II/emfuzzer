@@ -24,6 +24,12 @@ class InputStream(Selectable):
     def is_closed(self) -> bool:
         return self.stream.closed
 
+    def write(self) -> None:
+        raise RuntimeError("Should be used only for reading")
+
+    def wants_to_write(self) -> bool:
+        return False
+
 
 class StreamLogger(InputStream):
     def __init__(self, name: str, stream: IO[bytes]):

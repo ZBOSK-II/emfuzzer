@@ -31,13 +31,19 @@ class Selectable(ABC):
     def fileno(self) -> int: ...
 
     @abstractmethod
-    def read(self) -> None: ...
-
-    @abstractmethod
     def close(self) -> None: ...
 
     @abstractmethod
     def is_closed(self) -> bool: ...
+
+    @abstractmethod
+    def read(self) -> None: ...
+
+    @abstractmethod
+    def wants_to_write(self) -> bool: ...
+
+    @abstractmethod
+    def write(self) -> None: ...
 
 
 class InterruptPipe(Selectable):
@@ -62,6 +68,26 @@ class InterruptPipe(Selectable):
     def is_closed(self) -> bool:
         # never during IOLoop operations
         return False
+
+    def wants_to_write(self) -> bool:
+        # it should never write through "selection"
+        return False
+
+
+class SendQueue[T](ABC):
+    Empty: type[Exception] = queue.Empty
+
+    def __init__(self) -> None:
+        self._queue: queue.Queue[T] = queue.Queue()
+
+    @abstractmethod
+    def put(self, element: T) -> None: ...
+
+    def get(self) -> T:
+        return self._queue.get_nowait()
+
+    def empty(self) -> bool:
+        return self._queue.empty()
 
 
 class IOLoop(Worker):
@@ -93,18 +119,33 @@ class IOLoop(Worker):
         self._register_queue.put(selectable)
         self._wake_select()
 
+    # pylint: disable=unused-argument
+    def make_queue[T](self, send_type: type[T]) -> SendQueue[T]:
+        parent = self
+
+        class Queue(SendQueue[T]):
+            def put(self, element: T) -> None:
+                self._queue.put(element)
+                # pylint: disable=protected-access
+                parent._wake_select()
+
+        return Queue()
+
     def close(self, closeable: Closeable) -> None:
         self._close_queue.put(closeable)
         self._wake_select()
 
     def _process(self) -> None:
         while not self._stop_request.is_set():
-            rlist, _, _ = select.select(self._build_rlist(), [], [])
+            rlist, wlist, _ = select.select(
+                self._build_rlist(), self._build_wlist(), []
+            )
 
             if self._stop_request.is_set():
                 return
 
             self._process_rlist(rlist)
+            self._process_wlist(wlist)
             self._process_register_queue()
             self._process_close_queue()
             self._clean_closed()
@@ -114,6 +155,13 @@ class IOLoop(Worker):
 
     def _build_rlist(self) -> list[int]:
         return [selectable.fileno() for selectable in self._selectables.values()]
+
+    def _build_wlist(self) -> list[int]:
+        return [
+            selectable.fileno()
+            for selectable in self._selectables.values()
+            if selectable.wants_to_write()
+        ]
 
     def _perform_register(self, selectable: Selectable) -> None:
         self._selectables[selectable.fileno()] = selectable
@@ -143,13 +191,20 @@ class IOLoop(Worker):
 
     def _process_rlist(self, rlist: list[int]) -> None:
         for fd in rlist:
-            self._process_fd(fd)
+            selectable = self._selectables.get(fd)
+            if selectable is None:
+                logger.warning(f"Processing reading of non-existing fd: {fd}")
+                return
 
-    def _process_fd(self, fd: int) -> None:
-        selectable = self._selectables.get(fd)
-        if selectable is None:
-            logger.warning(f"Processing of non-existing fd: {fd}")
-            return
+            if not selectable.is_closed():
+                selectable.read()
 
-        if not selectable.is_closed():
-            selectable.read()
+    def _process_wlist(self, wlist: list[int]) -> None:
+        for fd in wlist:
+            selectable = self._selectables.get(fd)
+            if selectable is None:
+                logger.warning(f"Processing writing of non-existing fd: {fd}")
+                return
+
+            if not selectable.is_closed():
+                selectable.write()
