@@ -48,6 +48,7 @@ class Subprocess(Runnable):
         shell: bool,
         finish_config: FinishConfig,
         reader: IOReader,
+        log_stdout: bool = True,
     ):
         super().__init__(name)
 
@@ -56,6 +57,7 @@ class Subprocess(Runnable):
         self.finish_config = finish_config
 
         self.reader = reader
+        self.log_stdout = log_stdout
 
         self.process: Optional[subprocess.Popen[bytes]] = None
 
@@ -75,7 +77,8 @@ class Subprocess(Runnable):
 
         assert self.process.stdout is not None
         assert self.process.stderr is not None
-        self.reader.log_stream(f"<{self.name()}> - STDOUT", self.process.stdout)
+        if self.log_stdout:
+            self.reader.log_stream(f"<{self.name()}> - STDOUT", self.process.stdout)
         self.reader.log_stream(f"<{self.name()}> - STDERR", self.process.stderr)
         return True
 

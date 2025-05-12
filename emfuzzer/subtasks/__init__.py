@@ -31,7 +31,7 @@ def runnable_from_config(config: Config, context: Context, *prefix: str) -> Runn
         case "ping_alive":
             from .ping import PingIsAlive  # pylint: disable=import-outside-toplevel
 
-            return PingIsAlive.from_config(name, args)
+            return PingIsAlive.from_config(name, args, context)
         case "remote":
             from .remote import Remote  # pylint: disable=import-outside-toplevel
 
