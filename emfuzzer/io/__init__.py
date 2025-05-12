@@ -40,15 +40,41 @@ class Selectable(ABC):
     def is_closed(self) -> bool: ...
 
 
+class InterruptPipe(Selectable):
+    def __init__(self) -> None:
+        super().__init__("interrupt-pipe")
+        self._pipe = os.pipe()
+
+    def fileno(self) -> int:
+        return self._pipe[0]
+
+    def write(self) -> None:
+        os.write(self._pipe[1], b"x")
+
+    def read(self) -> None:
+        os.read(self.fileno(), 1024)
+
+    def close(self) -> None:
+        # should be called only when closing IOLoop
+        os.close(self._pipe[0])
+        os.close(self._pipe[1])
+
+    def is_closed(self) -> bool:
+        # never during IOLoop operations
+        return False
+
+
 class IOLoop(Worker):
 
     def __init__(self) -> None:
         self._thread = threading.Thread(name="io-reader", target=self._process)
         self._stop_request = threading.Event()
-        self._interrupt_pipe = os.pipe()
+        self._interrupt_pipe = InterruptPipe()
         self._selectables: dict[int, Selectable] = {}
         self._register_queue: queue.Queue[Selectable] = queue.Queue()
         self._close_queue: queue.Queue[Closeable] = queue.Queue()
+
+        self._perform_register(self._interrupt_pipe)
 
     def start(self) -> None:
         logger.info("Starting subprocess read thread")
@@ -84,21 +110,20 @@ class IOLoop(Worker):
             self._clean_closed()
 
     def _wake_select(self) -> None:
-        os.write(self._interrupt_pipe[1], b"x")
+        self._interrupt_pipe.write()
 
     def _build_rlist(self) -> list[int]:
-        return [self._interrupt_pipe[0]] + [
-            selectable.fileno() for selectable in self._selectables.values()
-        ]
+        return [selectable.fileno() for selectable in self._selectables.values()]
+
+    def _perform_register(self, selectable: Selectable) -> None:
+        self._selectables[selectable.fileno()] = selectable
 
     def _process_register_queue(self) -> None:
         while not self._register_queue.empty():
             try:
-                selectable = self._register_queue.get_nowait()
+                self._perform_register(self._register_queue.get_nowait())
             except queue.Empty:
                 return
-
-            self._selectables[selectable.fileno()] = selectable
 
     def _process_close_queue(self) -> None:
         while not self._close_queue.empty():
@@ -118,10 +143,7 @@ class IOLoop(Worker):
 
     def _process_rlist(self, rlist: list[int]) -> None:
         for fd in rlist:
-            if fd == self._interrupt_pipe[0]:
-                os.read(fd, 1)
-            else:
-                self._process_fd(fd)
+            self._process_fd(fd)
 
     def _process_fd(self, fd: int) -> None:
         selectable = self._selectables.get(fd)
