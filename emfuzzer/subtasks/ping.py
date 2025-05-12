@@ -8,7 +8,8 @@ from typing import IO, Self
 
 from ..config import Config
 from ..context import Context
-from ..io import InputStream, IOReader
+from ..io import IOReader
+from ..io.streams import InputStream
 from .subprocess import FinishConfig, Subprocess
 
 logger = logging.getLogger(__name__)
@@ -84,7 +85,7 @@ class PingIsAlive(Subprocess):
         assert self.process.stdout is not None
 
         self.stream = PingIsAliveStream(self.name(), self.process.stdout, self.process)
-        self.reader.register(self.stream)
+        self.reader.register(self.stream)  # overrides registration done by parent
 
         return True
 

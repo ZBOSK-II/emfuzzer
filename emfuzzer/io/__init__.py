@@ -8,9 +8,9 @@ import queue
 import select
 import threading
 from abc import ABC, abstractmethod
-from typing import IO, Protocol
+from typing import Protocol
 
-from .context import Worker
+from ..context import Worker
 
 logger = logging.getLogger(__name__)
 
@@ -40,39 +40,6 @@ class Selectable(ABC):
     def is_closed(self) -> bool: ...
 
 
-class InputStream(Selectable):
-    def __init__(self, name: str, stream: IO[bytes]):
-        super().__init__(name)
-        self.stream = stream
-
-    def close(self) -> None:
-        self.stream.close()
-
-    def fileno(self) -> int:
-        return self.stream.fileno()
-
-    def is_closed(self) -> bool:
-        return self.stream.closed
-
-
-class StreamLogger(InputStream):
-    def __init__(self, name: str, stream: IO[bytes]):
-        super().__init__(name, stream)
-
-        self._buffer = bytearray()
-
-    def read(self) -> None:
-        for b in self.stream.read(1024):
-            if b == b"\n"[0]:
-                self._flush()
-            else:
-                self._buffer.append(b)
-
-    def _flush(self) -> None:
-        logger.info(f"{self.name()}: {bytes(self._buffer.rstrip())!r}")
-        self._buffer.clear()
-
-
 class IOReader(Worker):
 
     def __init__(self) -> None:
@@ -95,9 +62,6 @@ class IOReader(Worker):
         for selectable in self._selectables.values():
             selectable.close()
         logger.info("Stopped subprocess read thread")
-
-    def log_stream(self, name: str, stream: IO[bytes]) -> None:
-        self.register(StreamLogger(name, stream))
 
     def register(self, selectable: Selectable) -> None:
         self._register_queue.put(selectable)

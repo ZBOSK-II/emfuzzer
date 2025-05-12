@@ -12,6 +12,7 @@ from typing import Optional, Self
 from ..config import Config
 from ..context import Context
 from ..io import IOReader
+from ..io.streams import StreamLogger
 from .runnable import Runnable
 
 logger = logging.getLogger(__name__)
@@ -48,7 +49,6 @@ class Subprocess(Runnable):
         shell: bool,
         finish_config: FinishConfig,
         reader: IOReader,
-        log_stdout: bool = True,
     ):
         super().__init__(name)
 
@@ -57,7 +57,6 @@ class Subprocess(Runnable):
         self.finish_config = finish_config
 
         self.reader = reader
-        self.log_stdout = log_stdout
 
         self.process: Optional[subprocess.Popen[bytes]] = None
 
@@ -77,9 +76,12 @@ class Subprocess(Runnable):
 
         assert self.process.stdout is not None
         assert self.process.stderr is not None
-        if self.log_stdout:
-            self.reader.log_stream(f"<{self.name()}> - STDOUT", self.process.stdout)
-        self.reader.log_stream(f"<{self.name()}> - STDERR", self.process.stderr)
+        self.reader.register(
+            StreamLogger(f"<{self.name()}> - STDOUT", self.process.stdout)
+        )
+        self.reader.register(
+            StreamLogger(f"<{self.name()}> - STDERR", self.process.stderr)
+        )
         return True
 
     def finish(self) -> Runnable.Result:
