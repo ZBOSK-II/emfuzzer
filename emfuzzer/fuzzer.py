@@ -23,9 +23,7 @@ def fuzz(args: Arguments, config: Config) -> int:
     validator = Validator(target, config.get_float("coapp", "validator", "timeout"))
 
     results = Results(config)
-    coapp_results = results.register(
-        "coapp", Validator.Result, Validator.Result.SUCCESS
-    )
+    coapp_results = results.register("coapp", Validator.Result)
 
     with Context(config) as context:
         setups = SubTasks.from_config(

@@ -57,10 +57,9 @@ class Results:
         }
         self.extra: dict[str, int] = {}
 
-    def register(
-        self, group: str, results: type[StrEnum], success: StrEnum
-    ) -> ResultsGroup:
-        g = ResultsGroup(list(results), success)
+    def register(self, group: str, results: type[StrEnum]) -> ResultsGroup:
+        r = list(results)
+        g = ResultsGroup(r, r[0])
         self.data[group] = g
         return g
 

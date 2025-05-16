@@ -75,9 +75,7 @@ class SubTasks:
         logger.info(f"Registering <{runnable.name()}>")
         task = SubTask(
             runnable,
-            self.results.register(
-                runnable.name(), Runnable.Result, Runnable.Result.SUCCESS
-            ),
+            self.results.register(runnable.name(), Runnable.Result),
         )
         self.tasks.append(task)
 
