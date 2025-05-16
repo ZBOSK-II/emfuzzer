@@ -40,7 +40,7 @@ def runnable_from_config(config: Config, context: Context, *prefix: str) -> Runn
             raise ValueError(f"Unknown sub-task type '{runnable_type}'")
 
 
-class SubTask:
+class SubTaskExecution:
     def __init__(self, runnable: Runnable, results: ResultsGroup):
         self.runnable = runnable
         self.results = results
@@ -66,14 +66,14 @@ class SubTasks:
     def __init__(self, results: Results, *prefix: str):
         self.results = results
         self.prefix = prefix
-        self.tasks: list[SubTask] = []
+        self.tasks: list[SubTaskExecution] = []
 
     def name(self) -> str:
         return ".".join(self.prefix)
 
     def register(self, runnable: Runnable) -> None:
         logger.info(f"Registering <{runnable.name()}>")
-        task = SubTask(
+        task = SubTaskExecution(
             runnable,
             self.results.register(runnable.name(), Runnable.Result),
         )
