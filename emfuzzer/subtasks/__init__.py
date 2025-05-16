@@ -9,7 +9,8 @@ from typing import Iterator, Self
 from ..config import Config
 from ..context import Context
 from ..results import Results, ResultsGroup
-from .subtask import BasicResult, SubTask
+from ..results.basic import BasicResult
+from .subtask import SubTask
 
 logger = logging.getLogger(__name__)
 

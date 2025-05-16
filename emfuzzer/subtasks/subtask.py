@@ -3,16 +3,10 @@
 # See the LICENSE.txt file in the root of the repository for full details.
 
 from abc import ABC, abstractmethod
-from enum import StrEnum, auto
+from enum import StrEnum
 from typing import TypeAlias
 
-
-class BasicResult(StrEnum):
-    SUCCESS = auto()
-    NOT_STARTED = auto()
-    FAILURE = auto()
-    TIMEOUT = auto()
-    ERROR = auto()
+from ..results.basic import BasicResult
 
 
 class SubTask(ABC):
