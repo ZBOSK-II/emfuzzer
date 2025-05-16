@@ -34,7 +34,7 @@ class Remote(BasicSubTask):
         self.start_timeout = start_timeout
         self.finish_config = finish_config
 
-    def start(self) -> bool:
+    def basic_start(self) -> bool:
         try:
             self.invoker.open()
             if not self.invoker.wait_for_start(self.start_timeout):

@@ -75,8 +75,8 @@ class PingIsAlive(Subprocess):
 
         self.stream: PingIsAliveStream | None = None
 
-    def start(self) -> bool:
-        if not super().start():
+    def basic_start(self) -> bool:
+        if not super().basic_start():
             return False
 
         assert self.process is not None

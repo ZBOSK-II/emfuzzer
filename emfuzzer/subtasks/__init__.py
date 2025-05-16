@@ -9,7 +9,6 @@ from typing import Iterator, Self
 from ..config import Config
 from ..context import Context
 from ..results import Results, ResultsGroup
-from ..results.basic import BasicResult
 from .subtask import SubTask
 
 logger = logging.getLogger(__name__)
@@ -45,18 +44,23 @@ class SubTaskExecution:
     def __init__(self, task: SubTask, results: ResultsGroup):
         self.task = task
         self.results = results
-        self.started = False
+        self.start_result: SubTask.StartResult | None = None
 
     def name(self) -> str:
         return self.task.name()
 
     def start(self) -> None:
-        self.started = self.task.start()
+        self.start_result = self.task.start()
 
     def finish_for(self, key: str) -> None:
-        result = self.task.finish() if self.started else BasicResult.NOT_STARTED
+        assert self.start_result is not None
+        result = (
+            self.task.finish()
+            if isinstance(self.start_result, SubTask.StartedType)
+            else self.start_result
+        )
         self.results.collect(key, result)
-        self.started = False
+        self.start_result = None
 
     def execute_for(self, key: str) -> None:
         self.start()

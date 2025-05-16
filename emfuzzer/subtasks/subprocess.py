@@ -60,7 +60,7 @@ class Subprocess(BasicSubTask):
 
         self.process: Optional[subprocess.Popen[bytes]] = None
 
-    def start(self) -> bool:
+    def basic_start(self) -> bool:
         try:
             logger.info(f"<{self.name()}>: Starting {self.args}")
             self.process = subprocess.Popen(  # pylint: disable=consider-using-with

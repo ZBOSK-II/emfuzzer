@@ -10,6 +10,13 @@ from ..results.basic import BasicResult
 
 
 class SubTask(ABC):
+    # pylint: disable=too-few-public-methods
+    class StartedType:
+        pass
+
+    type StartResult = str | StartedType
+    STARTED = StartedType()
+
     def __init__(self, name: str):
         self._name = name
 
@@ -17,7 +24,7 @@ class SubTask(ABC):
         return self._name
 
     @abstractmethod
-    def start(self) -> bool: ...
+    def start(self) -> str | StartedType: ...
 
     @abstractmethod
     def finish(self) -> str: ...
@@ -29,6 +36,9 @@ class SubTask(ABC):
 class TypedSubTask[T: StrEnum](SubTask):
 
     @abstractmethod
+    def start(self) -> T | SubTask.StartedType: ...
+
+    @abstractmethod
     def finish(self) -> T: ...
 
     @abstractmethod
@@ -36,7 +46,14 @@ class TypedSubTask[T: StrEnum](SubTask):
 
 
 class BasicSubTask(TypedSubTask[BasicResult]):
+    type StartResult = BasicResult | SubTask.StartedType
     Result: TypeAlias = BasicResult
+
+    def start(self) -> StartResult:
+        return SubTask.STARTED if self.basic_start() else BasicResult.NOT_STARTED
+
+    @abstractmethod
+    def basic_start(self) -> bool: ...
 
     def result_type(self) -> type[Result]:
         return self.Result
