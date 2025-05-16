@@ -76,7 +76,7 @@ class SubTasks:
         logger.info(f"Registering <{task.name()}>")
         execution = SubTaskExecution(
             task,
-            self.results.register(task.name(), BasicResult),
+            self.results.register(task.name(), task.result_type()),
         )
         self.tasks.append(execution)
 
