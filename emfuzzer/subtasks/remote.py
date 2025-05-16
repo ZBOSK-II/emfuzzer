@@ -7,13 +7,13 @@ from typing import Self
 
 from ..config import Config
 from ..ssh import ConnectionConfig, Invoker
-from .runnable import Runnable
 from .subprocess import FinishConfig
+from .subtask import BasicSubTask
 
 logger = logging.getLogger(__name__)
 
 
-class Remote(Runnable):
+class Remote(BasicSubTask):
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self,
@@ -45,7 +45,7 @@ class Remote(Runnable):
             logging.error(f"Failed to start monitoring <{self.name()}>: {ex}")
             return False
 
-    def finish(self) -> Runnable.Result:
+    def finish(self) -> BasicSubTask.Result:
         try:
             if self.finish_config.signal:
                 self.invoker.signal(self.finish_config.signal)

@@ -13,7 +13,7 @@ from ..config import Config
 from ..context import Context
 from ..io import IOLoop
 from ..io.streams import StreamLogger
-from .runnable import Runnable
+from .subtask import BasicSubTask
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ class FinishConfig:
         )
 
 
-class Subprocess(Runnable):
+class Subprocess(BasicSubTask):
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
@@ -80,7 +80,7 @@ class Subprocess(Runnable):
         self.io.register(StreamLogger(f"<{self.name()}> - STDERR", self.process.stderr))
         return True
 
-    def finish(self) -> Runnable.Result:
+    def finish(self) -> BasicSubTask.Result:
         assert self.process is not None
         assert self.process.stdout is not None
         assert self.process.stderr is not None
@@ -93,7 +93,7 @@ class Subprocess(Runnable):
 
         return result
 
-    def _finish_process(self) -> Runnable.Result:
+    def _finish_process(self) -> BasicSubTask.Result:
         assert self.process is not None
 
         if self.finish_config.signal:

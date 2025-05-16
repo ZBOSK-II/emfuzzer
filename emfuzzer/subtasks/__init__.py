@@ -9,12 +9,12 @@ from typing import Iterator, Self
 from ..config import Config
 from ..context import Context
 from ..results import Results, ResultsGroup
-from .runnable import Runnable
+from .subtask import BasicResult, SubTask
 
 logger = logging.getLogger(__name__)
 
 
-def runnable_from_config(config: Config, context: Context, *prefix: str) -> Runnable:
+def subtask_from_config(config: Config, context: Context, *prefix: str) -> SubTask:
     runnable_type = config.get_str("type")
     name = ".".join(prefix) + "." + config.get_str("name")
     args = config.section("args")
@@ -41,19 +41,19 @@ def runnable_from_config(config: Config, context: Context, *prefix: str) -> Runn
 
 
 class SubTaskExecution:
-    def __init__(self, runnable: Runnable, results: ResultsGroup):
-        self.runnable = runnable
+    def __init__(self, task: SubTask, results: ResultsGroup):
+        self.task = task
         self.results = results
         self.started = False
 
     def name(self) -> str:
-        return self.runnable.name()
+        return self.task.name()
 
     def start(self) -> None:
-        self.started = self.runnable.start()
+        self.started = self.task.start()
 
     def finish_for(self, key: str) -> None:
-        result = self.runnable.finish() if self.started else Runnable.Result.NOT_STARTED
+        result = self.task.finish() if self.started else BasicResult.NOT_STARTED
         self.results.collect(key, result)
         self.started = False
 
@@ -71,13 +71,13 @@ class SubTasks:
     def name(self) -> str:
         return ".".join(self.prefix)
 
-    def register(self, runnable: Runnable) -> None:
-        logger.info(f"Registering <{runnable.name()}>")
-        task = SubTaskExecution(
-            runnable,
-            self.results.register(runnable.name(), Runnable.Result),
+    def register(self, task: SubTask) -> None:
+        logger.info(f"Registering <{task.name()}>")
+        execution = SubTaskExecution(
+            task,
+            self.results.register(task.name(), BasicResult),
         )
-        self.tasks.append(task)
+        self.tasks.append(execution)
 
     def execute_for(self, key: str) -> None:
         logger.info(f"Start {self.name()}")
@@ -112,5 +112,5 @@ class SubTasks:
     def from_config(cls, *prefix: str, results: Results, context: Context) -> Self:
         tasks = cls(results, *prefix)
         for conf in context.config_root.get_config_list(*prefix):
-            tasks.register(runnable_from_config(conf, context, *prefix))
+            tasks.register(subtask_from_config(conf, context, *prefix))
         return tasks
