@@ -3,7 +3,7 @@
 # See the LICENSE.txt file in the root of the repository for full details.
 
 from dataclasses import dataclass
-from typing import Self
+from typing import Protocol, Self
 
 from ..config import Config
 
@@ -19,3 +19,9 @@ class NetworkAddress:
     @classmethod
     def from_config(cls, config: Config) -> Self:
         return cls(config.get_str("host"), config.get_int("port"))
+
+
+class NetworkObserver(Protocol):
+
+    def on_read(self, address: NetworkAddress, data: bytes) -> None: ...
+    def on_write(self, address: NetworkAddress, data: bytes) -> None: ...

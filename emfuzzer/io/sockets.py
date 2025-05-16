@@ -7,7 +7,7 @@ import socket
 from binascii import hexlify
 
 from . import Selectable, SendQueue
-from .net import NetworkAddress
+from .net import NetworkAddress, NetworkObserver
 
 logger = logging.getLogger(__name__)
 
@@ -30,16 +30,23 @@ class Socket(Selectable):
 
 
 class UdpClientSocket(Socket):
-    def __init__(self, name: str, queue: SendQueue[tuple[NetworkAddress, bytes]]):
+    def __init__(
+        self,
+        name: str,
+        queue: SendQueue[tuple[NetworkAddress, bytes]],
+        observer: NetworkObserver | None = None,
+    ):
         super().__init__(name, socket.socket(socket.AF_INET, socket.SOCK_DGRAM))
         self._queue = queue
+        self._observer = observer
 
     def read(self) -> None:
         data, addr = self.socket.recvfrom(1024)  # TODO pylint: disable=fixme
         logger.info(
             f"Received {len(data)} bytes from {addr}: {hexlify(data).decode('utf-8')}"
         )
-        # consumer . on_read
+        if self._observer:
+            self._observer.on_read(addr, data)
 
     def wants_to_write(self) -> bool:
         return not self._queue.empty()
@@ -52,5 +59,6 @@ class UdpClientSocket(Socket):
         logger.info(
             f"Sending {len(data)} bytes to {addr}: {hexlify(data).decode('utf-8')}"
         )
-        # consumer . on_send
+        if self._observer:
+            self._observer.on_write(addr, data)
         self.socket.sendto(data, addr.as_tuple())
