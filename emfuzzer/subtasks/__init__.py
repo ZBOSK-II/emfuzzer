@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 
 
 def subtask_from_config(config: Config, context: Context, *prefix: str) -> SubTask:
-    runnable_type = config.get_str("type")
+    task_type = config.get_str("type")
     name = ".".join(prefix) + "." + config.get_str("name")
     args = config.section("args")
-    match runnable_type:
+    match task_type:
         case "subprocess":
             # pylint: disable=import-outside-toplevel
             from .subprocess import Subprocess
@@ -36,31 +36,36 @@ def subtask_from_config(config: Config, context: Context, *prefix: str) -> SubTa
             from .remote import Remote  # pylint: disable=import-outside-toplevel
 
             return Remote.from_config(name, args)
+        case "coapp_monitor":
+            # pylint: disable=import-outside-toplevel
+            from ..coapp import CoappMonitor
+
+            return CoappMonitor.from_config(name, args, context)
         case _:
-            raise ValueError(f"Unknown sub-task type '{runnable_type}'")
+            raise ValueError(f"Unknown sub-task type '{task_type}'")
 
 
 class SubTaskExecution:
     def __init__(self, task: SubTask, results: ResultsGroup):
-        self.task = task
-        self.results = results
-        self.start_result: SubTask.StartResult | None = None
+        self._task = task
+        self._results = results
+        self._start_result: SubTask.StartResult | None = None
 
     def name(self) -> str:
-        return self.task.name()
+        return self._task.name()
 
     def start(self) -> None:
-        self.start_result = self.task.start()
+        self._start_result = self._task.start()
 
     def finish_for(self, key: str) -> None:
-        assert self.start_result is not None
+        assert self._start_result is not None
         result = (
-            self.task.finish()
-            if isinstance(self.start_result, SubTask.StartedType)
-            else self.start_result
+            self._task.finish()
+            if isinstance(self._start_result, SubTask.StartedType)
+            else self._start_result
         )
-        self.results.collect(key, result)
-        self.start_result = None
+        self._results.collect(key, result)
+        self._start_result = None
 
     def execute_for(self, key: str) -> None:
         self.start()
@@ -69,24 +74,24 @@ class SubTaskExecution:
 
 class SubTasks:
     def __init__(self, results: Results, *prefix: str):
-        self.results = results
-        self.prefix = prefix
-        self.tasks: list[SubTaskExecution] = []
+        self._results = results
+        self._prefix = prefix
+        self._tasks: list[SubTaskExecution] = []
 
     def name(self) -> str:
-        return ".".join(self.prefix)
+        return ".".join(self._prefix)
 
     def register(self, task: SubTask) -> None:
         logger.info(f"Registering <{task.name()}>")
         execution = SubTaskExecution(
             task,
-            self.results.register(task.name(), task.result_type()),
+            self._results.register(task.name(), task.result_type()),
         )
-        self.tasks.append(execution)
+        self._tasks.append(execution)
 
     def execute_for(self, key: str) -> None:
         logger.info(f"Start {self.name()}")
-        for task in self.tasks:
+        for task in self._tasks:
             logger.info(f"Executing {task.name()}")
             task.execute_for(key)
         logger.info(f"End {self.name()}")
@@ -101,14 +106,14 @@ class SubTasks:
 
     def start_all(self) -> None:
         logger.info(f"Starting {self.name()}")
-        for task in self.tasks:
+        for task in self._tasks:
             logger.info(f"Starting {task.name()}")
             task.start()
         logger.info(f"All {self.name()} started")
 
     def finish_all_for(self, key: str) -> None:
         logger.info(f"Finishing {self.name()}")
-        for task in self.tasks:
+        for task in self._tasks:
             logger.info(f"Finishing {task.name()}")
             task.finish_for(key)
         logger.info(f"All {self.name()} finished")

@@ -55,20 +55,22 @@ class Results:
             "config": config.to_dict(),
             "start": self.__iso_timestamp(),
         }
-        self.extra: dict[str, int] = {}
 
     def register(self, group: str, results: type[StrEnum]) -> ResultsGroup:
         r = list(results)
         g = ResultsGroup(r, r[0])
+        if group in self.data:
+            raise RuntimeError(
+                f"Result group already defined: '{group}'. Probably duplicated name. "
+            )
         self.data[group] = g
         return g
 
     def add_key(self, key: str) -> None:
         self.keys.append(key)
 
-    def finish(self, extra: dict[str, int]) -> None:
+    def finish(self) -> None:
         self.info["end"] = self.__iso_timestamp()
-        self.extra = extra
 
     def __getitem__(self, group: str) -> ResultsGroup:
         return self.data[group]
@@ -96,7 +98,6 @@ class Results:
             | {"all": self.keys}
             | {"failed": self.failed_keys()}
             | {"groups": {k: v.to_dict() for k, v in self.data.items()}}
-            | {"extra": self.extra}
         )
 
     @staticmethod

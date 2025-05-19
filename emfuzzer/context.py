@@ -21,6 +21,7 @@ class Context:
 
     def __init__(self, config: Config) -> None:
         self._workers: dict[type[Worker], Worker] = {}
+        self._data: dict[str, object] = {}
         self._config = config
 
     @property
@@ -43,6 +44,19 @@ class Context:
             w.stop()
 
         self._workers.clear()
+
+    def register_data(self, name: str, item: object) -> None:
+        if name in self._data:
+            raise RuntimeError(f"Data already registered: '{name}'")
+
+        self._data[name] = item
+
+    def data[T](self, data_type: type[T], name: str) -> T:
+        if item := self._data.get(name):
+            if isinstance(item, data_type):
+                return item
+            raise RuntimeError(f"Invalid data type for: '{name}'")
+        raise RuntimeError(f"Unknown data: '{name}'")
 
     def __enter__(self) -> Self:
         return self

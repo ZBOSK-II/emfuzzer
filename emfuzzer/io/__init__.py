@@ -103,11 +103,11 @@ class IOLoop(Worker):
         self._perform_register(self._interrupt_pipe)
 
     def start(self) -> None:
-        logger.info("Starting subprocess read thread")
+        logger.info("Starting I/O thread")
         self._thread.start()
 
     def stop(self) -> None:
-        logger.info("Stopping subprocess read thread")
+        logger.info("Stopping I/O thread")
         self._stop_request.set()
         self._wake_select()
         self._thread.join()

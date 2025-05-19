@@ -1,13 +1,15 @@
 {
-  "target": {
-    "host": "192.168.143.83",
-    "port": 5683
+  "delays": {
+    "between_cases": 0.2,
+    "before_inject": 1
+  },
+  "injector": {
+    "type": "coapp",
+    "args": {
+      "monitor": "case.monitoring.coapp"
+    }
   },
   "case": {
-    "delays": {
-      "between_cases": 0.2,
-      "before_sending": 1
-    },
     "setups": [
       {
         "type": "subprocess",
@@ -58,16 +60,28 @@
           "command": "sudo ./ledping -p 17 -w 250",
           "start_key": "Rising edge detected, starting measurements.",
           "start_timeout": 2,
-            "finish": {
-                "timeout": 2,
-                "signal": "SIGINT"
-            },
+          "finish": {
+            "timeout": 2,
+            "signal": "SIGINT"
+          },
           "connection": {
             "host": "192.168.143.88",
             "port": 22,
             "username": "pi",
             "password": "raspberry"
           }
+        }
+      },
+      {
+        "type": "coapp_monitor",
+        "name": "coapp",
+        "args": {
+          "target": {
+            "host": "192.168.143.83",
+            "port": 5683
+          },
+          "response_timeout": 5,
+          "observation_timeout": 1
         }
       }
     ],
@@ -98,10 +112,5 @@
         }
       }
     ]
-  },
-  "coapp": {
-    "validator": {
-      "timeout": 5
-    }
   }
 }
