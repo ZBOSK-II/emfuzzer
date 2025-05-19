@@ -19,6 +19,8 @@ def __parse_data(parser: argparse.ArgumentParser, data: list[str]) -> list[Path]
     for f in result:
         if not f.is_file():
             parser.error(f"Specified path is not a file: {f}")
+    if len(result) != len(set(result)):
+        parser.error("Non-unique file names as inputs - results would be inconsistent")
     return result
 
 
