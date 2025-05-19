@@ -20,7 +20,12 @@ variables:
 isort:
   stage: check
   script:
-    - isort .
+    - isort --check .
+
+black:
+  stage: check
+  script:
+    - black --check .
 
 flake8:
   stage: check
