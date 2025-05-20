@@ -51,6 +51,9 @@ class UdpClientSocket(Socket):
     def wants_to_write(self) -> bool:
         return not self._queue.empty()
 
+    def wants_to_read(self) -> bool:
+        return True
+
     def write(self) -> None:
         try:
             addr, data = self._queue.get()

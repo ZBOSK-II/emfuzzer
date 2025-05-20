@@ -10,7 +10,7 @@ from . import Selectable
 logger = logging.getLogger(__name__)
 
 
-class InputStream(Selectable):
+class Stream(Selectable):
     def __init__(self, name: str, stream: IO[bytes]):
         super().__init__(name)
         self.stream = stream
@@ -24,11 +24,49 @@ class InputStream(Selectable):
     def is_closed(self) -> bool:
         return self.stream.closed
 
+
+class InputStream(Stream):
     def write(self) -> None:
         raise RuntimeError("Should be used only for reading")
 
     def wants_to_write(self) -> bool:
         return False
+
+    def wants_to_read(self) -> bool:
+        return True
+
+
+class OutputStream(Stream):
+    def read(self) -> None:
+        raise RuntimeError("Should be used only for writing")
+
+    def wants_to_read(self) -> bool:
+        return False
+
+    def wants_to_write(self) -> bool:
+        return False
+
+
+class StreamWriter(OutputStream):
+    def __init__(self, name: str, stream: IO[bytes], data: bytes):
+        super().__init__(name, stream)
+        self._data = data
+
+    def write(self) -> None:
+        logger.info(f"{self.name()}: writing {len(self._data)} bytes.")
+
+        written = self.stream.write(self._data)
+        self._data = self._data[written:]
+
+        logger.info(
+            f"{self.name()}: wrote {written}, {len(self._data)} bytes remaining."
+        )
+        if len(self._data) == 0:
+            logger.info(f"{self.name()}: closing the stream")
+            self.close()
+
+    def wants_to_write(self) -> bool:
+        return len(self._data) > 0
 
 
 class StreamLogger(InputStream):

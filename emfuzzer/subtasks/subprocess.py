@@ -70,6 +70,7 @@ class Subprocess(BasicSubTask):
                 self.args,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
+                stdin=subprocess.PIPE,
                 text=False,
                 shell=self.shell,
             )
@@ -87,10 +88,12 @@ class Subprocess(BasicSubTask):
         assert self.process is not None
         assert self.process.stdout is not None
         assert self.process.stderr is not None
+        assert self.process.stdin is not None
 
         result = self._finish_process()
 
         self.process.terminate()
+        self.io.close(self.process.stdin)
         self.io.close(self.process.stdout)
         self.io.close(self.process.stderr)
 

@@ -20,6 +20,11 @@ def subtask_from_config(config: Config, context: Context) -> InjectionSubTask:
             from ..coapp import CoappInjector
 
             return CoappInjector.from_config(name, args, context)
+        case "subprocess":
+            # pylint: disable=import-outside-toplevel
+            from .subprocess import Subprocess
+
+            return Subprocess.from_config(name, args, context)
         case _:
             raise ValueError(f"Unknown sub-task type '{task_type}'")
 

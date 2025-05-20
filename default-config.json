@@ -4,23 +4,27 @@
     "before_inject": 1
   },
   "injector": {
-    "type": "coapp",
+    "type": "subprocess",
     "args": {
-      "monitor": "case.monitoring.coapp"
+      "cmd": [
+        "cat"
+      ],
+      "shell": false,
+      "timeout": 1
     }
   },
   "case": {
     "setups": [
       {
         "type": "subprocess",
-        "name": "reset",
+        "name": "setup",
         "args": {
           "cmd": [
-            "coap-client-notls",
-            "coap://192.168.143.75/reset"
+            "echo",
+            "SETUP"
           ],
           "finish": {
-            "timeout": 3,
+            "timeout": 0.5,
             "signal": "NONE"
           },
           "shell": false
@@ -36,20 +40,7 @@
         }
       }
     ],
-    "monitoring": [
-      {
-        "type": "coapp_monitor",
-        "name": "coapp",
-        "args": {
-          "target": {
-            "host": "127.0.0.1",
-            "port": 5683
-          },
-          "response_timeout": 5,
-          "observation_timeout": 1
-        }
-      }
-    ],
+    "monitoring": [],
     "checks": [
       {
         "type": "ping_stable",
@@ -58,6 +49,21 @@
           "host": "127.0.0.1",
           "count": 2,
           "interval": 1
+        }
+      },
+      {
+        "type": "subprocess",
+        "name": "teardown",
+        "args": {
+          "cmd": [
+            "echo",
+            "TEARDOWN"
+          ],
+          "finish": {
+            "timeout": 0.5,
+            "signal": "NONE"
+          },
+          "shell": false
         }
       }
     ]

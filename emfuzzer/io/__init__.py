@@ -37,6 +37,9 @@ class Selectable(ABC):
     def is_closed(self) -> bool: ...
 
     @abstractmethod
+    def wants_to_read(self) -> bool: ...
+
+    @abstractmethod
     def read(self) -> None: ...
 
     @abstractmethod
@@ -72,6 +75,9 @@ class InterruptPipe(Selectable):
     def wants_to_write(self) -> bool:
         # it should never write through "selection"
         return False
+
+    def wants_to_read(self) -> bool:
+        return True
 
 
 class SendQueue[T](ABC):
@@ -154,7 +160,11 @@ class IOLoop(Worker):
         self._interrupt_pipe.write()
 
     def _build_rlist(self) -> list[int]:
-        return [selectable.fileno() for selectable in self._selectables.values()]
+        return [
+            selectable.fileno()
+            for selectable in self._selectables.values()
+            if selectable.wants_to_read()
+        ]
 
     def _build_wlist(self) -> list[int]:
         return [
@@ -180,7 +190,10 @@ class IOLoop(Worker):
             except queue.Empty:
                 return
 
-            closeable.close()
+            try:
+                closeable.close()
+            except IOError as ex:
+                logger.error(f"Error during closing {ex}, {closeable}")
 
     def _clean_closed(self) -> None:
         self._selectables = {
