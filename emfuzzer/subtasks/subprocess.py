@@ -49,6 +49,7 @@ class Subprocess(BasicSubTask):
         shell: bool,
         finish_config: FinishConfig,
         io: IOLoop,
+        check_exit_code: bool = True,
     ):
         super().__init__(name)
 
@@ -59,6 +60,8 @@ class Subprocess(BasicSubTask):
         self.io = io
 
         self.process: Optional[subprocess.Popen[bytes]] = None
+
+        self.check_exit_code = check_exit_code
 
     def basic_start(self) -> bool:
         try:
@@ -113,8 +116,12 @@ class Subprocess(BasicSubTask):
 
         returncode = self.process.returncode
         if returncode != 0:
-            logger.warning(f"<{self.name()}>: Operation returned {returncode}")
-            return self.Result.FAILURE
+            logger.log(
+                logging.WARNING if self.check_exit_code else logging.INFO,
+                f"<{self.name()}>: Operation returned {returncode}",
+            )
+            if self.check_exit_code:
+                return self.Result.FAILURE
 
         logger.info(f"<{self.name()}>: Operation finished successfully")
         return self.Result.SUCCESS
