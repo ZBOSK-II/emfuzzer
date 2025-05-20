@@ -71,6 +71,7 @@ class PingIsAlive(Subprocess):
             ],
             shell=False,
             io=io,
+            check_exit_code=False,
         )
 
         self.stream: PingIsAliveStream | None = None
@@ -86,6 +87,16 @@ class PingIsAlive(Subprocess):
         self.io.register(self.stream)  # overrides registration done by parent
 
         return True
+
+    def finish(self) -> Subprocess.Result:
+        if super().finish() == Subprocess.Result.ERROR:
+            return Subprocess.Result.ERROR
+        assert self.stream is not None
+        return (
+            Subprocess.Result.SUCCESS
+            if self.stream.response_received
+            else Subprocess.Result.FAILURE
+        )
 
     @classmethod
     def from_config(cls, name: str, config: Config, context: Context) -> Self:
