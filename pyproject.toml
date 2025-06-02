@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "emfuzzer"
-# TODO description
+description="Experiments runner for embedded environments"
 version = "0.0.0"  # set by poetry
 requires-python = ">= 3.13"
 dependencies = [
@@ -18,11 +18,8 @@ license = { text = "MIT" }
 license-files = ["LICEN[CS]E.*"]
 
 [project.urls]
-# TODO homepage
 GitHub="https://github.com/ZBOSK-II/emfuzzer"
-# TODO download
-changelog="https://github.com/ZBOSK-II/emfuzzer/blob/master/CHANGELOG.md"
-# TODO documentation
+ChangeLog="https://github.com/ZBOSK-II/emfuzzer/blob/master/CHANGELOG.md"
 
 [project.scripts]
 emfuzzer = "emfuzzer.__main__:main"
