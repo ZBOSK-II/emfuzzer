@@ -8,9 +8,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from . import run
 from .arguments import Arguments
 from .config import Config
-from .fuzzer import fuzz
 from .version import VERSION
 
 
@@ -81,7 +81,7 @@ def main() -> int:
 
     __setup_logger(args.output_prefix)
 
-    return fuzz(args, Config.from_file(args.config))
+    return run(args, Config.from_file(args.config))
 
 
 if __name__ == "__main__":
