@@ -49,7 +49,7 @@ flake8 = "7.2.0"
 isort = "6.0.1"
 mypy = "1.16.0"
 pylint = "3.3.7"
-pytest = "8.3.4"
+pytest = "8.3.5"
 types_paramiko = "3.5.0.20240928"
 
 [tool.mypy]
