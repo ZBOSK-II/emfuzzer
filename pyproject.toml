@@ -21,9 +21,8 @@ license-files = ["LICEN[CS]E.*"]
 # TODO homepage
 GitHub="https://github.com/ZBOSK-II/emfuzzer"
 # TODO download
-# TODO changelog
+changelog="https://github.com/ZBOSK-II/emfuzzer/blob/master/CHANGELOG.md"
 # TODO documentation
-# TODO issues
 
 [project.scripts]
 emfuzzer = "emfuzzer.__main__:main"
