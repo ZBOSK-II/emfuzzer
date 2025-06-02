@@ -2,6 +2,10 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+"""
+Module representing context of the experiment.
+"""
+
 from abc import ABC, abstractmethod
 from types import TracebackType
 from typing import Self, cast

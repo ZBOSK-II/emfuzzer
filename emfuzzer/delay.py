@@ -2,6 +2,10 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+"""
+Module representing 'delay' in experiment execution.
+"""
+
 import logging
 import time
 from typing import Self
@@ -12,6 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 class Delay:
+    """
+    Class representing single 'delay' in the experiment.
+    Forces experiment to wait for a given number of seconds.
+    """
 
     def __init__(self, value: float, *prefix: str):
         self.value = value

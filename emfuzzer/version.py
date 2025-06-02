@@ -2,6 +2,10 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+"""
+Module providing current version of the application.
+"""
+
 import importlib.metadata
 import subprocess
 from pathlib import Path

@@ -2,6 +2,10 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+"""
+CoAP - protocol codes etc.
+"""
+
 
 def decode_code(octet: int) -> tuple[int, int]:
     clazz = (octet & 0b11100000) >> 5

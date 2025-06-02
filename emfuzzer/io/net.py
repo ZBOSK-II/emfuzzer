@@ -2,6 +2,10 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+"""
+Generic Network I/O components.
+"""
+
 from dataclasses import dataclass
 from typing import Protocol, Self
 

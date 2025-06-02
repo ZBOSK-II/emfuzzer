@@ -2,6 +2,10 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+"""
+Module representing experiment results.
+"""
+
 import sys
 from collections import defaultdict
 from datetime import datetime

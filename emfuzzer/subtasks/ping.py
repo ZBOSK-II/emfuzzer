@@ -2,6 +2,10 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+"""
+Module holding sub-tasks related to network "ping".
+"""
+
 import logging
 import subprocess
 from typing import IO, Self

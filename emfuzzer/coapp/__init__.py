@@ -2,6 +2,10 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+"""
+CoAP - Constrained Application Protocol support module.
+"""
+
 from enum import StrEnum, auto
 from typing import Self
 

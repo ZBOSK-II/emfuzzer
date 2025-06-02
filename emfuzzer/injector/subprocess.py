@@ -2,6 +2,10 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+"""
+Module representing subprocess based injection sub-task.
+"""
+
 import logging
 from typing import Self
 

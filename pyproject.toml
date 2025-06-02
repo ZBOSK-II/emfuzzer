@@ -88,7 +88,6 @@ logging-format-style = "new"
 [tool.pylint."messages control"]
 disable = [
   "missing-function-docstring",
-  "missing-module-docstring", # TODO
   "missing-class-docstring", # TODO ?
   "logging-fstring-interpolation",
 ]

@@ -2,6 +2,10 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+"""
+config module tests.
+"""
+
 import pytest
 
 from emfuzzer.config import Config

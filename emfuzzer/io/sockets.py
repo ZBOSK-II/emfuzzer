@@ -2,6 +2,10 @@
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
+"""
+Socket based network I/O.
+"""
+
 import logging
 import socket
 from binascii import hexlify
