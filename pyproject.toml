@@ -98,9 +98,5 @@ enable = [
   "useless-suppression",
 ]
 
-[tool.pylint.similarities]
-# TODO
-min-similarity-lines = 5
-
 [tool.pylint.imports]
 allow-reexport-from-package = true
