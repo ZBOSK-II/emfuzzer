@@ -57,7 +57,7 @@ class Results:
         }
 
     def register(self, group: str, results: type[StrEnum]) -> ResultsGroup:
-        r = list(results)
+        r = list(str(item) for item in results)
         g = ResultsGroup(r, r[0])
         if group in self.data:
             raise RuntimeError(
