@@ -4,9 +4,9 @@
     "before_inject": 1
   },
   "injector": {
-    "type": "coapp",
+    "type": "coap",
     "args": {
-      "monitor": "case.monitoring.coapp"
+      "monitor": "case.monitoring.coap"
     }
   },
   "case": {
@@ -37,7 +37,7 @@
       },
       {
         "type": "subprocess",
-        "name": "coapp_board",
+        "name": "coap_board",
         "args": {
           "cmd": [
             "bash",
@@ -73,8 +73,8 @@
         }
       },
       {
-        "type": "coapp_monitor",
-        "name": "coapp",
+        "type": "coap_monitor",
+        "name": "coap",
         "args": {
           "target": {
             "host": "192.168.143.83",
@@ -97,7 +97,7 @@
       },
       {
         "type": "subprocess",
-        "name": "coapp_board",
+        "name": "coap_board",
         "args": {
           "cmd": [
             "bash",

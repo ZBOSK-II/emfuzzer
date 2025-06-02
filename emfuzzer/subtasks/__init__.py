@@ -40,11 +40,11 @@ def subtask_from_config(config: Config, context: Context, *prefix: str) -> SubTa
             from .remote import Remote  # pylint: disable=import-outside-toplevel
 
             return Remote.from_config(name, args)
-        case "coapp_monitor":
+        case "coap_monitor":
             # pylint: disable=import-outside-toplevel
-            from ..coapp import CoappMonitor
+            from ..coap import CoapMonitor
 
-            return CoappMonitor.from_config(name, args, context)
+            return CoapMonitor.from_config(name, args, context)
         case _:
             raise ValueError(f"Unknown sub-task type '{task_type}'")
 

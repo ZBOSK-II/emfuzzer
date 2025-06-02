@@ -75,7 +75,7 @@ RUN apt-get update -q \
     openssh-client=1:9.2* \
     && rm -rf /var/lib/apt/lists/*
 
-# libcoapp from builder
+# libcoap from builder
 COPY --from=libcoap-builder /opt/libcoap /opt/libcoap
 ENV PATH="/opt/libcoap/bin:$PATH"
 
