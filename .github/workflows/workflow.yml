@@ -1,0 +1,41 @@
+name: Emfuzzer Workflow
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'poetry'
+
+      - name: Install dependencies
+        run: poetry install --with=dev --no-root
+
+      - name: Run isort
+        run: poetry run isort --check .
+
+      - name: Run black
+        run: poetry run black --check .
+
+      - name: Run flake8
+        run: poetry run flake8 .
+
+      - name: Run mypy
+        run: poetry run mypy .
+
+      - name: Run pylint
+        run: poetry run pylint .
+
+      - name: Run pytest
+        run: poetry run pytest
