@@ -10,20 +10,23 @@ requires-python = ">= 3.13"
 dependencies = [
   "paramiko==3.5.1",
 ]
-# TODO authors
 authors = [
-    {name = "Konrad Grochowski",email = "Konrad.Grochowski@pw.edu.pl"},
+    {name = "Konrad Grochowski", email = "Konrad.Grochowski@pw.edu.pl"},
 ]
 readme = "README.md"
 license = { text = "MIT" }
 license-files = ["LICEN[CS]E.*"]
 
-# TODO [project.urls]
+[project.urls]
+# TODO homepage
+GitHub="https://github.com/ZBOSK-II/emfuzzer"
+# TODO download
+# TODO changelog
+# TODO documentation
+# TODO issues
 
 [project.scripts]
 emfuzzer = "emfuzzer.__main__:main"
-
-# TODO [project.entry-points.
 
 [tool.poetry]
 packages = [{include = "emfuzzer"}]
