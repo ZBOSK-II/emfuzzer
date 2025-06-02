@@ -27,8 +27,8 @@ jobs:
           python-version: '3.13'
           cache: 'poetry'
 
-      - name: Install development tools
-        run: poetry install --only=dev
+      - name: Install dependencies
+        run: poetry install --with=dev --no-root
 
       - name: Run isort
         run: poetry run isort --check .
