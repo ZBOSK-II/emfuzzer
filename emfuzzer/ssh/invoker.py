@@ -88,7 +88,7 @@ class Invoker:
             time_elapsed = time.time() - t0
 
         self.close()
-        logger.warning(f"{self.name}: timoeut")
+        logger.warning(f"{self.name}: timeout")
         raise TimeoutError(f"Timeout, {self.__pid}")
 
     def signal(self, sig: signal.Signals) -> None:

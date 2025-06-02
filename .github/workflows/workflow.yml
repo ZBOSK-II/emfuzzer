@@ -36,6 +36,9 @@ jobs:
       - name: Run black
         run: poetry run black --check .
 
+      - name: Run codespell
+        run: poetry run codespell
+
       - name: Run flake8
         run: poetry run flake8 .
 

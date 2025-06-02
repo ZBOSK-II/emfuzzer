@@ -41,8 +41,9 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 black = "25.1.0"
-flake8-pyproject = "1.2.3"
+codespell = "2.4.1"
 flake8 = "7.2.0"
+flake8-pyproject = "1.2.3"
 isort = "6.0.1"
 mypy = "1.16.0"
 pylint = "3.3.7"
@@ -97,3 +98,8 @@ enable = [
 
 [tool.pylint.imports]
 allow-reexport-from-package = true
+
+[tool.codespell]
+skip = "poetry.lock"
+check-filenames = true
+count = true
