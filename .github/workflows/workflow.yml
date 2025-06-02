@@ -10,8 +10,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Load cached Poetry installation
+        id: cached-poetry
+        uses: actions/cache@v4
+        with:
+          path: ~/.local
+          key: poetry-install-20250602
+
       - name: Install Poetry
-        run: pipx install poetry
+        if: steps.cached-poetry.outputs.cache-hit != 'true'
+        uses: snok/install-poetry@v1
 
       - name: Set up Python
         uses: actions/setup-python@v5
