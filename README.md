@@ -62,14 +62,14 @@ Each data file passed to the emfuzzer represents a single
 Test Case. For each test case following experiment steps
 will be performed:
 
- 1. Setups tasks will be executed and their results stored.
+ 1. Setup tasks will be executed and their results stored.
  2. Monitoring tasks will be started.
  3. Injector will use Test Case data to perform the main
     experiment task (e.g. fuzzing data injection).
  4. Injector will observe system behaviour to capture
     result of the injection.
  5. Monitoring tasks will finish, their results stored.
- 6. Checks tasks will be executed and their results stored.
+ 6. Check tasks will be executed and their results stored.
  7. Go to 1 for next Test Case.
 
 Configuration
