@@ -3,7 +3,8 @@ name: Emfuzzer Workflow
 on: [push, pull_request]
 
 jobs:
-  check:
+  build:
+    name: Check and build package
     runs-on: ubuntu-latest
 
     steps:
@@ -50,3 +51,33 @@ jobs:
 
       - name: Run pytest
         run: poetry run pytest
+
+      - name: Build distribution
+        run: poetry build
+
+      - name: Store built distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish-to-pypi:
+    name: Publish package to PyPI
+    if: startsWith(github.ref, 'refs/tags/')
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/emfuzzer
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
