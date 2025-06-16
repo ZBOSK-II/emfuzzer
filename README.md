@@ -8,9 +8,9 @@ ensure embedded software booted, send fuzzing data using
 selected link, monitor peripheral state to detect changes
 in behaviour etc.
 
-This is what Emfuzzer help to orchestrate: it runs various
-tools and scripts in specific manner and gathers results
-for further inspections.
+This is what Emfuzzer helps to orchestrate: it runs various
+tools and scripts in specific manner, then gathers their
+results for further inspections.
 
 _Note_: although focused on fuzzing and embedded systems,
 Emfuzzer can help with any software-related experiments,
