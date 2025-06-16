@@ -1,4 +1,5 @@
-Emfuzzer - fuzzing experiments orchestrator for embedded
+Emfuzzer  
+_fuzzing experiments orchestrator for embedded systems_
 ============================================================
 
 When executing fuzzing experiment on embedded environment
