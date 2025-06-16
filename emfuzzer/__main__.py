@@ -46,7 +46,7 @@ def __setup_logger(prefix: str) -> None:
 def parse_args() -> Arguments:
     parser = argparse.ArgumentParser(
         prog="emfuzzer",
-        description="Fuzzer for embedded applications (with CoAP support)",
+        description="Fuzzing experiments orchestrator for embedded",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
