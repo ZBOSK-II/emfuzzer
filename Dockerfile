@@ -3,41 +3,6 @@
 # See the LICENSE.txt file in the root of the repository for full details.
 
 #
-# libcoap builder
-#
-FROM debian:bookworm AS libcoap-builder
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-RUN apt-get update -q \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -qy --no-install-recommends \
-    autoconf=2.71-* \
-    automake=1:1.16.5-* \
-    build-essential=12.9* \
-    ca-certificates=20* \
-    git=1:2.39.5-* \
-    libtool=2.4.7-* \
-    netbase=6.4 \
-    pkg-config=1.8.1-* \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /builddir
-
-# libcoap
-RUN git clone --branch v4.3.5 --depth=1 https://github.com/obgm/libcoap.git
-
-WORKDIR /builddir/libcoap
-
-RUN ./autogen.sh \
-    && ./configure \
-    --prefix /opt/libcoap \
-    --disable-dtls \
-    --disable-documentation \
-    --disable-shared \
-    && make \
-    && make install
-
-#
 # poetry builder
 #
 FROM python:3.13-slim-bookworm AS poetry-builder
@@ -75,13 +40,6 @@ RUN apt-get update -q \
     openssh-client=1:9.2* \
     && rm -rf /var/lib/apt/lists/*
 
-# libcoap from builder
-COPY --from=libcoap-builder /opt/libcoap /opt/libcoap
-ENV PATH="/opt/libcoap/bin:$PATH"
-
-ENV POETRY_VENV=/opt/poetry-venv
-COPY --from=poetry-builder ${POETRY_VENV}/ /opt/poetry-venv/
-
 #
 # development image
 #
@@ -90,6 +48,7 @@ FROM install-base AS emfuzzer-dev
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV POETRY_VENV=/opt/poetry-venv
+COPY --from=poetry-builder ${POETRY_VENV}/ /opt/poetry-venv/
 ENV POETRY=${POETRY_VENV}/bin/poetry
 
 ENV PATH="${POETRY_VENV}/bin:$PATH"
