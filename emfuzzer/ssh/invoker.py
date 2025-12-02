@@ -7,8 +7,8 @@ SSH command invoker.
 """
 
 import logging
-import signal
 import time
+from signal import Signals
 from typing import Optional
 
 import paramiko
@@ -95,7 +95,7 @@ class Invoker:
         logger.warning(f"{self.name}: timeout")
         raise TimeoutError(f"Timeout, {self.__pid}")
 
-    def signal(self, sig: signal.Signals) -> None:
+    def signal(self, sig: Signals) -> None:
         assert self.__handle is not None
         logger.info(f"{self.name}: Sending signal {sig.name} to {self.__pid}")
         inp, _, _ = self.__handle.exec_command(f"kill -{sig.name} {self.__pid}")
