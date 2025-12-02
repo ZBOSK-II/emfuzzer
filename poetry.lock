@@ -777,14 +777,14 @@ files = [
 
 [[package]]
 name = "types-paramiko"
-version = "3.5.0.20250516"
+version = "4.0.0.20250822"
 description = "Typing stubs for paramiko"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "types_paramiko-3.5.0.20250516-py3-none-any.whl", hash = "sha256:76ac5cbc0c04d36635ac080f301a864f698ef06b64c3a01a33dc657bd413b675"},
-    {file = "types_paramiko-3.5.0.20250516.tar.gz", hash = "sha256:8c2ac59648c16c5469aa0559abdb758a0f67f9f7cf36164b64654f7b6c2ebfb0"},
+    {file = "types_paramiko-4.0.0.20250822-py3-none-any.whl", hash = "sha256:55bdb14db75ca89039725ec64ae3fa26b8d57b6991cfb476212fa8f83a59753c"},
+    {file = "types_paramiko-4.0.0.20250822.tar.gz", hash = "sha256:1b56b0cbd3eec3d2fd123c9eb2704e612b777e15a17705a804279ea6525e0c53"},
 ]
 
 [package.dependencies]
@@ -805,4 +805,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">= 3.13"
-content-hash = "09eeb6113ae5308b88a06a76790f26f4cd93661bd0ed1be4966606ab6cdd319e"
+content-hash = "b32133e3df7418b05875cfec92cabfebedd23e781a9814a5337a493657f2f9a4"
