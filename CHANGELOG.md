@@ -14,7 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
  * isort bump from 6.0.1 to 6.1.0 [\#3](https://github.com/ZBOSK-II/emfuzzer/pull/3) ([dependabot](https://github.com/dependabot))
-
+ * pytest bump from 8.3.5 to 9.0.1 [\#5](https://github.com/ZBOSK-II/emfuzzer/pull/5) ([dependabot](https://github.com/dependabot))
+ * pylint bump from 3.3.7 to 4.0.4 [\#2](https://github.com/ZBOSK-II/emfuzzer/pull/2) ([dependabot](https://github.com/dependabot))
+ * flake8-pyproject bump from 1.2.3 to 1.2.4 [\#1](https://github.com/ZBOSK-II/emfuzzer/pull/1) ([dependabot](https://github.com/dependabot))
+ * flake8 bump from 7.2.0 to 7.3.0 [\#4](https://github.com/ZBOSK-II/emfuzzer/pull/4) ([dependabot](https://github.com/dependabot))
+ 
 ### Removed
 
 
