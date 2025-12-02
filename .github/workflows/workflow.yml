@@ -6,6 +6,9 @@ jobs:
   build:
     name: Check and build package
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.13, 3.14]
 
     steps:
       - name: Checkout code
@@ -16,16 +19,16 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local
-          key: poetry-install-20250602
+          key: poetry-install-20251202
 
       - name: Install Poetry
         if: steps.cached-poetry.outputs.cache-hit != 'true'
         uses: snok/install-poetry@v1
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: ${{ matrix.python-version }}
           cache: 'poetry'
 
       - name: Install dependencies
@@ -58,14 +61,14 @@ jobs:
       - name: Store built distribution
         uses: actions/upload-artifact@v4
         with:
-          name: python-package-distributions
+          name: python-package-distributions-${{ matrix.python-version }}
           path: dist/
 
   publish-to-pypi:
     name: Publish package to PyPI
     if: startsWith(github.ref, 'refs/tags/')
     needs:
-    - build
+      - build
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -77,7 +80,7 @@ jobs:
     - name: Download all the dists
       uses: actions/download-artifact@v4
       with:
-        name: python-package-distributions
+        name: python-package-distributions-3.14
         path: dist/
     - name: Publish distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
