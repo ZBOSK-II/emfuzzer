@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+ * isort bump from 6.0.1 to 6.1.0 [\#3](https://github.com/ZBOSK-II/emfuzzer/pull/3) ([dependabot](https://github.com/dependabot))
 
 ### Removed
 
