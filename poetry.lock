@@ -344,20 +344,20 @@ pyflakes = ">=3.3.0,<3.4.0"
 
 [[package]]
 name = "flake8-pyproject"
-version = "1.2.3"
+version = "1.2.4"
 description = "Flake8 plug-in loading the configuration from pyproject.toml"
 optional = false
-python-versions = ">= 3.6"
+python-versions = ">=3.6"
 groups = ["dev"]
 files = [
-    {file = "flake8_pyproject-1.2.3-py3-none-any.whl", hash = "sha256:6249fe53545205af5e76837644dc80b4c10037e73a0e5db87ff562d75fb5bd4a"},
+    {file = "flake8_pyproject-1.2.4-py3-none-any.whl", hash = "sha256:ea34c057f9a9329c76d98723bb2bb498cc6ba8ff9872c4d19932d48c91249a77"},
 ]
 
 [package.dependencies]
 Flake8 = ">=5"
 
 [package.extras]
-dev = ["pyTest", "pyTest-cov"]
+dev = ["Flit (>=3.4)", "pyTest (>=7)", "pyTest-cov (>=7) ; python_version >= \"3.10\""]
 
 [[package]]
 name = "iniconfig"
@@ -712,4 +712,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">= 3.13"
-content-hash = "bea439fd4da605513eb026c4d6c016428cbc7fea3f6aaa0b84a06c5b6a1cbd7b"
+content-hash = "f16a23c7097a02c6ff44a6ca10f80a27c1ba5908ffc53654c9d67ab5700854c6"
