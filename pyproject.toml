@@ -119,6 +119,7 @@ enable = [
 allow-reexport-from-package = true
 
 [tool.codespell]
-skip = "poetry.lock"
+skip = "poetry.lock,*.pyc"
 check-filenames = true
 count = true
+quiet = 0
