@@ -1,10 +1,10 @@
-Emfuzzer  
+Emfuzzer
 _fuzzing experiments orchestrator for embedded systems_
 ============================================================
 
 When executing fuzzing experiment on embedded environment
 one often faces challenge of performing multiple tasks in
-reapetable and observable manner, for example: reset board,
+repeatable and observable manner, for example: reset board,
 ensure embedded software booted, send fuzzing data using
 selected link, monitor peripheral state to detect changes
 in behaviour etc.
