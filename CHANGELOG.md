@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - black bump from 25.1.0 to 26.1.0 [\#8](https://github.com/ZBOSK-II/emfuzzer/pull/8) [\#10](https://github.com/ZBOSK-II/emfuzzer/pull/10) [\#16](https://github.com/ZBOSK-II/emfuzzer/pull/16) ([dependabot](https://github.com/dependabot))
  - types-paramiko bump from 3.5.0.20250516 to 4.0.0.20250822 [\#9](https://github.com/ZBOSK-II/emfuzzer/pull/9) ([dependabot](https://github.com/dependabot))
  - pytest bump from 9.0.1 to 9.0.2 [\#1](https://github.com/ZBOSK-II/emfuzzer/pull/11) ([dependabot](https://github.com/dependabot))
+ - pylint bump from 4.0.4 to 4.0.5 [\#18](https://github.com/ZBOSK-II/emfuzzer/pull/18) ([dependabot](https://github.com/dependabot))
 
 ### Removed
 
