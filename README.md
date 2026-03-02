@@ -166,7 +166,7 @@ effects. Currently supported injectors' types:
    Arguments:
     - `cmd` - (list of strings) command to be executed, data
       will be passed as the last argument to the call
-    - `shell` - (boolean) true when shell should be used todo
+    - `shell` - (boolean) true when shell should be used to
       interpret the command
     - `timeout` - (float) time to wait for command to finish
  * `coap` - CoAP (Constrained Application Protocol) injector
