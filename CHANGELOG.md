@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - isort bump from 6.1.0 to 8.0.1 [\#6](https://github.com/ZBOSK-II/emfuzzer/pull/6) [\#19](https://github.com/ZBOSK-II/emfuzzer/pull/19) ([dependabot](https://github.com/dependabot))
  - mypy bump from 1.16.0 to 1.19.1 [\#7](https://github.com/ZBOSK-II/emfuzzer/pull/7) [\#12](https://github.com/ZBOSK-II/emfuzzer/pull/12) ([dependabot](https://github.com/dependabot))
- - black bump from 25.1.0 to 26.3.0 [\#8](https://github.com/ZBOSK-II/emfuzzer/pull/8) [\#10](https://github.com/ZBOSK-II/emfuzzer/pull/10) [\#16](https://github.com/ZBOSK-II/emfuzzer/pull/16) [\#21](https://github.com/ZBOSK-II/emfuzzer/pull/21)([dependabot](https://github.com/dependabot))
+ - black bump from 25.1.0 to 26.3.0 [\#8](https://github.com/ZBOSK-II/emfuzzer/pull/8) [\#10](https://github.com/ZBOSK-II/emfuzzer/pull/10) [\#16](https://github.com/ZBOSK-II/emfuzzer/pull/16) [\#21](https://github.com/ZBOSK-II/emfuzzer/pull/21) ([dependabot](https://github.com/dependabot))
  - types-paramiko bump from 3.5.0.20250516 to 4.0.0.20250822 [\#9](https://github.com/ZBOSK-II/emfuzzer/pull/9) ([dependabot](https://github.com/dependabot))
  - pytest bump from 9.0.1 to 9.0.2 [\#1](https://github.com/ZBOSK-II/emfuzzer/pull/11) ([dependabot](https://github.com/dependabot))
  - pylint bump from 4.0.4 to 4.0.5 [\#18](https://github.com/ZBOSK-II/emfuzzer/pull/18) ([dependabot](https://github.com/dependabot))
