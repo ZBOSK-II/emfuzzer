@@ -61,7 +61,7 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 black = "26.3.0"
-codespell = "2.4.1"
+codespell = "2.4.2"
 flake8 = "7.3.0"
 flake8-pyproject = "1.2.4"
 isort = "8.0.1"
