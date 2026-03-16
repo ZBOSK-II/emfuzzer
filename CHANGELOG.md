@@ -5,10 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Added
-
+## [1.2.0] - 2026-03-16
 
 ### Changed
 
@@ -22,9 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - types-paramiko bump from 3.5.0.20250516 to 4.0.0.20250822 [\#9](https://github.com/ZBOSK-II/emfuzzer/pull/9) ([dependabot](https://github.com/dependabot))
  - pytest bump from 9.0.1 to 9.0.2 [\#11](https://github.com/ZBOSK-II/emfuzzer/pull/11) ([dependabot](https://github.com/dependabot))
  - pylint bump from 4.0.4 to 4.0.5 [\#18](https://github.com/ZBOSK-II/emfuzzer/pull/18) ([dependabot](https://github.com/dependabot))
-
-
-### Removed
 
 
 ## [1.1.0] - 2025-12-02
@@ -59,7 +53,8 @@ Initial release to setup PyPI.
 
 Fully functional emfuzzer - see README.md for details
 
-[unreleased]: https://github.com/ZBOSK-II/emfuzzer/1.1.0...HEAD
+[unreleased]: https://github.com/ZBOSK-II/emfuzzer/1.2.0...HEAD
+[1.2.0]: https://github.com/ZBOSK-II/emfuzzer/1.1.0...1.2.0
 [1.1.0]: https://github.com/ZBOSK-II/emfuzzer/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/ZBOSK-II/emfuzzer/compare/0.1.0...1.0.0
 [0.1.0]: https://github.com/ZBOSK-II/emfuzzer/releases/tag/0.1.0
