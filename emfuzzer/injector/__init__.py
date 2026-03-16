@@ -31,7 +31,6 @@ def subtask_from_config(config: Config, context: Context) -> InjectionSubTask:
             return Subprocess.from_config(name, args, context)
         case _:
             raise ValueError(f"Unknown sub-task type '{task_type}'")
-    # This point should be unreachable because all cases either return or raise.
     raise AssertionError(f"subtask_from_config reached unreachable state for type '{task_type}'")
 
 
