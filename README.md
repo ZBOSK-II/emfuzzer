@@ -216,7 +216,7 @@ Available tasks:
      - `timeout` - (float) timeout to wait for response
      - `interval` - (integer) interval between pings
  * `remote` - executes command over SSH and captures its
-   exit code.
+   exit code. Host key must be in 'known hosts' file.
    Arguments:
      - `connection` - dictionary containing:
        - `host`

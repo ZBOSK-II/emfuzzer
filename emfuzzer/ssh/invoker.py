@@ -104,7 +104,8 @@ class Invoker:
     def __open_ssh(self) -> None:
         try:
             self.__handle = paramiko.SSHClient()
-            self.__handle.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            self.__handle.load_system_host_keys()
+            self.__handle.set_missing_host_key_policy(paramiko.RejectPolicy())
             self.__handle.connect(
                 self.connection_config.host,
                 self.connection_config.port,
