@@ -138,8 +138,7 @@ class Subprocess(BasicSubTask):
         if name == "NONE":
             return None
 
-        # Use __members__.get to avoid KeyError for unknown signal names.
-        return signal.Signals.__members__.get(name)
+        return signal.Signals[name]
 
     @classmethod
     def from_config(cls, name: str, config: Config, context: Context) -> Self:
