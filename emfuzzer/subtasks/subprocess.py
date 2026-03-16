@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Warsaw University of Technology
+# Copyright (c) 2025-2026 Warsaw University of Technology
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
@@ -29,11 +29,9 @@ class FinishConfig:
 
     @staticmethod
     def _signal_from_name(name: str) -> Optional[Signals]:
-        match name:
-            case "NONE":
-                return None
-            case _:
-                return Signals[name]
+        if name == "NONE":
+            return None
+        return signal.Signals[name]
 
     @classmethod
     def from_config(cls, config: Config) -> Self:
@@ -135,11 +133,9 @@ class Subprocess(BasicSubTask):
 
     @staticmethod
     def _signal_from_name(name: str) -> Optional[signal.Signals]:
-        match name:
-            case "NONE":
-                return None
-            case _:
-                return signal.Signals[name]
+        if name == "NONE":
+            return None
+        return signal.Signals[name]
 
     @classmethod
     def from_config(cls, name: str, config: Config, context: Context) -> Self:
