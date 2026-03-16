@@ -34,6 +34,7 @@ class FinishConfig:
                 return None
             case _:
                 return Signals[name]
+        return None
 
     @classmethod
     def from_config(cls, config: Config) -> Self:
