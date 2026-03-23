@@ -98,8 +98,8 @@ class Invoker:
     def signal(self, sig: Signals) -> None:
         assert self.__handle is not None
         logger.info(f"{self.name}: Sending signal {sig.name} to {self.__pid}")
-        inp, _, _ = self.__handle.exec_command(f"kill -{sig.name} {self.__pid}")
-        inp.channel.recv_exit_status()
+        stdin, _, _ = self.__handle.exec_command(f"kill -{sig.name} {self.__pid}")
+        stdin.channel.recv_exit_status()
 
     def __open_ssh(self) -> None:
         try:
