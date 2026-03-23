@@ -45,6 +45,10 @@ def subtask_from_config(config: Config, context: Context, *prefix: str) -> SubTa
             from ..coap import CoapMonitor
 
             return CoapMonitor.from_config(name, args, context)
+        case "coap_send":
+            from ..coap import CoapSend  # pylint: disable=import-outside-toplevel
+
+            return CoapSend.from_config(name, args, context)
         case _:
             raise ValueError(f"Unknown sub-task type '{task_type}'")
 
