@@ -1,6 +1,5 @@
 {
   "delays": {
-    "between_cases": 0.2,
     "before_inject": 1
   },
   "injector": {

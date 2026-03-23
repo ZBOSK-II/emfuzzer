@@ -6,11 +6,16 @@
 Module representing context of the experiment.
 """
 
+import logging
 from abc import ABC, abstractmethod
+from pathlib import Path
 from types import TracebackType
 from typing import Self, cast
 
 from .config import Config
+from .results import Results
+
+logger = logging.getLogger(__name__)
 
 
 class Worker(ABC):
@@ -27,10 +32,15 @@ class Context:
         self._workers: dict[type[Worker], Worker] = {}
         self._data: dict[str, object] = {}
         self._config = config
+        self._results = Results(config)
 
     @property
     def config_root(self) -> Config:
         return self._config
+
+    @property
+    def results(self) -> Results:
+        return self._results
 
     def worker[T: Worker](self, worker: type[T]) -> T:
         if instance := self._workers.get(worker):
@@ -62,6 +72,9 @@ class Context:
             raise RuntimeError(f"Invalid data type for: '{name}'")
         raise RuntimeError(f"Unknown data: '{name}'")
 
+    def enter_case(self, path: Path) -> CaseContext:
+        return CaseContext(self, path)
+
     def __enter__(self) -> Self:
         return self
 
@@ -72,3 +85,43 @@ class Context:
         exc_traceback: TracebackType | None,
     ) -> None:
         self.teardown()
+
+
+class CaseContext:
+    def __init__(self, parent: Context, path: Path):
+        self._parent = parent
+        self._path = path
+        self._key = str(path)
+        self._data = bytes()
+
+    @property
+    def parent(self) -> Context:
+        return self._parent
+
+    @property
+    def key(self) -> str:
+        return self._key
+
+    @property
+    def data(self) -> bytes:
+        if self._data:
+            return self._data
+        logger.info(f"Opening {self._path}")
+        with self._path.open("rb") as file:
+            self._data = file.read()
+        return self._data
+
+    @property
+    def results(self) -> Results:
+        return self._parent.results
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        exc_traceback: TracebackType | None,
+    ) -> None:
+        pass

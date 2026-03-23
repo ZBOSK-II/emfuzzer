@@ -28,29 +28,19 @@ def run(args: Arguments, config: Config) -> int:
 
         injector = Injector.from_config(results=results, context=context)
 
-        delay_between_cases = Delay.from_config(
-            "delays", "between_cases", config=config
-        )
         delay_before_inject = Delay.from_config(
             "delays", "before_inject", config=config
         )
 
         for path in args.data:
-            logger.info(f"Opening {path}")
-            with path.open("rb") as file:
-                data = file.read()
-            if len(data) == 0:
-                logger.warning(f"No data found, skipping {path}")
-                continue
+            with context.enter_case(path) as case_context:
+                case_name = case_context.key
+                results.add_key(case_name)
 
-            case_name = str(path)
-            results.add_key(case_name)
-
-            with case.execute(case_name):
-                delay_before_inject.wait()
-                injector.inject(case_name, data)
-
-            delay_between_cases.wait()
+                with case.execute(case_name):
+                    delay_before_inject.wait()
+                    injector.inject(case_name, case_context.data)
+                    case.wait_between_cases()
 
         results.finish()
     logger.info(f"Results:\n {results.summary()}")
