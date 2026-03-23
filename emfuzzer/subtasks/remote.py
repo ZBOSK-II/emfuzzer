@@ -60,7 +60,7 @@ class Remote(BasicSubTask):
         except TimeoutError:
             return self.Result.TIMEOUT
         except Exception as ex:  # pylint: disable=broad-exception-caught
-            logging.error(f"Failed to finish monitoring <{self.name()}>: {ex}")
+            logger.error(f"Failed to finish monitoring <{self.name()}>: {ex}")
             return self.Result.ERROR
 
     @classmethod
