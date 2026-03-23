@@ -67,7 +67,7 @@ ENV EMFUZZER_VENV=/opt/emfuzzer-venv
 
 RUN python -m venv ${EMFUZZER_VENV}
 
-# empfuzzer from poetry
+# emfuzzer from poetry
 WORKDIR /emfuzzer
 COPY --from=poetry-builder /emfuzzer/dist /emfuzzer
 RUN ${EMFUZZER_VENV}/bin/pip install -r requirements.txt \
