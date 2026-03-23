@@ -51,15 +51,22 @@ class Remote(BasicSubTask):
             return False
 
     def finish(self) -> BasicSubTask.Result:
-        try:
-            if self.finish_config.signal:
+        if self.finish_config.signal:
+            try:
                 self.invoker.signal(self.finish_config.signal)
+            except Exception as ex:  # pylint: disable=broad-exception-caught
+                signal = self.finish_config.signal
+                logger.error(
+                    f"Failed to send signal {signal} to remote task <{self.name()}>: {ex}"
+                )
+                return self.Result.ERROR
+        try:
             result = self.invoker.wait_for_exit(self.finish_config.timeout)
             return self.Result.SUCCESS if (result == 0) else self.Result.FAILURE
         except TimeoutError:
             return self.Result.TIMEOUT
         except Exception as ex:  # pylint: disable=broad-exception-caught
-            logger.error(f"Failed to finish remote task <{self.name()}>: {ex}")
+            logger.error(f"Failed while waiting for remote task <{self.name()}>: {ex}")
             return self.Result.ERROR
         finally:
             self.invoker.close()
