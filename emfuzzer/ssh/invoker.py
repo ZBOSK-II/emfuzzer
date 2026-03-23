@@ -97,8 +97,21 @@ class Invoker:
     def signal(self, sig: Signals) -> None:
         assert self.__handle is not None
         logger.info(f"{self.name}: Sending signal {sig.name} to {self.__pid}")
-        inp, _, _ = self.__handle.exec_command(f"kill -{sig.name} {self.__pid}")
-        inp.channel.recv_exit_status()
+        stdin, _, stderr = self.__handle.exec_command(f"kill -{sig.name} {self.__pid}")
+        exit_status = stdin.channel.recv_exit_status()
+        if exit_status != 0:
+            # Read any error message from stderr to aid debugging.
+            error_message = stderr.read().decode(errors="replace").strip()
+            if error_message:
+                logger.error(
+                    f"{self.name}: failed to send signal {sig.name} to {self.__pid} "
+                    f"(exit status {exit_status}): {error_message}"
+                )
+            else:
+                logger.error(
+                    f"{self.name}: failed to send signal {sig.name} to {self.__pid} "
+                    f"(exit status {exit_status})"
+                )
 
     def __open_ssh(self) -> None:
         try:
