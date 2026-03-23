@@ -14,6 +14,10 @@
     }
   },
   "case": {
+    "delays": {
+      "between_cases": 0.2,
+      "before_actions": 1
+    },
     "setups": [
       {
         "type": "subprocess",
@@ -41,6 +45,22 @@
       }
     ],
     "monitoring": [],
+    "actions": [
+      {
+        "type": "subprocess",
+        "name": "test",
+        "args": {
+          "cmd": [
+            "cat $EMFUZZER_CASE_KEY"
+          ],
+          "shell": true,
+          "finish": {
+            "timeout": 0.5,
+            "signal": "NONE"
+          }
+        }
+      }
+    ],
     "checks": [
       {
         "type": "ping_stable",

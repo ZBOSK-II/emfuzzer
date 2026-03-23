@@ -65,13 +65,10 @@ will be performed:
 
  1. Setup tasks will be executed and their results stored.
  2. Monitoring tasks will be started.
- 3. Injector will use Test Case data to perform the main
-    experiment task (e.g. fuzzing data injection).
- 4. Injector will observe system behaviour to capture
-    result of the injection.
- 5. Monitoring tasks will finish, their results stored.
- 6. Check tasks will be executed and their results stored.
- 7. Go to 1 for next Test Case.
+ 3. Case actions will be performed and their results stored.
+ 4. Monitoring tasks will finish, their results stored.
+ 5. Check tasks will be executed and their results stored.
+ 6. Go to 1 for next Test Case.
 
 Configuration
 ------------------------------------------------------------
@@ -125,6 +122,22 @@ Below is the `default-config.json` with comments:
       }
     ],
     "monitoring": [],          // monitoring tasks
+    "actions": [               // case actions (core of the experiment)
+      {
+        "type": "subprocess",
+        "name": "test",
+        "args": {
+          "cmd": [
+            "cat $EMFUZZER_CASE_KEY"
+          ],
+          "shell": true,
+          "finish": {
+            "timeout": 0.5,
+            "signal": "NONE"
+          }
+        }
+      }
+    ],
     "checks": [                // list of checks tasks
       {                        // same as setups
         "type": "ping_stable",
@@ -156,7 +169,7 @@ Below is the `default-config.json` with comments:
 ```
 
 
-Injectors
+Injectors TODO
 ------------------------------------------------------------
 Injectors are the tools that take the experiment data,
 use it to "inject" it into the system, and then observe the
