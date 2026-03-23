@@ -138,12 +138,6 @@ class Subprocess(BasicSubTask):
         env["EMFUZZER_CASE_KEY"] = context.key
         return env
 
-    @staticmethod
-    def _signal_from_name(name: str) -> Optional[signal.Signals]:
-        if name == "NONE":
-            return None
-        return signal.Signals[name]
-
     @classmethod
     def from_config(cls, name: str, config: Config, context: Context) -> Self:
         return cls(
