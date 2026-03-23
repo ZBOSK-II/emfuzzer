@@ -62,8 +62,8 @@ Initial release to setup PyPI.
 
 Fully functional emfuzzer - see README.md for details
 
-[unreleased]: https://github.com/ZBOSK-II/emfuzzer/1.2.0...HEAD
-[1.2.0]: https://github.com/ZBOSK-II/emfuzzer/1.1.0...1.2.0
+[unreleased]: https://github.com/ZBOSK-II/emfuzzer/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/ZBOSK-II/emfuzzer/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/ZBOSK-II/emfuzzer/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/ZBOSK-II/emfuzzer/compare/0.1.0...1.0.0
 [0.1.0]: https://github.com/ZBOSK-II/emfuzzer/releases/tag/0.1.0
