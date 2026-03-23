@@ -47,7 +47,7 @@ class Remote(BasicSubTask):
                 return False
             return True
         except Exception as ex:  # pylint: disable=broad-exception-caught
-            logging.error(f"Failed to start monitoring <{self.name()}>: {ex}")
+            logger.error(f"Failed to start monitoring <{self.name()}>: {ex}")
             return False
 
     def finish(self) -> BasicSubTask.Result:
