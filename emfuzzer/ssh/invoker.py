@@ -132,8 +132,8 @@ class Invoker:
                 logger.info(f"{self.name}: Killing remotely: '{kill_command}'")
                 _, stdout, _ = self.__handle.exec_command(kill_command)
                 while not stdout.channel.exit_status_ready():
-                    # Loop until command executes
-                    pass
+                    # Loop until command executes, but avoid busy-waiting
+                    time.sleep(0.05)
                 logger.info(f"{self.name}: Kill done")
 
             self.__handle.close()
