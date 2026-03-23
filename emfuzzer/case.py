@@ -12,7 +12,6 @@ from typing import Iterator, Self
 from .config import Config
 from .context import Context
 from .delay import Delay
-from .results import Results
 from .subtasks import SubTasks
 
 
@@ -65,19 +64,11 @@ class Case:
         self._delays.wait_between_cases()
 
     @classmethod
-    def from_config(cls, context: Context, results: Results) -> Self:
+    def from_config(cls, context: Context) -> Self:
         return cls(
             delays=CaseDelays.from_config("case", "delays", config=context.config_root),
-            setups=SubTasks.from_config(
-                "case", "setups", results=results, context=context
-            ),
-            checks=SubTasks.from_config(
-                "case", "checks", results=results, context=context
-            ),
-            monitoring=SubTasks.from_config(
-                "case", "monitoring", results=results, context=context
-            ),
-            actions=SubTasks.from_config(
-                "case", "actions", results=results, context=context
-            ),
+            setups=SubTasks.from_config("case", "setups", context=context),
+            checks=SubTasks.from_config("case", "checks", context=context),
+            monitoring=SubTasks.from_config("case", "monitoring", context=context),
+            actions=SubTasks.from_config("case", "actions", context=context),
         )

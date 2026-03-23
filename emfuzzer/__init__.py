@@ -20,11 +20,10 @@ from .results import Results
 logger = logging.getLogger(__name__)
 
 
-def run(args: Arguments, config: Config) -> int:
-    results = Results(config)
-
+def execute(args: Arguments, config: Config) -> Results:
     with Context(config) as context:
-        case = Case.from_config(context=context, results=results)
+        results = context.results
+        case = Case.from_config(context)
 
         injector = Injector.from_config(results=results, context=context)
 
@@ -42,7 +41,12 @@ def run(args: Arguments, config: Config) -> int:
                     injector.inject(case_name, case_context.data)
                     case.wait_between_cases()
 
-        results.finish()
+        return context.results
+
+
+def run(args: Arguments, config: Config) -> int:
+    results = execute(args, config)
+
     logger.info(f"Results:\n {results.summary()}")
 
     with open(args.output_prefix + ".json", "w", encoding="utf-8") as f:

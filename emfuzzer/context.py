@@ -84,6 +84,7 @@ class Context:
         exc_value: BaseException | None,
         exc_traceback: TracebackType | None,
     ) -> None:
+        self.results.finish()
         self.teardown()
 
 

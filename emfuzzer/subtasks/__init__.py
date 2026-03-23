@@ -123,8 +123,8 @@ class SubTasks:
         logger.info(f"All {self.name()} finished")
 
     @classmethod
-    def from_config(cls, *prefix: str, results: Results, context: Context) -> Self:
-        tasks = cls(results, *prefix)
+    def from_config(cls, *prefix: str, context: Context) -> Self:
+        tasks = cls(context.results, *prefix)
         for conf in context.config_root.get_config_list(*prefix):
             tasks.register(subtask_from_config(conf, context, *prefix))
         return tasks
