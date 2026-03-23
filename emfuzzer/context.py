@@ -22,10 +22,12 @@ logger = logging.getLogger(__name__)
 
 class Worker(ABC):
     @abstractmethod
-    def start(self) -> None: ...
+    def start(self) -> None:
+        pass
 
     @abstractmethod
-    def stop(self) -> None: ...
+    def stop(self) -> None:
+        pass
 
 
 class Context:

@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 # pylint: disable=too-few-public-methods
 class Closeable(Protocol):
-    def close(self) -> None: ...
+    def close(self) -> None:
+        pass
 
 
 class Selectable(ABC):
@@ -32,25 +33,32 @@ class Selectable(ABC):
         return self._name
 
     @abstractmethod
-    def fileno(self) -> int: ...
+    def fileno(self) -> int:
+        pass
 
     @abstractmethod
-    def close(self) -> None: ...
+    def close(self) -> None:
+        pass
 
     @abstractmethod
-    def is_closed(self) -> bool: ...
+    def is_closed(self) -> bool:
+        pass
 
     @abstractmethod
-    def wants_to_read(self) -> bool: ...
+    def wants_to_read(self) -> bool:
+        pass
 
     @abstractmethod
-    def read(self) -> None: ...
+    def read(self) -> None:
+        pass
 
     @abstractmethod
-    def wants_to_write(self) -> bool: ...
+    def wants_to_write(self) -> bool:
+        pass
 
     @abstractmethod
-    def write(self) -> None: ...
+    def write(self) -> None:
+        pass
 
 
 class InterruptPipe(Selectable):
@@ -91,7 +99,8 @@ class SendQueue[T](ABC):
         self._queue: queue.Queue[T] = queue.Queue()
 
     @abstractmethod
-    def put(self, element: T) -> None: ...
+    def put(self, element: T) -> None:
+        pass
 
     def get(self) -> T:
         return self._queue.get_nowait()

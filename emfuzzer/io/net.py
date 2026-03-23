@@ -27,5 +27,8 @@ class NetworkAddress:
 
 class NetworkObserver(Protocol):
 
-    def on_read(self, address: NetworkAddress, data: bytes) -> None: ...
-    def on_write(self, address: NetworkAddress, data: bytes) -> None: ...
+    def on_read(self, address: NetworkAddress, data: bytes) -> None:
+        pass
+
+    def on_write(self, address: NetworkAddress, data: bytes) -> None:
+        pass

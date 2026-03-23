@@ -29,25 +29,31 @@ class SubTask(ABC):
         return self._name
 
     @abstractmethod
-    def start(self, context: CaseContext) -> str | StartedType: ...
+    def start(self, context: CaseContext) -> str | StartedType:
+        pass
 
     @abstractmethod
-    def finish(self) -> str: ...
+    def finish(self) -> str:
+        pass
 
     @abstractmethod
-    def result_type(self) -> type[StrEnum]: ...
+    def result_type(self) -> type[StrEnum]:
+        pass
 
 
 class TypedSubTask[T: StrEnum](SubTask):
 
     @abstractmethod
-    def start(self, context: CaseContext) -> T | SubTask.StartedType: ...
+    def start(self, context: CaseContext) -> T | SubTask.StartedType:
+        pass
 
     @abstractmethod
-    def finish(self) -> T: ...
+    def finish(self) -> T:
+        pass
 
     @abstractmethod
-    def result_type(self) -> type[T]: ...
+    def result_type(self) -> type[T]:
+        pass
 
 
 class BasicSubTask(TypedSubTask[BasicResult]):
@@ -58,7 +64,8 @@ class BasicSubTask(TypedSubTask[BasicResult]):
         return SubTask.STARTED if self.basic_start(context) else BasicResult.NOT_STARTED
 
     @abstractmethod
-    def basic_start(self, context: CaseContext) -> bool: ...
+    def basic_start(self, context: CaseContext) -> bool:
+        pass
 
     def result_type(self) -> type[Result]:
         return self.Result
