@@ -125,7 +125,7 @@ class Invoker:
         logger.info(f"{self.name} started via SSH: {self.__pid}")
 
     def __close_ssh(self) -> None:
-        if self.__handle:
+        if self.__handle is not None:
             if self.running:
                 kill_command = f"kill {self.__pid}"
                 logger.info(f"{self.name}: Killing remotely: '{kill_command}'")
