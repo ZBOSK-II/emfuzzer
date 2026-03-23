@@ -14,7 +14,7 @@ from signal import Signals
 from typing import Optional, Self
 
 from ..config import Config
-from ..context import Context
+from ..context import CaseContext, Context
 from ..io import IOLoop
 from ..io.streams import StreamLogger
 from .subtask import BasicSubTask
@@ -65,7 +65,7 @@ class Subprocess(BasicSubTask):
 
         self.check_exit_code = check_exit_code
 
-    def basic_start(self) -> bool:
+    def basic_start(self, context: CaseContext) -> bool:
         try:
             logger.info(f"<{self.name()}>: Starting {self.args}")
             self.process = subprocess.Popen(  # pylint: disable=consider-using-with

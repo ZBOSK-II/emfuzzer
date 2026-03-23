@@ -11,7 +11,7 @@ import subprocess
 from typing import IO, Self
 
 from ..config import Config
-from ..context import Context
+from ..context import CaseContext, Context
 from ..io import IOLoop
 from ..io.streams import InputStream
 from .subprocess import FinishConfig, Subprocess
@@ -80,8 +80,8 @@ class PingIsAlive(Subprocess):
 
         self.stream: PingIsAliveStream | None = None
 
-    def basic_start(self) -> bool:
-        if not super().basic_start():
+    def basic_start(self, context: CaseContext) -> bool:
+        if not super().basic_start(context):
             return False
 
         assert self.process is not None

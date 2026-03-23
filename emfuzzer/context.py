@@ -95,6 +95,8 @@ class CaseContext:
         self._key = str(path)
         self._data = bytes()
 
+        self.results.add_key(self.key)
+
     @property
     def parent(self) -> Context:
         return self._parent

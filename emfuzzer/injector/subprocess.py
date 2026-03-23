@@ -10,7 +10,7 @@ import logging
 from typing import Self
 
 from ..config import Config
-from ..context import Context
+from ..context import CaseContext, Context
 from ..io import IOLoop
 from ..io.streams import StreamWriter
 from ..results.basic import BasicResult
@@ -36,8 +36,8 @@ class Subprocess(TypedInjectionSubTask[BasicResult]):
             io=io,
         )
 
-    def inject(self, data: bytes) -> BasicResult:
-        if not self._task.basic_start():
+    def inject(self, data: bytes, context: CaseContext) -> BasicResult:
+        if not self._task.basic_start(context):
             return BasicResult.NOT_STARTED
 
         assert self._task.process is not None

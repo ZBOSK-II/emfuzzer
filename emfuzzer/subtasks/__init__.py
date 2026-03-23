@@ -11,7 +11,7 @@ from contextlib import contextmanager
 from typing import Iterator, Self
 
 from ..config import Config
-from ..context import Context
+from ..context import CaseContext, Context
 from ..results import Results, ResultsGroup
 from .subtask import SubTask
 
@@ -58,22 +58,22 @@ class SubTaskExecution:
     def name(self) -> str:
         return self._task.name()
 
-    def start(self) -> None:
-        self._start_result = self._task.start()
+    def start(self, context: CaseContext) -> None:
+        self._start_result = self._task.start(context)
 
-    def finish_for(self, key: str) -> None:
+    def finish_for(self, context: CaseContext) -> None:
         assert self._start_result is not None
         result = (
             self._task.finish()
             if isinstance(self._start_result, SubTask.StartedType)
             else self._start_result
         )
-        self._results.collect(key, result)
+        self._results.collect(context.key, result)
         self._start_result = None
 
-    def execute_for(self, key: str) -> None:
-        self.start()
-        self.finish_for(key)
+    def execute_for(self, context: CaseContext) -> None:
+        self.start(context)
+        self.finish_for(context)
 
 
 class SubTasks:
@@ -93,33 +93,33 @@ class SubTasks:
         )
         self._tasks.append(execution)
 
-    def execute_for(self, key: str) -> None:
+    def execute_for(self, context: CaseContext) -> None:
         logger.info(f"Start {self.name()}")
         for task in self._tasks:
             logger.info(f"Executing {task.name()}")
-            task.execute_for(key)
+            task.execute_for(context)
         logger.info(f"End {self.name()}")
 
     @contextmanager
-    def monitor(self, key: str) -> Iterator[None]:
+    def monitor(self, context: CaseContext) -> Iterator[None]:
         try:
-            self.start_all()
+            self.start_all(context)
             yield
         finally:
-            self.finish_all_for(key)
+            self.finish_all_for(context)
 
-    def start_all(self) -> None:
+    def start_all(self, context: CaseContext) -> None:
         logger.info(f"Starting {self.name()}")
         for task in self._tasks:
             logger.info(f"Starting {task.name()}")
-            task.start()
+            task.start(context)
         logger.info(f"All {self.name()} started")
 
-    def finish_all_for(self, key: str) -> None:
+    def finish_all_for(self, context: CaseContext) -> None:
         logger.info(f"Finishing {self.name()}")
         for task in self._tasks:
             logger.info(f"Finishing {task.name()}")
-            task.finish_for(key)
+            task.finish_for(context)
         logger.info(f"All {self.name()} finished")
 
     @classmethod

@@ -10,6 +10,7 @@ import logging
 from typing import Self
 
 from ..config import Config
+from ..context import CaseContext
 from ..ssh import ConnectionConfig, Invoker
 from .subprocess import FinishConfig
 from .subtask import BasicSubTask
@@ -38,7 +39,7 @@ class Remote(BasicSubTask):
         self.start_timeout = start_timeout
         self.finish_config = finish_config
 
-    def basic_start(self) -> bool:
+    def basic_start(self, context: CaseContext) -> bool:
         try:
             self.invoker.open()
             if not self.invoker.wait_for_start(self.start_timeout):

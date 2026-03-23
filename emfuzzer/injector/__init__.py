@@ -9,7 +9,7 @@ Module representing injection part of the experiment.
 from typing import Self
 
 from ..config import Config
-from ..context import Context
+from ..context import CaseContext, Context
 from ..results import Results
 from .subtask import InjectionSubTask
 
@@ -39,8 +39,8 @@ class Injector:
         self._results = results.register(task.name(), task.result_type())
         self._task = task
 
-    def inject(self, key: str, data: bytes) -> None:
-        self._results.collect(key, self._task.inject(data))
+    def inject(self, key: str, data: bytes, context: CaseContext) -> None:
+        self._results.collect(key, self._task.inject(data, context))
 
     @classmethod
     def from_config(cls, results: Results, context: Context) -> Self:

@@ -33,13 +33,12 @@ def execute(args: Arguments, config: Config) -> Results:
 
         for path in args.data:
             with context.enter_case(path) as case_context:
-                case_name = case_context.key
-                results.add_key(case_name)
-
-                with case.execute(case_name):
+                case_name = case_context.key  # XTODO kill
+                with case.execute(case_context):
                     delay_before_inject.wait()
-                    injector.inject(case_name, case_context.data)
-                    case.wait_between_cases()
+                    injector.inject(case_name, case_context.data, case_context)
+
+                case.wait_between_cases()
 
         return context.results
 

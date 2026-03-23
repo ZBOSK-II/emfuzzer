@@ -9,6 +9,8 @@ Module representing base of injection sub-tasks.
 from abc import ABC, abstractmethod
 from enum import StrEnum
 
+from ..context import CaseContext
+
 
 class InjectionSubTask(ABC):
     def __init__(self, name: str):
@@ -18,13 +20,13 @@ class InjectionSubTask(ABC):
         return self._name
 
     @abstractmethod
-    def inject(self, data: bytes) -> str: ...
+    def inject(self, data: bytes, context: CaseContext) -> str: ...
     @abstractmethod
     def result_type(self) -> type[StrEnum]: ...
 
 
 class TypedInjectionSubTask[T: StrEnum](InjectionSubTask):
     @abstractmethod
-    def inject(self, data: bytes) -> T: ...
+    def inject(self, data: bytes, context: CaseContext) -> T: ...
     @abstractmethod
     def result_type(self) -> type[T]: ...
