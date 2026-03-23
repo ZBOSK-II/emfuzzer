@@ -157,7 +157,7 @@ class IOLoop(Worker):
             self._process_rlist(rlist)
             self._process_wlist(wlist)
             self._process_register_queue()
-            self._process_close_queue()
+            self._process_close_requests(len(rlist))
             self._clean_closed()
 
     def _wake_select(self) -> None:
@@ -186,6 +186,12 @@ class IOLoop(Worker):
                 self._perform_register(self._register_queue.get_nowait())
             except queue.Empty:
                 return
+
+    def _process_close_requests(self, rlen: int) -> None:
+        if rlen == 1:  # process only if there was nothing to read (only interrupt pipe)
+            self._process_close_queue()
+        elif not self._close_queue.empty():
+            self._wake_select()  # requests skipped, but present, let's try next time
 
     def _process_close_queue(self) -> None:
         while not self._close_queue.empty():
