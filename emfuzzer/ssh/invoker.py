@@ -91,7 +91,6 @@ class Invoker:
             time.sleep(0.05)
             time_elapsed = time.time() - t0
 
-        self.close()
         logger.warning(f"{self.name}: timeout")
         raise TimeoutError(f"Timeout, {self.__pid}")
 
