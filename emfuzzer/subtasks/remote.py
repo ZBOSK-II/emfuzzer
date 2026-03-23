@@ -52,16 +52,18 @@ class Remote(BasicSubTask):
 
     def finish(self) -> BasicSubTask.Result:
         try:
-            if self.finish_config.signal:
-                self.invoker.signal(self.finish_config.signal)
-            result = self.invoker.wait_for_exit(self.finish_config.timeout)
+            try:
+                if self.finish_config.signal:
+                    self.invoker.signal(self.finish_config.signal)
+                result = self.invoker.wait_for_exit(self.finish_config.timeout)
+                return self.Result.SUCCESS if (result == 0) else self.Result.FAILURE
+            except TimeoutError:
+                return self.Result.TIMEOUT
+            except Exception as ex:  # pylint: disable=broad-exception-caught
+                logger.error(f"Failed to finish monitoring <{self.name()}>: {ex}")
+                return self.Result.ERROR
+        finally:
             self.invoker.close()
-            return self.Result.SUCCESS if (result == 0) else self.Result.FAILURE
-        except TimeoutError:
-            return self.Result.TIMEOUT
-        except Exception as ex:  # pylint: disable=broad-exception-caught
-            logger.error(f"Failed to finish monitoring <{self.name()}>: {ex}")
-            return self.Result.ERROR
 
     @classmethod
     def from_config(cls, name: str, config: Config) -> Self:
