@@ -80,21 +80,11 @@ and monitors (with arguments).
 Below is the `default-config.json` with comments:
 ``` json-with-comments
 {
-  "delays": {
-    "between_cases": 0.2, // delay between Test Cases
-    "before_inject": 1    // delay after all setups
-  },
-  "injector": {
-    "type": "subprocess", // type of injection
-    "args": {             // arguments for given injector
-      "cmd": [
-        "cat"
-      ],
-      "shell": false,
-      "timeout": 1
-    }
-  },
   "case": {                    // for each case
+    "delays": {
+      "between_cases": 0.2,    // delay between Test Cases
+      "before_actions": 1      // delay after all setups
+    },
     "setups": [                // list of setups
       {
         "type": "subprocess",  // type of setup tasks
@@ -168,43 +158,20 @@ Below is the `default-config.json` with comments:
 }
 ```
 
-
-Injectors TODO
-------------------------------------------------------------
-Injectors are the tools that take the experiment data,
-use it to "inject" it into the system, and then observe the
-effects. Currently supported injectors' types:
-
- * `subprocess` - execute script and captures its exit code.
-   Arguments:
-    - `cmd` - (list of strings) command to be executed, data
-      will be passed as the last argument to the call
-    - `shell` - (boolean) true when shell should be used to
-      interpret the command
-    - `timeout` - (float) time to wait for command to finish
- * `coap` - CoAP (Constrained Application Protocol) injector
-   data will be sent over UDP to specified address, success
-   when positive response is received from the system.
-   Arguments:
-    - `target` - dictionary containing `host` and `port` of
-      the target
-    - `response_timeout` - (float) timeout to wait for CoAP
-      response after sending the data
-    - `observation_timeout` - (float) additional time for
-      detecting any unexpected messages _after_ the response
-
-SubTasks & Monitors
+SubTasks
 ------------------------------------------------------------
 Sub Tasks are tasks that for each case can be executed as
-setups or checks.
+setups, checks, actions or monitors.
 
 _Note_: failure of "setup" _does not_ interrupt the test
 case execution - it is logged and stored in results, next
 steps are still executed, to be analyzed later.
 
 Monitors are tasks that their execution is started after
-setups, then they are active during the injection and
+setups, then they are active during the actions and
 finish before checks.
+
+All Sub Tasks instances has to be named using `name`.
 
 Available tasks:
  * `subprocess` - execute script and capture its exit code.
@@ -257,3 +224,8 @@ Available tasks:
     - `observation_timeout` - (float) additional time for
       detecting any unexpected messages when monitoring
       finishes
+  * `coap_send` - sends data provided in argument to the
+    program call as CoAP message and checks system response.
+    Arguments:
+      - `monitor` - name of the `coap_monitor` instance used
+        to send the message.
