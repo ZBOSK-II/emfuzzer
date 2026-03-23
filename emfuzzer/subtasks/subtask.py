@@ -22,6 +22,7 @@ class SubTask(ABC):
     type StartResult = str | StartedType
     STARTED = StartedType()
 
+    # pylint: disable=duplicate-code
     def __init__(self, name: str):
         self._name = name
 
