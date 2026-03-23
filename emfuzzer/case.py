@@ -6,8 +6,7 @@
 Module representing "case" - an instance of the experiment execution.
 """
 
-from contextlib import contextmanager
-from typing import Iterator, Self
+from typing import Self
 
 from .config import Config
 from .context import CaseContext, Context
@@ -51,13 +50,11 @@ class Case:
         self._checks = checks
         self._actions = actions
 
-    @contextmanager
-    def execute(self, context: CaseContext) -> Iterator[None]:
+    def execute(self, context: CaseContext) -> None:
         self._setups.execute_for(context)
         with self._monitoring.monitor(context):
             self._delays.wait_before_actions()
             self._actions.execute_for(context)
-            yield
         self._checks.execute_for(context)
 
     def wait_between_cases(self) -> None:

@@ -89,3 +89,8 @@ class StreamLogger(InputStream):
     def _flush(self) -> None:
         logger.info(f"{self.name()}: {bytes(self._buffer.rstrip())!r}")
         self._buffer.clear()
+
+    def close(self) -> None:
+        if self._buffer:
+            self._flush()
+        super().close()

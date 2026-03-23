@@ -13,8 +13,6 @@ from .arguments import Arguments
 from .case import Case
 from .config import Config
 from .context import Context
-from .delay import Delay
-from .injector import Injector
 from .results import Results
 
 logger = logging.getLogger(__name__)
@@ -22,23 +20,12 @@ logger = logging.getLogger(__name__)
 
 def execute(args: Arguments, config: Config) -> Results:
     with Context(config) as context:
-        results = context.results
         case = Case.from_config(context)
-
-        injector = Injector.from_config(results=results, context=context)
-
-        delay_before_inject = Delay.from_config(
-            "delays", "before_inject", config=config
-        )
 
         for path in args.data:
             with context.enter_case(path) as case_context:
-                case_name = case_context.key  # XTODO kill
-                with case.execute(case_context):
-                    delay_before_inject.wait()
-                    injector.inject(case_name, case_context.data, case_context)
-
-                case.wait_between_cases()
+                case.execute(case_context)
+            case.wait_between_cases()
 
         return context.results
 
