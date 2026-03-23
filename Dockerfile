@@ -23,7 +23,7 @@ WORKDIR /emfuzzer
 COPY . /emfuzzer
 RUN ${POETRY} install --no-interaction --no-root
 RUN ${POETRY} build --no-interaction
-# export freezed requirements
+# export frozen requirements
 RUN ${POETRY} export --no-interaction > dist/requirements.txt
 
 #
