@@ -96,7 +96,9 @@ class Subprocess(BasicSubTask):
 
         result = self._finish_process()
 
-        self.process.terminate()
+        if self.process.poll() is None:
+            self.process.terminate()
+
         self.io.close(self.process.stdin)
         self.io.close(self.process.stdout)
         self.io.close(self.process.stderr)
