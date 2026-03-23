@@ -32,7 +32,11 @@ class FinishConfig:
     def _signal_from_name(name: str) -> Optional[Signals]:
         if name == "NONE":
             return None
-        return signal.Signals[name]
+        try:
+            return signal.Signals[name]
+        except KeyError:
+            logger.warning(f"Invalid signal name in configuration: {name}")
+            return None
 
     @classmethod
     def from_config(cls, config: Config) -> Self:
@@ -96,7 +100,9 @@ class Subprocess(BasicSubTask):
 
         result = self._finish_process()
 
-        self.process.terminate()
+        if self.process.poll() is None:
+            self.process.terminate()
+
         self.io.close(self.process.stdin)
         self.io.close(self.process.stdout)
         self.io.close(self.process.stderr)
