@@ -10,9 +10,8 @@ from enum import StrEnum, auto
 from typing import Self
 
 from ..config import Config
-from ..context import Context
+from ..context import CaseContext, Context
 from ..delay import Delay
-from ..injector.subtask import TypedInjectionSubTask
 from ..io import IOLoop, SendQueue
 from ..io.net import NetworkAddress
 from ..io.sockets import UdpClientSocket
@@ -45,7 +44,7 @@ class CoapMonitor(TypedSubTask[CoapMonitorResult]):
         self._socket: UdpClientSocket | None = None
         self._queue: SendQueue[tuple[NetworkAddress, bytes]] | None = None
 
-    def start(self) -> CoapMonitorResult | SubTask.StartedType:
+    def start(self, context: CaseContext) -> CoapMonitorResult | SubTask.StartedType:
         self._queue = self._io.make_queue(tuple[NetworkAddress, bytes])
         self._validator = Validator(self._target, self._response_timeout)
         self._socket = UdpClientSocket(
@@ -89,13 +88,16 @@ class CoapMonitor(TypedSubTask[CoapMonitorResult]):
         return result
 
 
-class CoapInjector(TypedInjectionSubTask[Validator.Result]):
+class CoapSend(TypedSubTask[Validator.Result]):
     def __init__(self, name: str, monitor: CoapMonitor):
         super().__init__(name)
         self._monitor = monitor
 
-    def inject(self, data: bytes) -> Validator.Result:
-        self._monitor.send(data)
+    def start(self, context: CaseContext) -> SubTask.StartedType:
+        self._monitor.send(context.data)
+        return SubTask.STARTED
+
+    def finish(self) -> Validator.Result:
         return self._monitor.wait_for_response()
 
     def result_type(self) -> type[Validator.Result]:

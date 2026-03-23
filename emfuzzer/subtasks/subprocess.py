@@ -7,6 +7,7 @@ Module providing subprocess based sub tasks.
 """
 
 import logging
+import os
 import signal
 import subprocess
 from dataclasses import dataclass
@@ -14,7 +15,7 @@ from signal import Signals
 from typing import Optional, Self
 
 from ..config import Config
-from ..context import Context
+from ..context import CaseContext, Context
 from ..io import IOLoop
 from ..io.streams import StreamLogger
 from .subtask import BasicSubTask
@@ -65,7 +66,7 @@ class Subprocess(BasicSubTask):
 
         self.check_exit_code = check_exit_code
 
-    def basic_start(self) -> bool:
+    def basic_start(self, context: CaseContext) -> bool:
         try:
             logger.info(f"<{self.name()}>: Starting {self.args}")
             self.process = subprocess.Popen(  # pylint: disable=consider-using-with
@@ -75,6 +76,7 @@ class Subprocess(BasicSubTask):
                 stdin=subprocess.PIPE,
                 text=False,
                 shell=self.shell,
+                env=self._prepare_env(context),
             )
         except Exception as ex:  # pylint: disable=broad-exception-caught
             logger.error(f"<{self.name()}>: Operation error: {ex}")
@@ -130,6 +132,11 @@ class Subprocess(BasicSubTask):
 
         logger.info(f"<{self.name()}>: Operation finished successfully")
         return self.Result.SUCCESS
+
+    def _prepare_env(self, context: CaseContext) -> dict[str, str]:
+        env = os.environ.copy()
+        env["EMFUZZER_CASE_KEY"] = context.key
+        return env
 
     @staticmethod
     def _signal_from_name(name: str) -> Optional[signal.Signals]:

@@ -13,46 +13,26 @@ from .arguments import Arguments
 from .case import Case
 from .config import Config
 from .context import Context
-from .delay import Delay
-from .injector import Injector
 from .results import Results
 
 logger = logging.getLogger(__name__)
 
 
-def run(args: Arguments, config: Config) -> int:
-    results = Results(config)
-
+def execute(args: Arguments, config: Config) -> Results:
     with Context(config) as context:
-        case = Case.from_config(context=context, results=results)
-
-        injector = Injector.from_config(results=results, context=context)
-
-        delay_between_cases = Delay.from_config(
-            "delays", "between_cases", config=config
-        )
-        delay_before_inject = Delay.from_config(
-            "delays", "before_inject", config=config
-        )
+        case = Case.from_config(context)
 
         for path in args.data:
-            logger.info(f"Opening {path}")
-            with path.open("rb") as file:
-                data = file.read()
-            if len(data) == 0:
-                logger.warning(f"No data found, skipping {path}")
-                continue
+            with context.enter_case(path) as case_context:
+                case.execute(case_context)
+            case.wait_between_cases()
 
-            case_name = str(path)
-            results.add_key(case_name)
+        return context.results
 
-            with case.execute(case_name):
-                delay_before_inject.wait()
-                injector.inject(case_name, data)
 
-            delay_between_cases.wait()
+def run(args: Arguments, config: Config) -> int:
+    results = execute(args, config)
 
-        results.finish()
     logger.info(f"Results:\n {results.summary()}")
 
     with open(args.output_prefix + ".json", "w", encoding="utf-8") as f:

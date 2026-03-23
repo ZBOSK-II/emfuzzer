@@ -10,6 +10,7 @@ from abc import ABC, abstractmethod
 from enum import StrEnum
 from typing import TypeAlias
 
+from ..context import CaseContext
 from ..results.basic import BasicResult
 
 
@@ -28,7 +29,7 @@ class SubTask(ABC):
         return self._name
 
     @abstractmethod
-    def start(self) -> str | StartedType: ...
+    def start(self, context: CaseContext) -> str | StartedType: ...
 
     @abstractmethod
     def finish(self) -> str: ...
@@ -40,7 +41,7 @@ class SubTask(ABC):
 class TypedSubTask[T: StrEnum](SubTask):
 
     @abstractmethod
-    def start(self) -> T | SubTask.StartedType: ...
+    def start(self, context: CaseContext) -> T | SubTask.StartedType: ...
 
     @abstractmethod
     def finish(self) -> T: ...
@@ -53,11 +54,11 @@ class BasicSubTask(TypedSubTask[BasicResult]):
     type StartResult = BasicResult | SubTask.StartedType
     Result: TypeAlias = BasicResult
 
-    def start(self) -> StartResult:
-        return SubTask.STARTED if self.basic_start() else BasicResult.NOT_STARTED
+    def start(self, context: CaseContext) -> StartResult:
+        return SubTask.STARTED if self.basic_start(context) else BasicResult.NOT_STARTED
 
     @abstractmethod
-    def basic_start(self) -> bool: ...
+    def basic_start(self, context: CaseContext) -> bool: ...
 
     def result_type(self) -> type[Result]:
         return self.Result
