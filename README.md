@@ -1,5 +1,5 @@
 **PROJECT ARCHIVED**
-Further development performed as (emtorch)[https://pypi.org/project/emfuzzer/].
+Further development performed as [emtorch](https://pypi.org/project/emfuzzer/).
 
 This project has drifted from fuzzing towards more generic experiments,
 hence the change of the name.
