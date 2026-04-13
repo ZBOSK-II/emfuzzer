@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.3.0] - 2026-04-13
 
-### Added
+**FINAL RELEASE** of the emfuzzer project. Further development performed as (emtorch)[https://pypi.org/project/emfuzzer/].
 
 ### Changed
  - BREAKING CHANGE: Moving away from "injection" towards more generic usage of the project - "actions" introduced. Instead of a single dedicated tool to be executed after monitoring has started, set of "subtasks" called "actions" will execute. [\#28](https://github.com/ZBOSK-II/emfuzzer/pull/28) ([hcorg](https://github.com/hcorg))
@@ -18,8 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - cryptography bump from 46.0.5 to 46.0.7 [\#40](https://github.com/ZBOSK-II/emfuzzer/pull/40) [\#45](https://github.com/ZBOSK-II/emfuzzer/pull/45) ([dependabot](https://github.com/dependabot))
  - pygments bump from 2.19.2 to 2.20.0 [\#41](https://github.com/ZBOSK-II/emfuzzer/pull/41) ([dependabot](https://github.com/dependabot))
  - pytest bump from 9.0.2 to 9.0.3 [\#43](https://github.com/ZBOSK-II/emfuzzer/pull/43) ([dependabot](https://github.com/dependabot))
-
-### Removed
 
 
 ## [1.2.0] - 2026-03-16
