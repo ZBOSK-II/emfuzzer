@@ -57,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
- - Docker image now contains only emfuzzer (dropped CoAP experiment dependabilities)
+ - Docker image now contains only emfuzzer (dropped CoAP experiment dependencies)
 
 ### Removed
 
