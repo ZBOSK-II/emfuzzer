@@ -1,43 +1,32 @@
-**PROJECT ARCHIVED**
-Further development performed as [emtorch](https://pypi.org/project/emfuzzer/).
-
-This project has drifted from fuzzing towards more generic experiments,
-hence the change of the name.
-
-Emfuzzer
-_fuzzing experiments orchestrator for embedded systems_
+Emtorch
+_experiments orchestrator for embedded systems_
 ============================================================
 
-When executing fuzzing experiment on embedded environment
+When executing experiment/test on embedded environment
 one often faces challenge of performing multiple tasks in
 repeatable and observable manner, for example: reset board,
-ensure embedded software booted, send fuzzing data using
+ensure embedded software booted, send trigger data using
 selected link, monitor peripheral state to detect changes
 in behaviour etc.
 
-This is what Emfuzzer helps to orchestrate: it runs various
+This is what Emtorch helps to orchestrate: it runs various
 tools and scripts in specific manner, then gathers their
 results for further inspections.
 
-_Note_: although focused on fuzzing and embedded systems,
-Emfuzzer can help with any software-related experiments,
-that require repeatable order of tasks and results capture.
-
-
 Installation
 ------------------------------------------------------------
-Emfuzzer is available on PyPI, it is recommended to install
+Emtorch is available on PyPI, it is recommended to install
 it in isolated environment, either by using Python `venv` or
 tools like `pipx`.
 
 ``` shell
 python -m venv .venv
 source .venv/bin/activate
-pip install emfuzzer
+pip install emtorch
 ```
 
 ``` shell
-pipx install emfuzzer
+pipx install emtorch
 ```
 
 Usage
@@ -45,12 +34,12 @@ Usage
 To run experiments simply run:
 
 ``` shell
-emfuzzer --config=experiment.json test1.bin test2.bin
+emtorch --config=experiment.json test1.bin test2.bin
 ```
 
 For each specified data file steps from `experiment.json`
 will be executed and gathered results stored in file named
-`emfuzzer-CURRENTDATE.json`. Application will output logs
+`emtorch-CURRENTDATE.json`. Application will output logs
 to the console and also store them in `.log` file next to
 the `.json` results file. The prefix for output files can
 be modified using `--output-prefix` command line switch.
@@ -60,12 +49,12 @@ of experiment definition (this file can be safely used -
 the "experiment" calls `cat` on each passed file).
 
 To obtain complete command line switches documentation call
-`emfuzzer --help`.
+`emtorch --help`.
 
 
 Experiment
 ------------------------------------------------------------
-Each data file passed to the emfuzzer represents a single
+Each data file passed to the emtorch represents a single
 Test Case. For each test case following experiment steps
 will be performed:
 
@@ -124,7 +113,7 @@ Below is the `default-config.json` with comments:
         "name": "test",
         "args": {
           "cmd": [
-            "cat $EMFUZZER_CASE_KEY"
+            "cat $EMTORCH_CASE_KEY"
           ],
           "shell": true,
           "finish": {
