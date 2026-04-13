@@ -50,7 +50,7 @@
         "name": "test",
         "args": {
           "cmd": [
-            "cat $EMFUZZER_CASE_KEY"
+            "cat $EMTORCH_CASE_KEY"
           ],
           "shell": true,
           "finish": {

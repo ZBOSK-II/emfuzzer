@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Warsaw University of Technology
+# Copyright (c) 2025-2026 Warsaw University of Technology
 # This file is licensed under the MIT License.
 # See the LICENSE.txt file in the root of the repository for full details.
 
@@ -45,8 +45,8 @@ def __setup_logger(prefix: str) -> None:
 
 def parse_args() -> Arguments:
     parser = argparse.ArgumentParser(
-        prog="emfuzzer",
-        description="Fuzzing experiments orchestrator for embedded",
+        prog="emtorch",
+        description="Experiments orchestrator for embedded systems",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
@@ -57,7 +57,7 @@ def parse_args() -> Arguments:
     parser.add_argument(
         "--output-prefix",
         help="prefix to be used for saving output (logs, reports, etc.)",
-        default="emfuzzer",
+        default="emtorch",
         type=str,
     )
     parser.add_argument(

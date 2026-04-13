@@ -1,4 +1,4 @@
-name: Emfuzzer Workflow
+name: Emtorch Workflow
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local
-          key: poetry-install-20251202
+          key: poetry-install-20260413
 
       - name: Install Poetry
         if: steps.cached-poetry.outputs.cache-hit != 'true'
@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/emfuzzer
+      url: https://pypi.org/p/emtorch
     permissions:
       id-token: write
 

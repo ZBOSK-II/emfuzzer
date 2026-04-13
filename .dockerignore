@@ -7,8 +7,6 @@
 **/*.json
 **/*.pyc
 .gitlab*
-build.sh
-emfuzzer.sh
 dist
 .poetry
 Dockerfile

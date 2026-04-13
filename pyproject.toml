@@ -3,8 +3,8 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [project]
-name = "emfuzzer"
-description="Fuzzing experiments orchestrator for embedded systems"
+name = "emtorch"
+description="Experiments orchestrator for embedded systems"
 version = "0.0.0"  # set by poetry
 requires-python = ">= 3.13"
 dependencies = [
@@ -19,9 +19,9 @@ license = "MIT"
 license-files = ["LICEN[CS]E.*"]
 keywords = [
   "embedded",
-  "fuzzing",
   "testing",
   "experiments",
+  "orchestrator",
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -38,14 +38,14 @@ classifiers = [
 ]
 
 [project.urls]
-GitHub="https://github.com/ZBOSK-II/emfuzzer"
-ChangeLog="https://github.com/ZBOSK-II/emfuzzer/blob/master/CHANGELOG.md"
+GitHub="https://github.com/ZBOSK-II/emtorch"
+ChangeLog="https://github.com/ZBOSK-II/emtorch/blob/master/CHANGELOG.md"
 
 [project.scripts]
-emfuzzer = "emfuzzer.__main__:main"
+emtorch = "emtorch.__main__:main"
 
 [tool.poetry]
-packages = [{include = "emfuzzer"}]
+packages = [{include = "emtorch"}]
 requires-poetry = ">=2.1.2"
 
 [tool.poetry.requires-plugins]

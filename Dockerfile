@@ -18,9 +18,9 @@ RUN python3 -m venv ${POETRY_VENV} \
 
 ENV POETRY=${POETRY_VENV}/bin/poetry
 
-WORKDIR /emfuzzer
+WORKDIR /emtorch
 
-COPY . /emfuzzer
+COPY . /emtorch
 RUN ${POETRY} install --no-interaction --no-root
 RUN ${POETRY} build --no-interaction
 # export frozen requirements
@@ -43,7 +43,7 @@ RUN apt-get update -q \
 #
 # development image
 #
-FROM install-base AS emfuzzer-dev
+FROM install-base AS emtorch-dev
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -63,15 +63,15 @@ FROM install-base
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ENV EMFUZZER_VENV=/opt/emfuzzer-venv
+ENV EMTORCH_VENV=/opt/emtorch-venv
 
-RUN python -m venv ${EMFUZZER_VENV}
+RUN python -m venv ${EMTORCH_VENV}
 
-# emfuzzer from poetry
-WORKDIR /emfuzzer
-COPY --from=poetry-builder /emfuzzer/dist /emfuzzer
-RUN ${EMFUZZER_VENV}/bin/pip install -r requirements.txt \
-  && ${EMFUZZER_VENV}/bin/pip install emfuzzer*.whl \
-  && ln -sr ${EMFUZZER_VENV}/bin/emfuzzer /usr/bin
+# emtorch from poetry
+WORKDIR /emtorch
+COPY --from=poetry-builder /emtorch/dist /emtorch
+RUN ${EMTORCH_VENV}/bin/pip install -r requirements.txt \
+  && ${EMTORCH_VENV}/bin/pip install emtorch*.whl \
+  && ln -sr ${EMTORCH_VENV}/bin/emtorch /usr/bin
 
-CMD ["emfuzzer"]
+CMD ["emtorch"]
