@@ -13,10 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - BREAKING CHANGE: Moving away from "injection" towards more generic usage of the project - "actions" introduced. Instead of a single dedicated tool to be executed after monitoring has started, set of "subtasks" called "actions" will execute. [\#28](https://github.com/ZBOSK-II/emfuzzer/pull/28) ([hcorg](https://github.com/hcorg))
 
 ### Dependencies updated
- - mypy bump from 1.19.1 to 1.20.0 [\#39](https://github.com/ZBOSK-II/emfuzzer/pull/39) ([dependabot](https://github.com/dependabot))
- - types-paramiko bump from 4.0.0.20260322 to 4.0.0.20260402 [\#38](https://github.com/ZBOSK-II/emfuzzer/pull/38) ([dependabot](https://github.com/dependabot))
- - cryptography bump from 46.0.5 to 46.0.6 [\#40](https://github.com/ZBOSK-II/emfuzzer/pull/40) ([dependabot](https://github.com/dependabot))
+ - mypy bump from 1.19.1 to 1.20.1 [\#39](https://github.com/ZBOSK-II/emfuzzer/pull/39) [\#42](https://github.com/ZBOSK-II/emfuzzer/pull/42) ([dependabot](https://github.com/dependabot))
+ - types-paramiko bump from 4.0.0.20260322 to 4.0.0.20260408 [\#38](https://github.com/ZBOSK-II/emfuzzer/pull/38) [\#42](https://github.com/ZBOSK-II/emfuzzer/pull/42) ([dependabot](https://github.com/dependabot))
+ - cryptography bump from 46.0.5 to 46.0.7 [\#40](https://github.com/ZBOSK-II/emfuzzer/pull/40) [\#45](https://github.com/ZBOSK-II/emfuzzer/pull/45) ([dependabot](https://github.com/dependabot))
  - pygments bump from 2.19.2 to 2.20.0 [\#41](https://github.com/ZBOSK-II/emfuzzer/pull/41) ([dependabot](https://github.com/dependabot))
+ - pytest bump from 9.0.2 to 9.0.3 [\#43](https://github.com/ZBOSK-II/emfuzzer/pull/43) ([dependabot](https://github.com/dependabot))
 
 ### Removed
 
