@@ -25,18 +25,18 @@ class ResultsGroup:
 
         self.success = success
 
-        self.failed_keys: dict[str, str] = {}
+        self.failed_identifiers: dict[str, str] = {}
 
-    def collect(self, key: str, result: str) -> None:
-        self.data[result].append(key)
+    def collect(self, identifier: str, result: str) -> None:
+        self.data[result].append(identifier)
         if result != self.success:
-            self.failed_keys[key] = result
+            self.failed_identifiers[identifier] = result
 
     def total(self) -> int:
         return sum(len(v) for v in self.data.values())
 
     def total_errors(self) -> int:
-        return len(self.failed_keys)
+        return len(self.failed_identifiers)
 
     def summary(self, indent: str = "\t") -> str:
         return "\n".join(f"{indent}{k}: {len(v)}" for k, v in self.data.items())
@@ -44,15 +44,15 @@ class ResultsGroup:
     def to_dict(self) -> dict[str, list[str]]:
         return self.data
 
-    def to_failed_keys_dict(self) -> dict[str, str]:
-        return self.failed_keys
+    def to_failed_ids_dict(self) -> dict[str, str]:
+        return self.failed_identifiers
 
 
 class Results:
 
     def __init__(self, config: Config):
         self.data: dict[str, ResultsGroup] = {}
-        self.keys: list[str] = []
+        self.identifiers: list[str] = []
         self.info = {
             "version": VERSION,
             "args": " ".join(sys.argv[1:]),
@@ -70,8 +70,8 @@ class Results:
         self.data[group] = g
         return g
 
-    def add_key(self, key: str) -> None:
-        self.keys.append(key)
+    def add_id(self, identifier: str) -> None:
+        self.identifiers.append(identifier)
 
     def finish(self) -> None:
         self.info["end"] = self.__iso_timestamp()
@@ -80,7 +80,7 @@ class Results:
         return self.data[group]
 
     def summary(self) -> str:
-        header = f"Sent: {len(self.keys)}\n"
+        header = f"Processed: {len(self.identifiers)}\n"
         return header + "\n".join(
             f"{k} ({v.total_errors()}/{v.total()}):\n{v.summary()}"
             for k, v in self.data.items()
@@ -89,18 +89,18 @@ class Results:
     def total_errors(self) -> int:
         return sum(g.total_errors() for g in self.data.values())
 
-    def failed_keys(self) -> dict[str, list[str]]:
+    def failed_identifiers(self) -> dict[str, list[str]]:
         result = defaultdict(list)
         for g, d in self.data.items():
-            for k, v in d.to_failed_keys_dict().items():
+            for k, v in d.to_failed_ids_dict().items():
                 result[k].append(g + "." + v)
         return dict(result)
 
     def to_dict(self) -> Mapping[str, Collection[Any]]:
         return (
             {"info": self.info}
-            | {"all": self.keys}
-            | {"failed": self.failed_keys()}
+            | {"all": self.identifiers}
+            | {"failed": self.failed_identifiers()}
             | {"groups": {k: v.to_dict() for k, v in self.data.items()}}
         )
 

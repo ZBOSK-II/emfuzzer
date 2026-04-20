@@ -72,7 +72,7 @@ class SubTaskExecution:
             if isinstance(self._start_result, SubTask.StartedType)
             else self._start_result
         )
-        self._results.collect(context.key, result)
+        self._results.collect(context.identifier, result)
         self._start_result = None
 
     def execute_for(self, context: CaseContext) -> None:

@@ -33,7 +33,7 @@ def execute(args: Arguments, config: Config) -> Results:
 def run(args: Arguments, config: Config) -> int:
     results = execute(args, config)
 
-    logger.info(f"Results:\n {results.summary()}")
+    logger.info(f"Results:\n{results.summary()}")
 
     with open(args.output_prefix + ".json", "w", encoding="utf-8") as f:
         json.dump(results.to_dict(), f, indent=2)

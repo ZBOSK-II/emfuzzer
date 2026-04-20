@@ -96,18 +96,18 @@ class CaseContext:
     def __init__(self, parent: Context, path: Path):
         self._parent = parent
         self._path = path
-        self._key = str(path)
+        self._identifier = str(path)
         self._data = bytes()
 
-        self.results.add_key(self.key)
+        self.results.add_id(self.identifier)
 
     @property
     def parent(self) -> Context:
         return self._parent
 
     @property
-    def key(self) -> str:
-        return self._key
+    def identifier(self) -> str:
+        return self._identifier
 
     @property
     def data(self) -> bytes:
