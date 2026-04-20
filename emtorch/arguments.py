@@ -6,11 +6,12 @@
 Module representing command line arguments.
 """
 
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
 
 
-class Arguments(Protocol):  # pylint: disable=too-few-public-methods
+@dataclass
+class Arguments:
     data: list[Path]
     output_prefix: str
     config: Path

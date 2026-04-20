@@ -77,7 +77,7 @@ def parse_args() -> Arguments:
     args.data = __parse_data(parser, args.data)
     args.output_prefix += f"-{datetime.now():%Y%m%d-%H%M%S}"
 
-    return args
+    return Arguments(**vars(args))
 
 
 def main() -> int:
