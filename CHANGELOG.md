@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - renamed results "keys" to "identifiers" internally
  - `EMTORCH_CASE_KEY` renamed to `EMTORCH_CASE_ID`
  - "groups" in results JSON became "subtasks" for consistency
+ - `"all"` and `"cases"` inside results JSON embedded into `"cases"` to be more clear
 
 
 ## [2.0.0] - 2026-04-13

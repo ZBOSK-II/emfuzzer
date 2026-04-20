@@ -25,18 +25,18 @@ class SubTaskResults:
 
         self.success = success
 
-        self.failed_identifiers: dict[str, str] = {}
+        self.failed_case_ids: dict[str, str] = {}
 
     def collect(self, identifier: str, result: str) -> None:
         self.subtasks[result].append(identifier)
         if result != self.success:
-            self.failed_identifiers[identifier] = result
+            self.failed_case_ids[identifier] = result
 
     def total(self) -> int:
         return sum(len(v) for v in self.subtasks.values())
 
     def total_errors(self) -> int:
-        return len(self.failed_identifiers)
+        return len(self.failed_case_ids)
 
     def summary(self, indent: str = "\t") -> str:
         return "\n".join(f"{indent}{k}: {len(v)}" for k, v in self.subtasks.items())
@@ -45,7 +45,7 @@ class SubTaskResults:
         return self.subtasks
 
     def to_failed_ids_dict(self) -> dict[str, str]:
-        return self.failed_identifiers
+        return self.failed_case_ids
 
 
 class Results:
@@ -62,13 +62,13 @@ class Results:
 
     def register(self, name: str, results: type[StrEnum]) -> SubTaskResults:
         r = list(str(item) for item in results)
-        g = SubTaskResults(r, r[0])
+        s = SubTaskResults(r, r[0])
         if name in self.subtasks:
             raise RuntimeError(
                 f"Subtask results already registered: '{name}'. Probably duplicated name."
             )
-        self.subtasks[name] = g
-        return g
+        self.subtasks[name] = s
+        return s
 
     def add_case(self, identifier: str) -> None:
         self.cases.append(identifier)
@@ -89,7 +89,7 @@ class Results:
     def total_errors(self) -> int:
         return sum(g.total_errors() for g in self.subtasks.values())
 
-    def failed_identifiers(self) -> dict[str, list[str]]:
+    def failed_case_ids(self) -> dict[str, list[str]]:
         result = defaultdict(list)
         for g, d in self.subtasks.items():
             for k, v in d.to_failed_ids_dict().items():
@@ -99,8 +99,12 @@ class Results:
     def to_dict(self) -> Mapping[str, Collection[Any]]:
         return (
             {"info": self.info}
-            | {"all": self.cases}
-            | {"failed": self.failed_identifiers()}
+            | {
+                "cases": {
+                    "all": self.cases,
+                    "failed": self.failed_case_ids(),
+                }
+            }
             | {"subtasks": {k: v.to_dict() for k, v in self.subtasks.items()}}
         )
 
