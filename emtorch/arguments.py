@@ -6,11 +6,19 @@
 Module representing command line arguments.
 """
 
+from enum import Enum
 from pathlib import Path
 from typing import Protocol
+
+
+class RepeatMode(Enum):
+    AABB = "aabb"
+    ABAB = "abab"
 
 
 class Arguments(Protocol):  # pylint: disable=too-few-public-methods
     data: list[Path]
     output_prefix: str
     config: Path
+    repeats: int
+    repeat_mode: RepeatMode
