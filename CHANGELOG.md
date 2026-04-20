@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - "groups" in results JSON became "subtasks" for consistency
  - `"all"` and `"cases"` inside results JSON embedded into `"cases"` to be more clear
 
+### Added
+ - `--repeats` argument will allow to repeat test cases for each data specified number of times
+ - `--repeat-mode` argument will allow to select order of repetition (abc * 2 -> aabbcc or abcabc)
+
 
 ## [2.0.0] - 2026-04-13
 
