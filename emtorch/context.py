@@ -10,10 +10,10 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
-from pathlib import Path
 from types import TracebackType
 from typing import Self, cast
 
+from .case.instance import CaseInstance
 from .config import Config
 from .results import Results
 
@@ -76,8 +76,8 @@ class Context:
             raise RuntimeError(f"Invalid data type for: '{name}'")
         raise RuntimeError(f"Unknown data: '{name}'")
 
-    def enter_case(self, path: Path) -> CaseContext:
-        return CaseContext(self, path)
+    def enter_case(self, case: CaseInstance) -> CaseContext:
+        return CaseContext(self, case)
 
     def __enter__(self) -> Self:
         return self
@@ -93,30 +93,19 @@ class Context:
 
 
 class CaseContext:
-    def __init__(self, parent: Context, path: Path):
+    def __init__(self, parent: Context, case: CaseInstance):
         self._parent = parent
-        self._path = path
-        self._identifier = str(path)
-        self._data = bytes()
+        self._case = case
 
-        self.results.add_case(self.identifier)
+        self.results.add_case(self.case.identifier)
 
     @property
     def parent(self) -> Context:
         return self._parent
 
     @property
-    def identifier(self) -> str:
-        return self._identifier
-
-    @property
-    def data(self) -> bytes:
-        if self._data:
-            return self._data
-        logger.info(f"Opening {self._path}")
-        with self._path.open("rb") as file:
-            self._data = file.read()
-        return self._data
+    def case(self) -> CaseInstance:
+        return self._case
 
     @property
     def results(self) -> Results:

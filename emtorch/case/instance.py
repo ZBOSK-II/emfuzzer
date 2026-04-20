@@ -9,6 +9,8 @@ Module representing specific case instance (with id and data).
 import logging
 from pathlib import Path
 
+from ..arguments import Arguments
+
 logger = logging.getLogger(__name__)
 
 
@@ -48,3 +50,8 @@ class CaseInstance:
     @property
     def data(self) -> CaseData:
         return self._data
+
+    @staticmethod
+    def list_from(args: Arguments) -> list[CaseInstance]:
+        data = [CaseData(p) for p in args.data]
+        return [CaseInstance(d.identifier, d) for d in data]

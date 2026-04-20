@@ -94,7 +94,7 @@ class CoapSend(TypedSubTask[Validator.Result]):
         self._monitor = monitor
 
     def start(self, context: CaseContext) -> SubTask.StartedType:
-        self._monitor.send(context.data)
+        self._monitor.send(context.case.data.contents)
         return SubTask.STARTED
 
     def finish(self) -> Validator.Result:

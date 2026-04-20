@@ -11,6 +11,7 @@ import logging
 
 from .arguments import Arguments
 from .case import Case
+from .case.instance import CaseInstance
 from .config import Config
 from .context import Context
 from .results import Results
@@ -22,8 +23,8 @@ def execute(args: Arguments, config: Config) -> Results:
     with Context(config) as context:
         case = Case.from_config(context)
 
-        for path in args.data:
-            with context.enter_case(path) as case_context:
+        for instance in CaseInstance.list_from(args):
+            with context.enter_case(instance) as case_context:
                 case.execute(case_context)
             case.wait_between_cases()
 
