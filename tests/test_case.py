@@ -8,12 +8,18 @@ case module tests.
 
 from pathlib import Path
 
-from emtorch.arguments import Arguments
+from emtorch.arguments import Arguments, RepeatMode
 from emtorch.case.instance import CaseInstance
 
 
 def _given_data(*args: str) -> Arguments:
-    return Arguments(data=[Path(p) for p in args], output_prefix="", config=Path())
+    return Arguments(
+        data=[Path(p) for p in args],
+        output_prefix="",
+        config=Path(),
+        repeats=1,
+        repeat_mode=RepeatMode.AABB,
+    )
 
 
 def _cases_ids(cases: list[CaseInstance]) -> list[str]:
@@ -24,7 +30,7 @@ def _data_ids(cases: list[CaseInstance]) -> list[str]:
     return [c.data.identifier for c in cases]
 
 
-def test_for_empty_args_builds_empty_list() -> None:
+def test_empty_args_builds_empty_list() -> None:
     args = _given_data()
 
     cases = CaseInstance.list_from(args)
@@ -32,7 +38,7 @@ def test_for_empty_args_builds_empty_list() -> None:
     assert len(cases) == 0
 
 
-def test_for_single_items_args_builds_simple_list() -> None:
+def test_single_items_args_builds_simple_list() -> None:
     args = _given_data("a")
 
     cases = CaseInstance.list_from(args)
@@ -41,10 +47,51 @@ def test_for_single_items_args_builds_simple_list() -> None:
     assert _data_ids(cases) == ["a"]
 
 
-def test_for_multiple_items_args_builds_list() -> None:
+def test_multiple_items_args_builds_list() -> None:
     args = _given_data("a", "b", "c")
 
     cases = CaseInstance.list_from(args)
 
     assert _cases_ids(cases) == ["a", "b", "c"]
     assert _data_ids(cases) == ["a", "b", "c"]
+
+
+def test_repeats_repeat_identifiers() -> None:
+    args = _given_data("a", "b", "c")
+    args.repeats = 2
+
+    cases = CaseInstance.list_from(args)
+
+    assert _cases_ids(cases) == ["a[0]", "a[1]", "b[0]", "b[1]", "c[0]", "c[1]"]
+    assert _data_ids(cases) == ["a", "a", "b", "b", "c", "c"]
+
+
+def test_repeats_respect_mode() -> None:
+    args = _given_data("a", "b", "c")
+    args.repeats = 2
+    args.repeat_mode = RepeatMode.ABAB
+
+    cases = CaseInstance.list_from(args)
+
+    assert _cases_ids(cases) == ["a[0]", "b[0]", "c[0]", "a[1]", "b[1]", "c[1]"]
+    assert _data_ids(cases) == ["a", "b", "c", "a", "b", "c"]
+
+
+def test_repeats_handles_large_number() -> None:
+    args = _given_data("a", "b", "c")
+    args.repeats = 200
+
+    cases = CaseInstance.list_from(args)
+
+    assert _cases_ids(cases)[0] == "a[000]"
+    assert _cases_ids(cases)[-1] == "c[199]"
+
+
+def test_repeats_handles_large_number_edge_case() -> None:
+    args = _given_data("a", "b", "c")
+    args.repeats = 1000
+
+    cases = CaseInstance.list_from(args)
+
+    assert _cases_ids(cases)[0] == "a[000]"
+    assert _cases_ids(cases)[-1] == "c[999]"

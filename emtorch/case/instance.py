@@ -9,7 +9,7 @@ Module representing specific case instance (with id and data).
 import logging
 from pathlib import Path
 
-from ..arguments import Arguments
+from ..arguments import Arguments, RepeatMode
 
 logger = logging.getLogger(__name__)
 
@@ -54,4 +54,15 @@ class CaseInstance:
     @staticmethod
     def list_from(args: Arguments) -> list[CaseInstance]:
         data = [CaseData(p) for p in args.data]
-        return [CaseInstance(d.identifier, d) for d in data]
+
+        if args.repeats < 2:
+            return [CaseInstance(d.identifier, d) for d in data]
+
+        match args.repeat_mode:
+            case RepeatMode.AABB:
+                pairs = ((d, i) for d in data for i in range(args.repeats))
+            case RepeatMode.ABAB:
+                pairs = ((d, i) for i in range(args.repeats) for d in data)
+
+        width = max(1, len(str(args.repeats - 1)))
+        return [CaseInstance(f"{d.identifier}[{i:0{width}}]", d) for d, i in pairs]

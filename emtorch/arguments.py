@@ -7,7 +7,13 @@ Module representing command line arguments.
 """
 
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
+
+
+class RepeatMode(Enum):
+    AABB = "aabb"
+    ABAB = "abab"
 
 
 @dataclass
@@ -15,3 +21,5 @@ class Arguments:
     data: list[Path]
     output_prefix: str
     config: Path
+    repeats: int
+    repeat_mode: RepeatMode

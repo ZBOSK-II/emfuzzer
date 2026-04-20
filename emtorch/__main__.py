@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 
 from . import run
-from .arguments import Arguments
+from .arguments import Arguments, RepeatMode
 from .config import Config
 from .version import VERSION
 
@@ -67,6 +67,19 @@ def parse_args() -> Arguments:
         type=Path,
     )
     parser.add_argument(
+        "--repeats",
+        help="number of times to repeat each data file",
+        default=1,
+        type=int,
+    )
+    parser.add_argument(
+        "--repeat-mode",
+        help="pattern used when repeating ('aabb' or 'abab')",
+        choices=("aabb", "abab"),
+        default="aabb",
+        type=str,
+    )
+    parser.add_argument(
         "--version",
         action="version",
         version=VERSION,
@@ -74,7 +87,11 @@ def parse_args() -> Arguments:
 
     args = parser.parse_args()
 
+    if args.repeats < 1:
+        parser.error("--repeats must be >= 1")
+
     args.data = __parse_data(parser, args.data)
+    args.repeat_mode = RepeatMode(args.repeat_mode)
     args.output_prefix += f"-{datetime.now():%Y%m%d-%H%M%S}"
 
     return Arguments(**vars(args))
