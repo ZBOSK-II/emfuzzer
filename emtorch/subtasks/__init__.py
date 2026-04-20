@@ -12,7 +12,7 @@ from typing import Iterator, Self
 
 from ..config import Config
 from ..context import CaseContext, Context
-from ..results import Results, ResultsGroup
+from ..results import Results, SubTaskResults
 from .subtask import SubTask
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ def subtask_from_config(config: Config, context: Context, *prefix: str) -> SubTa
 
 
 class SubTaskExecution:
-    def __init__(self, task: SubTask, results: ResultsGroup):
+    def __init__(self, task: SubTask, results: SubTaskResults):
         self._task = task
         self._results = results
         self._start_result: SubTask.StartResult | None = None

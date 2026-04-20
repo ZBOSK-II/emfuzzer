@@ -16,33 +16,33 @@ from ..config import Config
 from ..version import VERSION
 
 
-class ResultsGroup:
+class SubTaskResults:
 
     def __init__(self, results_names: list[str], success: str) -> None:
-        self.data: dict[str, list[str]] = {}
+        self.subtasks: dict[str, list[str]] = {}
         for result in results_names:
-            self.data[result] = []
+            self.subtasks[result] = []
 
         self.success = success
 
         self.failed_identifiers: dict[str, str] = {}
 
     def collect(self, identifier: str, result: str) -> None:
-        self.data[result].append(identifier)
+        self.subtasks[result].append(identifier)
         if result != self.success:
             self.failed_identifiers[identifier] = result
 
     def total(self) -> int:
-        return sum(len(v) for v in self.data.values())
+        return sum(len(v) for v in self.subtasks.values())
 
     def total_errors(self) -> int:
         return len(self.failed_identifiers)
 
     def summary(self, indent: str = "\t") -> str:
-        return "\n".join(f"{indent}{k}: {len(v)}" for k, v in self.data.items())
+        return "\n".join(f"{indent}{k}: {len(v)}" for k, v in self.subtasks.items())
 
     def to_dict(self) -> dict[str, list[str]]:
-        return self.data
+        return self.subtasks
 
     def to_failed_ids_dict(self) -> dict[str, str]:
         return self.failed_identifiers
@@ -51,8 +51,8 @@ class ResultsGroup:
 class Results:
 
     def __init__(self, config: Config):
-        self.data: dict[str, ResultsGroup] = {}
-        self.identifiers: list[str] = []
+        self.subtasks: dict[str, SubTaskResults] = {}
+        self.cases: list[str] = []
         self.info = {
             "version": VERSION,
             "args": " ".join(sys.argv[1:]),
@@ -60,38 +60,38 @@ class Results:
             "start": self.__iso_timestamp(),
         }
 
-    def register(self, group: str, results: type[StrEnum]) -> ResultsGroup:
+    def register(self, name: str, results: type[StrEnum]) -> SubTaskResults:
         r = list(str(item) for item in results)
-        g = ResultsGroup(r, r[0])
-        if group in self.data:
+        g = SubTaskResults(r, r[0])
+        if name in self.subtasks:
             raise RuntimeError(
-                f"Result group already defined: '{group}'. Probably duplicated name. "
+                f"Subtask results already registered: '{name}'. Probably duplicated name."
             )
-        self.data[group] = g
+        self.subtasks[name] = g
         return g
 
-    def add_id(self, identifier: str) -> None:
-        self.identifiers.append(identifier)
+    def add_case(self, identifier: str) -> None:
+        self.cases.append(identifier)
 
     def finish(self) -> None:
         self.info["end"] = self.__iso_timestamp()
 
-    def __getitem__(self, group: str) -> ResultsGroup:
-        return self.data[group]
+    def __getitem__(self, name: str) -> SubTaskResults:
+        return self.subtasks[name]
 
     def summary(self) -> str:
-        header = f"Processed: {len(self.identifiers)}\n"
+        header = f"Processed: {len(self.cases)}\n"
         return header + "\n".join(
             f"{k} ({v.total_errors()}/{v.total()}):\n{v.summary()}"
-            for k, v in self.data.items()
+            for k, v in self.subtasks.items()
         )
 
     def total_errors(self) -> int:
-        return sum(g.total_errors() for g in self.data.values())
+        return sum(g.total_errors() for g in self.subtasks.values())
 
     def failed_identifiers(self) -> dict[str, list[str]]:
         result = defaultdict(list)
-        for g, d in self.data.items():
+        for g, d in self.subtasks.items():
             for k, v in d.to_failed_ids_dict().items():
                 result[k].append(g + "." + v)
         return dict(result)
@@ -99,9 +99,9 @@ class Results:
     def to_dict(self) -> Mapping[str, Collection[Any]]:
         return (
             {"info": self.info}
-            | {"all": self.identifiers}
+            | {"all": self.cases}
             | {"failed": self.failed_identifiers()}
-            | {"groups": {k: v.to_dict() for k, v in self.data.items()}}
+            | {"subtasks": {k: v.to_dict() for k, v in self.subtasks.items()}}
         )
 
     @staticmethod

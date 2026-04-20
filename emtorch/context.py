@@ -99,7 +99,7 @@ class CaseContext:
         self._identifier = str(path)
         self._data = bytes()
 
-        self.results.add_id(self.identifier)
+        self.results.add_case(self.identifier)
 
     @property
     def parent(self) -> Context:
