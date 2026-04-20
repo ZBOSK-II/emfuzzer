@@ -76,9 +76,6 @@ class Results:
     def finish(self) -> None:
         self.info["end"] = self.__iso_timestamp()
 
-    def __getitem__(self, name: str) -> SubTaskResults:
-        return self.subtasks[name]
-
     def summary(self) -> str:
         header = f"Processed: {len(self.cases)}\n"
         return header + "\n".join(
