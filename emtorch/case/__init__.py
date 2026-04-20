@@ -3,15 +3,15 @@
 # See the LICENSE.txt file in the root of the repository for full details.
 
 """
-Module representing "case" - an instance of the experiment execution.
+Module representing "case" - a single instance of the experiment execution.
 """
 
 from typing import Self
 
-from .config import Config
-from .context import CaseContext, Context
-from .delay import Delay
-from .subtasks import SubTasks
+from ..config import Config
+from ..context import CaseContext, Context
+from ..delay import Delay
+from ..subtasks import SubTasks
 
 
 class CaseDelays:

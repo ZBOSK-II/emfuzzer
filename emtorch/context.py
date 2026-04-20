@@ -32,7 +32,7 @@ class Worker(ABC):
 
 class Context:
 
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: Config):
         self._workers: dict[type[Worker], Worker] = {}
         self._data: dict[str, object] = {}
         self._config = config
