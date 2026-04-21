@@ -38,7 +38,7 @@ def test_empty_args_builds_empty_list() -> None:
     assert len(cases) == 0
 
 
-def test_single_items_args_builds_simple_list() -> None:
+def test_single_item_args_builds_simple_list() -> None:
     args = _given_data("a")
 
     cases = CaseInstance.list_from(args)
