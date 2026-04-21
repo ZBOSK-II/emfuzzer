@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.0] - 2026-04-13
 
-**FINAL RELEASE** of the emfuzzer project. Further development performed as (emtorch)[https://pypi.org/project/emfuzzer/].
+**FINAL RELEASE** of the emfuzzer project. Further development performed as [emtorch](https://pypi.org/project/emtorch/).
 
 ### Changed
  - BREAKING CHANGE: Moving away from "injection" towards more generic usage of the project - "actions" introduced. Instead of a single dedicated tool to be executed after monitoring has started, set of "subtasks" called "actions" will execute. [\#28](https://github.com/ZBOSK-II/emtorch/pull/28) ([hcorg](https://github.com/hcorg))
