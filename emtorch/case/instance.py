@@ -20,7 +20,7 @@ class CaseData:
     def __init__(self, path: Path):
         self._path = path
         self._id = str(path)
-        self._contents = bytes()
+        self._contents: bytes | None = None
 
     @property
     def path(self) -> Path:
@@ -32,11 +32,10 @@ class CaseData:
 
     @property
     def contents(self) -> bytes:
-        if self._contents:
-            return self._contents
-        logger.info(f"Opening {self._path}")
-        with self._path.open("rb") as file:
-            self._contents = file.read()
+        if self._contents is None:
+            logger.info(f"Opening {self._path}")
+            with self._path.open("rb") as file:
+                self._contents = file.read()
         return self._contents
 
 
