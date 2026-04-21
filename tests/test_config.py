@@ -114,11 +114,21 @@ def test_throws_when_not_config_list() -> None:
 
 
 def test_returns_bool() -> None:
-    conf = Config({"a": True, "b": 0, "sub": {"c": 1}})
+    conf = Config({"a": True, "b": 0, "d": False, "sub": {"c": 1}})
 
     assert conf.get_bool("a")
     assert not conf.get_bool("b")
+    assert not conf.get_bool("d")
     assert conf.get_bool("sub", "c")
+
+
+def test_returns_bool_from_non_binary_int() -> None:
+    conf = Config({"a": 2, "b": -1, "c": 0, "sub": {"x": 3}})
+
+    assert conf.get_bool("a")
+    assert conf.get_bool("b")
+    assert not conf.get_bool("c")
+    assert conf.get_bool("sub", "x")
 
 
 def test_throws_when_not_bool() -> None:
