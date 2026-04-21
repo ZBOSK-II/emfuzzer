@@ -65,6 +65,8 @@ class CaseInstance:
                 pairs = ((d, i) for d in data for i in range(args.repeats))
             case RepeatMode.ABAB:
                 pairs = ((d, i) for i in range(args.repeats) for d in data)
+            case _:
+                raise ValueError(f"Unsupported repeat mode: {args.repeat_mode!r}")
 
         width = max(1, len(str(args.repeats - 1)))
         return [CaseInstance(f"{d.identifier}[{i:0{width}}]", d) for d, i in pairs]
