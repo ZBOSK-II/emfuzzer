@@ -38,7 +38,7 @@ def test_empty_args_builds_empty_list() -> None:
     assert len(cases) == 0
 
 
-def test_single_items_args_builds_simple_list() -> None:
+def test_single_item_args_builds_simple_list() -> None:
     args = _given_data("a")
 
     cases = CaseInstance.list_from(args)
@@ -66,7 +66,7 @@ def test_repeats_repeat_identifiers() -> None:
     assert _data_ids(cases) == ["a", "a", "b", "b", "c", "c"]
 
 
-def test_repeats_respect_mode() -> None:
+def test_repeats_respects_mode() -> None:
     args = _given_data("a", "b", "c")
     args.repeats = 2
     args.repeat_mode = RepeatMode.ABAB
