@@ -216,7 +216,7 @@ Available tasks:
        - `port`
        - `username`
        - `password`
-     - `local_path` - path to a local file to uplaod
+     - `local_path` - path to a local file to upload
      - `remote_path` - path to a remote file (target)
  * `sftp-downnload` - downloads file using SFTP
    Arguments:
