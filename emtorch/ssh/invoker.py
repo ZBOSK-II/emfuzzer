@@ -13,6 +13,7 @@ from typing import Optional
 
 import paramiko
 
+from .client import open_ssh
 from .connectionconfig import ConnectionConfig
 from .reader import ParamikoStream, Reader
 
@@ -101,22 +102,7 @@ class Invoker:
         inp.channel.recv_exit_status()
 
     def __open_ssh(self) -> None:
-        try:
-            self.__handle = paramiko.SSHClient()
-            self.__handle.load_system_host_keys()
-            self.__handle.set_missing_host_key_policy(paramiko.RejectPolicy())
-            self.__handle.connect(
-                self.connection_config.host,
-                self.connection_config.port,
-                self.connection_config.username,
-                self.connection_config.password,
-            )
-        except Exception:
-            if self.__handle is not None and self.__handle.get_transport() is not None:
-                self.__handle.close()
-                self.__handle = None
-            raise
-
+        self.__handle = open_ssh(self.connection_config)
         command = f"echo $$; exec {self.command}"
         logger.info(f"{self.name} executing via SSH: {command}")
         # get_pty - enables "live" stdout

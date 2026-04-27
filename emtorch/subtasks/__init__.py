@@ -18,6 +18,7 @@ from .subtask import SubTask
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=too-many-return-statements
 def subtask_from_config(config: Config, context: Context, *prefix: str) -> SubTask:
     task_type = config.get_str("type")
     name = ".".join(prefix) + "." + config.get_str("name")
@@ -49,6 +50,14 @@ def subtask_from_config(config: Config, context: Context, *prefix: str) -> SubTa
             from ..coap import CoapSend  # pylint: disable=import-outside-toplevel
 
             return CoapSend.from_config(name, args, context)
+        case "sftp-upload":
+            from .sftp import SftpUpload  # pylint: disable=import-outside-toplevel
+
+            return SftpUpload.from_config(name, args)
+        case "sftp-download":
+            from .sftp import SftpDownload  # pylint: disable=import-outside-toplevel
+
+            return SftpDownload.from_config(name, args)
         case _:
             raise ValueError(f"Unknown sub-task type '{task_type}'")
 

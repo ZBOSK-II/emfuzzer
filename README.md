@@ -209,6 +209,24 @@ Available tasks:
         task (can be `NONE`)
       - `timeout` - (float) time to wait for command to
         finish (starts after signal is sent)
+ * `sftp-upload` - uploads file using SFTP
+   Arguments:
+     - `connection` - dictionary containing:
+       - `host`
+       - `port`
+       - `username`
+       - `password`
+     - `local_path` - path to a local file to uplaod
+     - `remote_path` - path to a remote file (target)
+ * `sftp-downnload` - downloads file using SFTP
+   Arguments:
+     - `connection` - dictionary containing:
+       - `host`
+       - `port`
+       - `username`
+       - `password`
+     - `remote_path` - path to a remote file to download
+     - `local_path` - path to a local file to store (target)
  * `coap_monitor` - listens for CoAP responses
    Arguments:
     - `target` - dictionary containing `host` and `port` of
