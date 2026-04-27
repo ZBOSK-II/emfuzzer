@@ -8,7 +8,6 @@ Module providing subprocess based sub tasks.
 
 import logging
 import os
-import signal
 import subprocess
 from dataclasses import dataclass
 from signal import Signals
