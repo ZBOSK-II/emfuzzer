@@ -33,7 +33,7 @@ class FinishConfig:
         if name == "NONE":
             return None
         try:
-            return signal.Signals[name]
+            return Signals[name]
         except KeyError:
             logger.warning(f"Invalid signal name in configuration: {name}")
             return None
