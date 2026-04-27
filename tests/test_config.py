@@ -122,7 +122,7 @@ def test_returns_bool() -> None:
     assert conf.get_bool("sub", "c")
 
 
-def test_returns_bool_from_non_binary_int() -> None:
+def test_returns_bool_from_int() -> None:
     conf = Config({"a": 2, "b": -1, "c": 0, "sub": {"x": 3}})
 
     assert conf.get_bool("a")
