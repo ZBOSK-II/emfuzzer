@@ -12,6 +12,7 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Any, Collection, Mapping
 
+from ..case.instance import CaseId
 from ..config import Config
 from ..version import VERSION
 
@@ -25,18 +26,20 @@ class SubTaskResults:
 
         self.success = success
 
-        self.failed_case_ids: dict[str, str] = {}
+        self.failed_cases: dict[str, str] = {}
+        self.failed_groups: dict[str, list[str]] = defaultdict(list)
 
-    def collect(self, identifier: str, result: str) -> None:
-        self.subtasks[result].append(identifier)
+    def collect(self, case_id: CaseId, result: str) -> None:
+        self.subtasks[result].append(case_id.unique)
         if result != self.success:
-            self.failed_case_ids[identifier] = result
+            self.failed_cases[case_id.unique] = result
+            self.failed_groups[case_id.group].append(case_id.unique)
 
     def total(self) -> int:
         return sum(len(v) for v in self.subtasks.values())
 
     def total_errors(self) -> int:
-        return len(self.failed_case_ids)
+        return len(self.failed_cases)
 
     def summary(self, indent: str = "\t") -> str:
         return "\n".join(f"{indent}{k}: {len(v)}" for k, v in self.subtasks.items())
@@ -45,7 +48,10 @@ class SubTaskResults:
         return self.subtasks
 
     def to_failed_ids_dict(self) -> dict[str, str]:
-        return self.failed_case_ids
+        return self.failed_cases
+
+    def to_failed_groups_dict(self) -> dict[str, list[str]]:
+        return self.failed_groups
 
 
 class Results:
@@ -53,6 +59,7 @@ class Results:
     def __init__(self, config: Config):
         self.subtasks: dict[str, SubTaskResults] = {}
         self.cases: list[str] = []
+        self.groups: set[str] = set()
         self.info = {
             "version": VERSION,
             "args": " ".join(sys.argv[1:]),
@@ -70,14 +77,16 @@ class Results:
         self.subtasks[name] = s
         return s
 
-    def add_case(self, identifier: str) -> None:
-        self.cases.append(identifier)
+    def add_case(self, case_id: CaseId) -> None:
+        self.cases.append(case_id.unique)
+        self.groups.add(case_id.group)
 
     def finish(self) -> None:
         self.info["end"] = self.__iso_timestamp()
 
     def summary(self) -> str:
         header = f"Processed: {len(self.cases)}\n"
+        header += f"Groups: {len(self.groups)}\n"
         return header + "\n".join(
             f"{k} ({v.total_errors()}/{v.total()}):\n{v.summary()}"
             for k, v in self.subtasks.items()
@@ -86,24 +95,33 @@ class Results:
     def total_errors(self) -> int:
         return sum(g.total_errors() for g in self.subtasks.values())
 
-    def failed_case_ids(self) -> dict[str, list[str]]:
+    def failed_cases(self) -> dict[str, list[str]]:
         result = defaultdict(list)
         for g, d in self.subtasks.items():
             for k, v in d.to_failed_ids_dict().items():
                 result[k].append(g + "." + v)
         return dict(result)
 
+    def failed_groups(self) -> dict[str, list[str]]:
+        result: dict[str, list[str]] = defaultdict(list)
+        for d in self.subtasks.values():
+            for k, v in d.to_failed_groups_dict().items():
+                result[k] += v
+        return dict(result)
+
     def to_dict(self) -> Mapping[str, Collection[Any]]:
-        return (
-            {"info": self.info}
-            | {
-                "cases": {
-                    "all": self.cases,
-                    "failed": self.failed_case_ids(),
-                }
-            }
-            | {"subtasks": {k: v.to_dict() for k, v in self.subtasks.items()}}
-        )
+        return {
+            "info": self.info,
+            "cases": {
+                "all": self.cases,
+                "failed": self.failed_cases(),
+            },
+            "groups": {
+                "all": list(self.groups),
+                "failed": self.failed_groups(),
+            },
+            "subtasks": {k: v.to_dict() for k, v in self.subtasks.items()},
+        }
 
     @staticmethod
     def __iso_timestamp() -> str:

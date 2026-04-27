@@ -23,7 +23,7 @@ def _given_data(*args: str) -> Arguments:
 
 
 def _cases_ids(cases: list[CaseInstance]) -> list[str]:
-    return [c.identifier for c in cases]
+    return [c.identifier.unique for c in cases]
 
 
 def _data_ids(cases: list[CaseInstance]) -> list[str]:

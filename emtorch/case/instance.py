@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Callable
 
 from ..arguments import Arguments, RepeatMode
 
@@ -39,13 +40,48 @@ class CaseData:
         return self._contents
 
 
+class CaseId:
+    def __init__(self, identifier: str, group: str, iteration: int):
+        self._group = group
+        self._iteration = iteration
+        self._id = identifier
+
+    @property
+    def unique(self) -> str:
+        return self._id
+
+    @property
+    def group(self) -> str:
+        return self._group
+
+    @property
+    def iteration(self) -> int:
+        return self._iteration
+
+    def __repr__(self) -> str:
+        return self.unique
+
+    @staticmethod
+    def builder_from(args: Arguments) -> Callable[[str, int], CaseId]:
+        width = max(1, len(str(args.repeats - 1)))
+
+        def builder(group: str, iteration: int) -> CaseId:
+            return CaseId(f"{group}[{iteration:0{width}}]", group, iteration)
+
+        return builder
+
+    @staticmethod
+    def from_id(identifier: str) -> CaseId:
+        return CaseId(identifier, identifier, 0)
+
+
 class CaseInstance:
-    def __init__(self, case_id: str, data: CaseData):
+    def __init__(self, case_id: CaseId, data: CaseData):
         self._id = case_id
         self._data = data
 
     @property
-    def identifier(self) -> str:
+    def identifier(self) -> CaseId:
         return self._id
 
     @property
@@ -57,7 +93,7 @@ class CaseInstance:
         data = [CaseData(p) for p in args.data]
 
         if args.repeats < 2:
-            return [CaseInstance(d.identifier, d) for d in data]
+            return [CaseInstance(CaseId.from_id(d.identifier), d) for d in data]
 
         match args.repeat_mode:
             case RepeatMode.AABB:
@@ -67,5 +103,5 @@ class CaseInstance:
             case _:
                 raise ValueError(f"Unsupported repeat mode: {args.repeat_mode!r}")
 
-        width = max(1, len(str(args.repeats - 1)))
-        return [CaseInstance(f"{d.identifier}[{i:0{width}}]", d) for d, i in pairs]
+        id_builder = CaseId.builder_from(args)
+        return [CaseInstance(id_builder(d.identifier, i), d) for d, i in pairs]

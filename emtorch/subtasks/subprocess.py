@@ -140,7 +140,7 @@ class Subprocess(BasicSubTask):
 
     def _prepare_env(self, context: CaseContext) -> dict[str, str]:
         env = os.environ.copy()
-        env["EMTORCH_CASE_ID"] = context.case.identifier
+        env["EMTORCH_CASE_ID"] = context.case.identifier.unique
         env["EMTORCH_DATA_PATH"] = str(context.case.data.path)
         return env
 
