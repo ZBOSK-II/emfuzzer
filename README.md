@@ -224,3 +224,7 @@ Available tasks:
     Arguments:
       - `monitor` - name of the `coap_monitor` instance used
         to send the message.
+
+Environment variables available to scripts in `subprocess`:
+ * `EMTORCH_CASE_ID` - unique identifier of the current case
+ * `EMTORCH_DATA_PATH` - path to the case data
