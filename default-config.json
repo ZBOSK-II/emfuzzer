@@ -50,7 +50,7 @@
         "name": "test",
         "args": {
           "cmd": [
-            "cat $EMTORCH_CASE_ID"
+            "cat $EMTORCH_DATA_PATH"
           ],
           "shell": true,
           "finish": {

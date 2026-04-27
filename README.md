@@ -113,7 +113,7 @@ Below is the `default-config.json` with comments:
         "name": "test",
         "args": {
           "cmd": [
-            "cat $EMTORCH_CASE_ID"
+            "cat $EMTORCH_DATA_PATH"
           ],
           "shell": true,
           "finish": {

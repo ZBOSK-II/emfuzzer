@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
  - `--repeats` argument will allow to repeat test cases for each data specified number of times
  - `--repeat-mode` argument will allow to select order of repetition (abc * 2 -> aabbcc or abcabc)
+ - `EMTORCH_DATA_PATH` environment variable added to subprocess calls (contains path to current case data)
 
 ### Dependencies updated
  - mypy bump from 1.20.1 to 1.20.2 [\#53](https://github.com/ZBOSK-II/emtorch/pull/53)
