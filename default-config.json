@@ -1,17 +1,4 @@
 {
-  "delays": {
-    "before_inject": 1
-  },
-  "injector": {
-    "type": "subprocess",
-    "args": {
-      "cmd": [
-        "cat"
-      ],
-      "shell": false,
-      "timeout": 1
-    }
-  },
   "case": {
     "delays": {
       "between_cases": 0.2,
