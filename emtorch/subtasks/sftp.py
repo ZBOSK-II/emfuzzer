@@ -98,6 +98,7 @@ class SftpTask(BasicSubTask):
         if self._finished:
             return self.Result.SUCCESS
         if timed_out:
+            logger.error(f"SFTP transfer timed-out <{self.name()}>")
             return self.Result.TIMEOUT
         return self.Result.ERROR
 
