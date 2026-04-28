@@ -15,6 +15,7 @@ from typing import Any, Collection, Mapping
 from ..case.instance import CaseId
 from ..config import Config
 from ..version import VERSION
+from .values import Value
 
 
 class SubTaskResults:
@@ -58,6 +59,7 @@ class Results:
 
     def __init__(self, config: Config):
         self.subtasks: dict[str, SubTaskResults] = {}
+        self.values: dict[str, Value] = {}
         self.cases: list[str] = []
         self.groups: set[str] = set()
         self.info = {
@@ -121,6 +123,7 @@ class Results:
                 "failed": self.failed_groups(),
             },
             "subtasks": {k: v.to_dict() for k, v in self.subtasks.items()},
+            "values": {k: v.to_dict_list() for k, v in self.values.items()},
         }
 
     @staticmethod

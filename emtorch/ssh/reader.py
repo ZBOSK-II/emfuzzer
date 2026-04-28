@@ -18,6 +18,7 @@ type ParamikoStream = paramiko.ChannelFile[bytes]
 type StreamFactory = Callable[[], ParamikoStream]
 
 
+# pylint: disable=too-many-instance-attributes
 class Reader:
     def __init__(
         self, name: str, start_key: str, stdout: StreamFactory, stderr: StreamFactory
