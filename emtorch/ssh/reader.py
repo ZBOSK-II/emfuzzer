@@ -13,8 +13,6 @@ from typing import Callable
 
 import paramiko
 
-logger = logging.getLogger(__name__)
-
 # pylint: disable=unsubscriptable-object
 type ParamikoStream = paramiko.ChannelFile[bytes]
 type StreamFactory = Callable[[], ParamikoStream]
@@ -31,6 +29,9 @@ class Reader:
         self.threads: list[threading.Thread] = []
         self.started_event = threading.Event()
         self.start_key = start_key
+        self.logger = logging.LoggerAdapter(
+            logging.getLogger(__name__), extra={"subtask": name}
+        )
 
     def start(self) -> None:
         # one stream per thread - ugly, but Paramiko does not properly support 'select'...
@@ -59,22 +60,22 @@ class Reader:
             thread.start()
 
     def stop(self) -> None:
-        logger.info("Stopping reader threads")
+        self.logger.info("Stopping reader threads")
 
         self.kill.set()
 
         for thread in self.threads:
             thread.join()
 
-        logger.info("Reader threads stopped")
+        self.logger.info("Reader threads stopped")
 
         self.threads = []
 
     def __log_stderr(self, line: bytes) -> None:
-        logger.warning(f"{self.name} - STDERR: {line!r}")
+        self.logger.warning(f"STDERR - {line!r}")
 
     def __log_stdout(self, line: bytes) -> None:
-        logger.info(f"{self.name} - STDOUT: {line!r}")
+        self.logger.info(f"STDOUT - {line!r}")
 
     def __read(
         self, stream: ParamikoStream, line_handler: Callable[[bytes], None]
@@ -87,7 +88,7 @@ class Reader:
             if line:
                 line_handler(line.rstrip())
                 if not self.started_event.is_set() and line.startswith(self.start_key):
-                    logger.info(f"{self.name} - start key detected, marking as started")
+                    self.logger.info("start key detected, marking as started")
                     self.started_event.set()
             else:
                 time.sleep(0.01)
