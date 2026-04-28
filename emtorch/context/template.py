@@ -6,8 +6,7 @@
 Provides Template class based on string.Template ($-string) but case-sensitive.
 """
 
-from __future__ import annotations
-
+from re import RegexFlag
 from string import Template as StringTemplate
 
 from . import CaseContext
@@ -15,7 +14,7 @@ from . import CaseContext
 
 class Template(StringTemplate):
     idpattern = r"[A-Za-z][_A-Za-z0-9]*"
-    flags = None
+    flags = RegexFlag(0)
 
     def evaluate(self, context: CaseContext) -> str:
         return self.safe_substitute(
