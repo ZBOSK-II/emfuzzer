@@ -8,7 +8,6 @@ Subpackage representing context of the experiment.
 
 from __future__ import annotations
 
-import logging
 from abc import ABC, abstractmethod
 from types import TracebackType
 from typing import Self, cast
@@ -16,8 +15,6 @@ from typing import Self, cast
 from ..case.instance import CaseInstance
 from ..config import Config
 from ..results import Results
-
-logger = logging.getLogger(__name__)
 
 
 class Worker(ABC):
