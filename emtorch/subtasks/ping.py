@@ -35,21 +35,21 @@ class PingIsAliveStream(InputStream):
             match char:
                 case b"\b":
                     if not self.response_received:
-                        logger.info(f"<{self.name()}>: Response received")
+                        self.logger.info("Response received")
                     self.response_received = True
                 case b".":
                     if self.response_received:
-                        logger.info(f"<{self.name()}>: Ping received")
+                        self.logger.info("Ping received")
                         # if process finishes before external timeout - it will be a success
                         self.process.terminate()
                     else:
-                        logger.info(f"<{self.name()}>: Ping")
+                        self.logger.info("Ping")
                 case b"E":
-                    logger.warning(f"<{self.name()}>: error response")
+                    self.logger.warning("Error response")
                     self.response_received = False
         else:
             if char == b"\n":
-                logger.info(f"<{self.name()}>: {self.header!r}")
+                self.logger.info(f"{self.header!r}")
                 self.header_done = True
             else:
                 self.header += char
@@ -76,6 +76,7 @@ class PingIsAlive(Subprocess):
             shell=False,
             io=io,
             check_exit_code=False,
+            subtask_logger=logger,
         )
 
         self.stream: PingIsAliveStream | None = None
@@ -136,6 +137,7 @@ class PingIsStable(Subprocess):
             ],
             shell=False,
             io=io,
+            subtask_logger=logger,
         )
 
     @classmethod

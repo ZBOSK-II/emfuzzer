@@ -15,8 +15,6 @@ from ..ssh import ConnectionConfig, Invoker
 from .subprocess import FinishConfig
 from .subtask import BasicSubTask
 
-logger = logging.getLogger(__name__)
-
 
 class Remote(BasicSubTask):
     # pylint: disable=too-many-arguments,too-many-positional-arguments
@@ -29,7 +27,7 @@ class Remote(BasicSubTask):
         start_timeout: float,
         finish_config: FinishConfig,
     ):
-        super().__init__(name)
+        super().__init__(name, logging.getLogger(__name__))
         self.invoker = Invoker(
             name=name,
             command=command,
@@ -47,7 +45,7 @@ class Remote(BasicSubTask):
                 return False
             return True
         except Exception as ex:  # pylint: disable=broad-exception-caught
-            logger.error(f"Failed to start remote task <{self.name()}>: {ex}")
+            self.logger.error(f"Failed to start remote task <{self.name()}>: {ex}")
             return False
 
     def finish(self) -> BasicSubTask.Result:
@@ -56,7 +54,7 @@ class Remote(BasicSubTask):
                 self.invoker.signal(self.finish_config.signal)
             except Exception as ex:  # pylint: disable=broad-exception-caught
                 signal = self.finish_config.signal
-                logger.error(
+                self.logger.error(
                     f"Failed to send signal {signal} to remote task <{self.name()}>: {ex}"
                 )
                 return self.Result.ERROR
@@ -66,7 +64,9 @@ class Remote(BasicSubTask):
         except TimeoutError:
             return self.Result.TIMEOUT
         except Exception as ex:  # pylint: disable=broad-exception-caught
-            logger.error(f"Failed while waiting for remote task <{self.name()}>: {ex}")
+            self.logger.error(
+                f"Failed while waiting for remote task <{self.name()}>: {ex}"
+            )
             return self.Result.ERROR
         finally:
             self.invoker.close()

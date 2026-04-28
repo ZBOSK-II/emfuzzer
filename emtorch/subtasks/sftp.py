@@ -20,8 +20,6 @@ from ..ssh import ConnectionConfig
 from ..ssh.client import open_ssh
 from .subtask import BasicSubTask
 
-logger = logging.getLogger(__name__)
-
 
 # pylint: disable=too-many-instance-attributes
 class SftpTask(BasicSubTask):
@@ -34,7 +32,7 @@ class SftpTask(BasicSubTask):
         remote_path: str,
         timeout: float,
     ):
-        super().__init__(name)
+        super().__init__(name, logging.getLogger(__name__))
         self.connection_config = connection_config
         self.local_path = Template(local_path)
         self.remote_path = Template(remote_path)
@@ -56,7 +54,7 @@ class SftpTask(BasicSubTask):
                 )
                 self._finished = True
             except Exception as ex:  # pylint: disable=broad-exception-caught
-                logger.error(f"Failed to complete SFT transfer <{self.name()}>: {ex}")
+                self.logger.error(f"Failed to complete SFTP transfer: {ex}")
 
         self._thread = Thread(target=action)
         self._thread.start()
@@ -68,7 +66,7 @@ class SftpTask(BasicSubTask):
             self._sftp = self._ssh.open_sftp()
             return True
         except Exception as ex:  # pylint: disable=broad-exception-caught
-            logger.error(f"Failed to open SSH connection <{self.name()}>: {ex}")
+            self.logger.error(f"Failed to open SSH connection: {ex}")
             if self._sftp is not None:
                 self._sftp.close()
                 if self._ssh is not None:
@@ -98,13 +96,13 @@ class SftpTask(BasicSubTask):
         if self._finished:
             return self.Result.SUCCESS
         if timed_out:
-            logger.error(f"SFTP transfer timed-out <{self.name()}>")
+            self.logger.error("SFTP transfer timed-out")
             return self.Result.TIMEOUT
         return self.Result.ERROR
 
     def create_callback(self, infix: str) -> Callable[[int, int], None]:
         def callback(current: int, total: int) -> None:
-            logger.info(
+            self.logger.info(
                 f"{self.local_path} {infix} {self.remote_path}: {current} of {total} bytes"
             )
 
@@ -114,7 +112,7 @@ class SftpTask(BasicSubTask):
 class SftpUpload(SftpTask):
     def perform_action(self, local_path: str, remote_path: str) -> None:
         assert self._sftp
-        logger.info(f"SFTP PUT {local_path} -> {remote_path}")
+        self.logger.info(f"SFTP PUT {local_path} -> {remote_path}")
         self._sftp.put(
             localpath=local_path,
             remotepath=remote_path,
@@ -137,7 +135,7 @@ class SftpUpload(SftpTask):
 class SftpDownload(SftpTask):
     def perform_action(self, local_path: str, remote_path: str) -> None:
         assert self._sftp
-        logger.info(f"SFTP GET {local_path} <- {remote_path}")
+        self.logger.info(f"SFTP GET {local_path} <- {remote_path}")
         self._sftp.get(
             localpath=local_path,
             remotepath=remote_path,

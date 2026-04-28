@@ -29,16 +29,19 @@ def __parse_data(parser: argparse.ArgumentParser, data: list[str]) -> list[Path]
 
 
 def __setup_logger(prefix: str) -> None:
-    log_format = "%(asctime)s [%(levelname)8s](%(name)20s): %(message)s"
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format=log_format,
-    )
-
     root_logger = logging.getLogger()
-    handler = logging.FileHandler(f"{prefix}.log")
-    handler.setFormatter(root_logger.handlers[0].formatter)
-    logging.getLogger().addHandler(handler)
+    root_logger.setLevel(logging.DEBUG)
+
+    log_format = "%(asctime)s [%(levelname)8s](%(name)32s)<%(subtask)32s>: %(message)s"
+    formatter = logging.Formatter(fmt=log_format, defaults={"subtask": "-" * 32})
+
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    root_logger.addHandler(console_handler)
+
+    file_handler = logging.FileHandler(f"{prefix}.log")
+    file_handler.setFormatter(formatter)
+    root_logger.addHandler(file_handler)
 
     root_logger.info(f"Started instance ({VERSION})")
 

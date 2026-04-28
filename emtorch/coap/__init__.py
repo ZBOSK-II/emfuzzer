@@ -6,6 +6,7 @@
 CoAP - Constrained Application Protocol support module.
 """
 
+import logging
 from enum import StrEnum, auto
 from typing import Self
 
@@ -34,7 +35,7 @@ class CoapMonitor(TypedSubTask[CoapMonitorResult]):
         response_timeout: float,
         observation_timeout: float,
     ):
-        super().__init__(name)
+        super().__init__(name, logging.getLogger(__name__))
         self._io = io
         self._target = target
         self._response_timeout = response_timeout
@@ -90,7 +91,7 @@ class CoapMonitor(TypedSubTask[CoapMonitorResult]):
 
 class CoapSend(TypedSubTask[Validator.Result]):
     def __init__(self, name: str, monitor: CoapMonitor):
-        super().__init__(name)
+        super().__init__(name, logging.getLogger(__name__))
         self._monitor = monitor
 
     def start(self, context: CaseContext) -> SubTask.StartedType:

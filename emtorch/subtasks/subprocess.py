@@ -56,8 +56,9 @@ class Subprocess(BasicSubTask):
         finish_config: FinishConfig,
         io: IOLoop,
         check_exit_code: bool = True,
+        subtask_logger: logging.Logger = logger,
     ):
-        super().__init__(name)
+        super().__init__(name, subtask_logger)
 
         self.args = [Template(arg) for arg in args]
         self.shell = shell
@@ -72,7 +73,7 @@ class Subprocess(BasicSubTask):
     def basic_start(self, context: CaseContext) -> bool:
         try:
             args = [arg.evaluate(context) for arg in self.args]
-            logger.info(f"<{self.name()}>: Starting {args}")
+            self.logger.info(f"Starting {args}")
             self.process = subprocess.Popen(  # pylint: disable=consider-using-with
                 args,
                 stdout=subprocess.PIPE,
@@ -82,13 +83,13 @@ class Subprocess(BasicSubTask):
                 shell=self.shell,
             )
         except Exception as ex:  # pylint: disable=broad-exception-caught
-            logger.error(f"<{self.name()}>: Operation error: {ex}")
+            self.logger.error(f"Operation error: {ex}")
             return False
 
         assert self.process.stdout is not None
         assert self.process.stderr is not None
-        self.io.register(StreamLogger(f"<{self.name()}> - STDOUT", self.process.stdout))
-        self.io.register(StreamLogger(f"<{self.name()}> - STDERR", self.process.stderr))
+        self.io.register(StreamLogger(self.name(), "STDOUT", self.process.stdout))
+        self.io.register(StreamLogger(self.name(), "STDERR", self.process.stderr))
         return True
 
     def finish(self) -> BasicSubTask.Result:
@@ -112,30 +113,28 @@ class Subprocess(BasicSubTask):
         assert self.process is not None
 
         if self.finish_config.signal:
-            logger.info(
-                f"<{self.name()}>: Sending signal {self.finish_config.signal.name}"
-            )
+            self.logger.info(f"Sending signal {self.finish_config.signal.name}")
             self.process.send_signal(self.finish_config.signal)
 
         try:
             self.process.wait(timeout=self.finish_config.timeout)
         except subprocess.TimeoutExpired:
-            logger.warning(f"<{self.name()}>: Operation timeout")
+            self.logger.warning("Operation timeout")
             return self.Result.TIMEOUT
         except Exception as ex:  # pylint: disable=broad-exception-caught
-            logger.error(f"<{self.name()}>: Operation error: {ex}")
+            self.logger.error(f"Operation error: {ex}")
             return self.Result.ERROR
 
         returncode = self.process.returncode
         if returncode != 0:
-            logger.log(
+            self.logger.log(
                 logging.WARNING if self.check_exit_code else logging.INFO,
-                f"<{self.name()}>: Operation returned {returncode}",
+                f"Operation returned {returncode}",
             )
             if self.check_exit_code:
                 return self.Result.FAILURE
 
-        logger.info(f"<{self.name()}>: Operation finished successfully")
+        self.logger.info("Operation finished successfully")
         return self.Result.SUCCESS
 
     @classmethod

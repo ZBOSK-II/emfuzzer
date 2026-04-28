@@ -18,6 +18,7 @@ class Stream(Selectable):
     def __init__(self, name: str, stream: IO[bytes]):
         super().__init__(name)
         self.stream = stream
+        self.logger = logging.LoggerAdapter(logger, extra={"subtask": name})
 
     def close(self) -> None:
         self.stream.close()
@@ -57,16 +58,14 @@ class StreamWriter(OutputStream):
         self._data = data
 
     def write(self) -> None:
-        logger.info(f"{self.name()}: writing {len(self._data)} bytes.")
+        self.logger.info(f"writing {len(self._data)} bytes.")
 
         written = self.stream.write(self._data)
         self._data = self._data[written:]
 
-        logger.info(
-            f"{self.name()}: wrote {written}, {len(self._data)} bytes remaining."
-        )
+        self.logger.info(f"wrote {written}, {len(self._data)} bytes remaining.")
         if len(self._data) == 0:
-            logger.info(f"{self.name()}: closing the stream")
+            self.logger.info("closing the stream")
             self.close()
 
     def wants_to_write(self) -> bool:
@@ -74,8 +73,9 @@ class StreamWriter(OutputStream):
 
 
 class StreamLogger(InputStream):
-    def __init__(self, name: str, stream: IO[bytes]):
+    def __init__(self, name: str, subname: str, stream: IO[bytes]):
         super().__init__(name, stream)
+        self._subname = subname
 
         self._buffer = bytearray()
 
@@ -87,7 +87,7 @@ class StreamLogger(InputStream):
                 self._buffer.append(b)
 
     def _flush(self) -> None:
-        logger.info(f"{self.name()}: {bytes(self._buffer.rstrip())!r}")
+        self.logger.info(f"{self._subname} - {bytes(self._buffer.rstrip())!r}")
         self._buffer.clear()
 
     def close(self) -> None:
