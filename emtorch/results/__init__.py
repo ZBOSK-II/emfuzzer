@@ -69,7 +69,7 @@ class Results:
             "start": self.__iso_timestamp(),
         }
 
-    def register(self, name: str, results: type[StrEnum]) -> SubTaskResults:
+    def register_subtask(self, name: str, results: type[StrEnum]) -> SubTaskResults:
         r = list(str(item) for item in results)
         s = SubTaskResults(r, r[0])
         if name in self.subtasks:
@@ -78,6 +78,14 @@ class Results:
             )
         self.subtasks[name] = s
         return s
+
+    def register_value(self, name: str, value: Value) -> Value:
+        if name in self.values:
+            raise RuntimeError(
+                f"Value results already registered: '{name}'. Probably duplicated name."
+            )
+        self.values[name] = value
+        return value
 
     def add_case(self, case_id: CaseId) -> None:
         self.cases.append(case_id.unique)

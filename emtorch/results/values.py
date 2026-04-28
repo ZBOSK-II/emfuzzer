@@ -3,7 +3,7 @@
 # See the LICENSE.txt file in the root of the repository for full details.
 
 """
-Module representing values gathered during experiment to be included in results.
+Module representing gathered values gathered to be included in the results.
 """
 
 from abc import ABC, abstractmethod
@@ -45,11 +45,3 @@ class Value:
 class TypedValue[T: (int | float)](Value):
     def collect(self, case_id: CaseId, value: T) -> None:
         self._values.append(TypedValuePoint[T](case_id, value))
-
-
-class IntValue(TypedValue[int]):
-    pass
-
-
-class FloatValue(TypedValue[float]):
-    pass

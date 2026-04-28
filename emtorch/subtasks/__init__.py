@@ -58,6 +58,16 @@ def subtask_from_config(config: Config, context: Context, *prefix: str) -> SubTa
             from .sftp import SftpDownload  # pylint: disable=import-outside-toplevel
 
             return SftpDownload.from_config(name, args)
+        case "logger-int-matcher":
+            # pylint: disable=import-outside-toplevel
+            from .collector import LoggerIntMatcher
+
+            return LoggerIntMatcher.from_config(name, args, context)
+        case "logger-float-matcher":
+            # pylint: disable=import-outside-toplevel
+            from .collector import LoggerFloatMatcher
+
+            return LoggerFloatMatcher.from_config(name, args, context)
         case _:
             raise ValueError(f"Unknown sub-task type '{task_type}'")
 
@@ -102,7 +112,7 @@ class SubTasks:
         logger.info(f"Registering <{task.name()}>")
         execution = SubTaskExecution(
             task,
-            self._results.register(task.name(), task.result_type()),
+            self._results.register_subtask(task.name(), task.result_type()),
         )
         self._tasks.append(execution)
 
