@@ -7,7 +7,6 @@ Module providing subprocess based sub tasks.
 """
 
 import logging
-import os
 import subprocess
 from dataclasses import dataclass
 from signal import Signals
@@ -15,6 +14,7 @@ from typing import Optional, Self
 
 from ..config import Config
 from ..context import CaseContext, Context
+from ..context.template import Template
 from ..io import IOLoop
 from ..io.streams import StreamLogger
 from .subtask import BasicSubTask
@@ -59,7 +59,7 @@ class Subprocess(BasicSubTask):
     ):
         super().__init__(name)
 
-        self.args = args
+        self.args = [Template(arg) for arg in args]
         self.shell = shell
         self.finish_config = finish_config
 
@@ -71,15 +71,15 @@ class Subprocess(BasicSubTask):
 
     def basic_start(self, context: CaseContext) -> bool:
         try:
-            logger.info(f"<{self.name()}>: Starting {self.args}")
+            args = [arg.evaluate(context) for arg in self.args]
+            logger.info(f"<{self.name()}>: Starting {args}")
             self.process = subprocess.Popen(  # pylint: disable=consider-using-with
-                self.args,
+                args,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 stdin=subprocess.PIPE,
                 text=False,
                 shell=self.shell,
-                env=self._prepare_env(context),
             )
         except Exception as ex:  # pylint: disable=broad-exception-caught
             logger.error(f"<{self.name()}>: Operation error: {ex}")
@@ -137,12 +137,6 @@ class Subprocess(BasicSubTask):
 
         logger.info(f"<{self.name()}>: Operation finished successfully")
         return self.Result.SUCCESS
-
-    def _prepare_env(self, context: CaseContext) -> dict[str, str]:
-        env = os.environ.copy()
-        env["EMTORCH_CASE_ID"] = context.case.identifier.unique
-        env["EMTORCH_DATA_PATH"] = str(context.case.data.path)
-        return env
 
     @classmethod
     def from_config(cls, name: str, config: Config, context: Context) -> Self:
