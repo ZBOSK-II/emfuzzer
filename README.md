@@ -171,8 +171,8 @@ All Sub Tasks instances has to be named using `name`.
 Available tasks:
  * `subprocess` - execute script and capture its exit code.
    Arguments:
-    - `cmd` - (list of strings) command to be executed
-    - `shell` - (boolean) true when shell should be used todo
+    - `cmd` - (list of $-strings) command to be executed
+    - `shell` - (boolean) true when shell should be used to
       interpret the command
     - `finish` - configuration of finishing the task:
       - `signal` - (string) signal name to be sent to the
@@ -194,14 +194,14 @@ Available tasks:
    exit code. Host key must be in 'known hosts' file.
    Arguments:
      - `connection` - dictionary containing:
-       - `host`
-       - `port`
-       - `username`
-       - `password`
+       - `host` - (string) SSH host name
+       - `port`- (integer) SSH port
+       - `username` - (string) user name
+       - `password` - (string) user's password
      - `command` - (string) command to be executed
      - `start_key` - (string) string expected in the output
-       of the executed command for the command to be considered
-       "started successfully"
+       of the executed command for the command to be
+       considered "started successfully"
      - `start_timeout` - (float) timeout for the start of
        the command
     - `finish` - configuration of finishing the task:
@@ -212,21 +212,29 @@ Available tasks:
  * `sftp-upload` - uploads file using SFTP
    Arguments:
      - `connection` - dictionary containing:
-       - `host`
-       - `port`
-       - `username`
-       - `password`
-     - `local_path` - path to a local file to upload
-     - `remote_path` - path to a remote file (target)
+       - `host` - (string) SSH host name
+       - `port`- (integer) SSH port
+       - `username` - (string) user name
+       - `password` - (string) user's password
+     - `local_path` - ($-string) path to a local file to
+       upload
+     - `remote_path` - ($-string) path to a remote file
+       (target)
+     - `timeout` - (float) number of seconds to complete
+       the transfer
  * `sftp-downnload` - downloads file using SFTP
    Arguments:
      - `connection` - dictionary containing:
-       - `host`
-       - `port`
-       - `username`
-       - `password`
-     - `remote_path` - path to a remote file to download
-     - `local_path` - path to a local file to store (target)
+       - `host` - (string) SSH host name
+       - `port`- (integer) SSH port
+       - `username` - (string) user name
+       - `password` - (string) user's password
+     - `remote_path` - ($-string) path to a remote file to
+        download
+     - `local_path` - ($-string) path to a local file to
+        store (target)
+     - `timeout` - (float) number of seconds to complete
+       the transfer
  * `coap_monitor` - listens for CoAP responses
    Arguments:
     - `target` - dictionary containing `host` and `port` of
@@ -240,9 +248,9 @@ Available tasks:
   * `coap_send` - sends data provided in argument to the
     program call as CoAP message and checks system response.
     Arguments:
-      - `monitor` - name of the `coap_monitor` instance used
-        to send the message.
+      - `monitor` - (string) name of the `coap_monitor`
+        instance used to send the message.
 
-Environment variables available to scripts in `subprocess`:
+Environment variables available in $-strings:
  * `EMTORCH_CASE_ID` - unique identifier of the current case
  * `EMTORCH_DATA_PATH` - path to the case data
