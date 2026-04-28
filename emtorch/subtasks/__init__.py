@@ -18,7 +18,7 @@ from .subtask import SubTask
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=too-many-return-statements
+# pylint: disable=too-many-return-statements,too-many-locals
 def subtask_from_config(config: Config, context: Context, *prefix: str) -> SubTask:
     task_type = config.get_str("type")
     name = ".".join(prefix) + "." + config.get_str("name")
