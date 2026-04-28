@@ -3,7 +3,7 @@
 # See the LICENSE.txt file in the root of the repository for full details.
 
 """
-Module representing context of the experiment.
+Subpackage representing context of the experiment.
 """
 
 from __future__ import annotations
@@ -13,9 +13,9 @@ from abc import ABC, abstractmethod
 from types import TracebackType
 from typing import Self, cast
 
-from .case.instance import CaseInstance
-from .config import Config
-from .results import Results
+from ..case.instance import CaseInstance
+from ..config import Config
+from ..results import Results
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ class Context:
             raise RuntimeError(f"Invalid data type for: '{name}'")
         raise RuntimeError(f"Unknown data: '{name}'")
 
-    def enter_case(self, case: CaseInstance) -> CaseContext:
+    def enter_case(self, case: CaseInstance) -> "CaseContext":
         return CaseContext(self, case)
 
     def __enter__(self) -> Self:
@@ -121,3 +121,6 @@ class CaseContext:
         exc_traceback: TracebackType | None,
     ) -> None:
         pass
+
+
+__all__ = ["Context", "CaseContext", "Worker"]
