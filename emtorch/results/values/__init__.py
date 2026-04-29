@@ -9,7 +9,7 @@ Module representing gathered values gathered to be included in the results.
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from ..case.instance import CaseId
+from ...case.instance import CaseId
 
 
 @dataclass

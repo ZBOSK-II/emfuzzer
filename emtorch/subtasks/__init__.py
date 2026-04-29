@@ -60,12 +60,12 @@ def subtask_from_config(config: Config, context: Context, *prefix: str) -> SubTa
             return SftpDownload.from_config(name, args)
         case "logger-int-matcher":
             # pylint: disable=import-outside-toplevel
-            from .collector import LoggerIntMatcher
+            from .logger_matcher import LoggerIntMatcher
 
             return LoggerIntMatcher.from_config(name, args, context)
         case "logger-float-matcher":
             # pylint: disable=import-outside-toplevel
-            from .collector import LoggerFloatMatcher
+            from .logger_matcher import LoggerFloatMatcher
 
             return LoggerFloatMatcher.from_config(name, args, context)
         case _:
