@@ -19,6 +19,7 @@ class Stream(Selectable):
         super().__init__(name)
         self.stream = stream
         self.logger = logging.LoggerAdapter(logger, extra={"subtask": name})
+        self._eof = False
 
     def close(self) -> None:
         self.stream.close()
@@ -28,6 +29,12 @@ class Stream(Selectable):
 
     def is_closed(self) -> bool:
         return self.stream.closed
+
+    def eof(self) -> bool:
+        return self._eof
+
+    def mark_eof(self) -> None:
+        self._eof = True
 
 
 class InputStream(Stream):
@@ -82,8 +89,7 @@ class StreamLogger(InputStream):
     def read(self) -> None:
         data = self.stream.read(4 * 1024)
         if len(data) == 0:
-            # EOF
-            self.close()
+            self.mark_eof()
         for b in data:
             if b == b"\n"[0]:
                 self._flush()

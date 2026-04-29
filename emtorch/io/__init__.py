@@ -9,7 +9,7 @@ I/O handling components.
 import logging
 import os
 import queue
-import select
+import selectors
 import threading
 from abc import ABC, abstractmethod
 from typing import Protocol
@@ -19,8 +19,10 @@ from ..context import Worker
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=too-few-public-methods
 class Closeable(Protocol):
+    def fileno(self) -> int:
+        pass
+
     def close(self) -> None:
         pass
 
@@ -60,6 +62,10 @@ class Selectable(ABC):
     def write(self) -> None:
         pass
 
+    @abstractmethod
+    def eof(self) -> bool:
+        pass
+
 
 class InterruptPipe(Selectable):
     def __init__(self) -> None:
@@ -91,6 +97,9 @@ class InterruptPipe(Selectable):
     def wants_to_read(self) -> bool:
         return True
 
+    def eof(self) -> bool:
+        return False
+
 
 class SendQueue[T](ABC):
     Empty: type[Exception] = queue.Empty
@@ -115,9 +124,10 @@ class IOLoop(Worker):
         self._thread = threading.Thread(name="io-reader", target=self._process)
         self._stop_request = threading.Event()
         self._interrupt_pipe = InterruptPipe()
-        self._selectables: dict[int, Selectable] = {}
         self._register_queue: queue.Queue[Selectable] = queue.Queue()
         self._close_queue: queue.Queue[Closeable] = queue.Queue()
+        self._selectables: dict[int, Selectable] = {}
+        self._selector = selectors.DefaultSelector()
 
         self._perform_register(self._interrupt_pipe)
 
@@ -132,6 +142,7 @@ class IOLoop(Worker):
         self._thread.join()
         for selectable in self._selectables.values():
             selectable.close()
+        self._selector.close()
         logger.info("Stopped subprocess read thread")
 
     def register(self, selectable: Selectable) -> None:
@@ -158,38 +169,59 @@ class IOLoop(Worker):
 
     def _process(self) -> None:
         while not self._stop_request.is_set():
-            rlist, wlist, _ = select.select(
-                self._build_rlist(), self._build_wlist(), []
-            )
+            self._sync_registrations()
+            events = self._selector.select()
 
             if self._stop_request.is_set():
                 return
 
-            self._process_rlist(rlist)
-            self._process_wlist(wlist)
+            something_was_read = self._process_events(events)
             self._process_register_queue()
-            self._process_close_requests(len(rlist))
+            self._process_close_requests(something_was_read)
+            self._close_eofs()
             self._clean_closed()
+
+    def _process_events(self, events: list[tuple[selectors.SelectorKey, int]]) -> bool:
+        something_was_read = False
+        for key, mask in events:
+            selectable: Selectable = key.data
+            if selectable.is_closed():
+                continue
+            if mask & selectors.EVENT_READ:
+                if selectable is not self._interrupt_pipe:
+                    something_was_read = True
+                selectable.read()
+            if mask & selectors.EVENT_WRITE:
+                selectable.write()
+        return something_was_read
 
     def _wake_select(self) -> None:
         self._interrupt_pipe.write()
 
-    def _build_rlist(self) -> list[int]:
-        return [
-            selectable.fileno()
-            for selectable in self._selectables.values()
-            if not selectable.is_closed() and selectable.wants_to_read()
-        ]
-
-    def _build_wlist(self) -> list[int]:
-        return [
-            selectable.fileno()
-            for selectable in self._selectables.values()
-            if not selectable.is_closed() and selectable.wants_to_write()
-        ]
-
     def _perform_register(self, selectable: Selectable) -> None:
         self._selectables[selectable.fileno()] = selectable
+
+    def _sync_registrations(self) -> None:
+        selector_map = self._selector.get_map()
+        for selectable in self._selectables.values():
+            wanted = 0
+            if selectable.wants_to_read():
+                wanted |= selectors.EVENT_READ
+            if selectable.wants_to_write():
+                wanted |= selectors.EVENT_WRITE
+
+            key = selector_map.get(selectable.fileno())
+
+            if wanted == 0:
+                if key is not None:
+                    self._selector.unregister(key.fd)
+            else:
+                if key is None:
+                    self._selector.register(
+                        selectable.fileno(), wanted, data=selectable
+                    )
+                elif key.events != wanted:
+                    self._selector.modify(key.fd, wanted, data=selectable)
 
     def _process_register_queue(self) -> None:
         while not self._register_queue.empty():
@@ -198,8 +230,8 @@ class IOLoop(Worker):
             except queue.Empty:
                 return
 
-    def _process_close_requests(self, rlen: int) -> None:
-        if rlen == 1:  # process only if there was nothing to read (only interrupt pipe)
+    def _process_close_requests(self, something_was_read: bool) -> None:
+        if not something_was_read:
             self._process_close_queue()
         elif not self._close_queue.empty():
             self._wake_select()  # requests skipped, but present, let's try next time
@@ -212,35 +244,43 @@ class IOLoop(Worker):
                 return
 
             try:
+                self._selector.unregister(closeable.fileno())
+            except Exception:  # pylint: disable=broad-exception-caught
+                pass
+
+            try:
+                self._selectables.pop(closeable.fileno(), None)
+            except Exception:  # pylint: disable=broad-exception-caught
+                pass
+
+            try:
                 closeable.close()
             except IOError as ex:
                 logger.error(f"Error during closing {ex}, {closeable}")
-            finally:
-                self._close_queue.task_done()
+
+            self._close_queue.task_done()
 
     def _clean_closed(self) -> None:
+        closed_fds = [
+            fd for fd, selectable in self._selectables.items() if selectable.is_closed()
+        ]
+        if len(closed_fds) == 0:
+            return
+        selector_map = self._selector.get_map()
+        for fd in closed_fds:
+            if fd in selector_map:
+                self._selector.unregister(fd)
         self._selectables = {
             fd: selectable
             for fd, selectable in self._selectables.items()
             if not selectable.is_closed()
         }
 
-    def _process_rlist(self, rlist: list[int]) -> None:
-        for fd in rlist:
-            selectable = self._selectables.get(fd)
-            if selectable is None:
-                logger.warning(f"Processing reading of non-existing fd: {fd}")
-                return
-
-            if not selectable.is_closed():
-                selectable.read()
-
-    def _process_wlist(self, wlist: list[int]) -> None:
-        for fd in wlist:
-            selectable = self._selectables.get(fd)
-            if selectable is None:
-                logger.warning(f"Processing writing of non-existing fd: {fd}")
-                return
-
-            if not selectable.is_closed():
-                selectable.write()
+    def _close_eofs(self) -> None:
+        for fd, selectable in self._selectables.items():
+            if selectable.eof():
+                try:
+                    self._selector.unregister(fd)
+                except Exception:  # pylint: disable=broad-exception-caught
+                    pass
+                selectable.close()

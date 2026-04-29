@@ -32,6 +32,9 @@ class Socket(Selectable):
     def is_closed(self) -> bool:
         return self._closed
 
+    def eof(self) -> bool:
+        return self.is_closed()
+
 
 class UdpClientSocket(Socket):
     def __init__(

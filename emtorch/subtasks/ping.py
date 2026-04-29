@@ -31,6 +31,9 @@ class PingIsAliveStream(InputStream):
 
     def read(self) -> None:
         char = self.stream.read(1)
+        if len(char) == 0:
+            self.mark_eof()
+            return
         if self.header_done:
             match char:
                 case b"\b":
