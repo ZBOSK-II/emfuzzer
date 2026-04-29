@@ -131,7 +131,7 @@ class Results:
                 "failed": self.failed_groups(),
             },
             "subtasks": {k: v.to_dict() for k, v in self.subtasks.items()},
-            "values": {k: v.to_dict_list() for k, v in self.values.items()},
+            "values": {k: v.to_dict() for k, v in self.values.items()},
         }
 
     @staticmethod

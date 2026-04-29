@@ -38,8 +38,8 @@ class Value:
     def __init__(self) -> None:
         self._values: list[ValuePoint] = []
 
-    def to_dict_list(self) -> list[dict[str, str | int | float]]:
-        return [v.to_dict() for v in self._values]
+    def to_dict(self) -> dict[str, list[dict[str, str | int | float]]]:
+        return {"points": [v.to_dict() for v in self._values]}
 
 
 class TypedValue[T: (int | float)](Value):
