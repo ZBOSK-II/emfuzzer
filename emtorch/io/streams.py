@@ -30,7 +30,7 @@ class Stream(Selectable):
     def is_closed(self) -> bool:
         return self.stream.closed
 
-    def eof(self) -> bool:
+    def at_eof(self) -> bool:
         return self._eof
 
     def mark_eof(self) -> None:

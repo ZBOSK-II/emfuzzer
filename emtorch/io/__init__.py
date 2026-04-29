@@ -63,7 +63,7 @@ class Selectable(ABC):
         pass
 
     @abstractmethod
-    def eof(self) -> bool:
+    def at_eof(self) -> bool:
         pass
 
 
@@ -97,7 +97,7 @@ class InterruptPipe(Selectable):
     def wants_to_read(self) -> bool:
         return True
 
-    def eof(self) -> bool:
+    def at_eof(self) -> bool:
         return False
 
 
@@ -278,7 +278,7 @@ class IOLoop(Worker):
 
     def _close_eofs(self) -> None:
         for fd, selectable in self._selectables.items():
-            if selectable.eof():
+            if selectable.at_eof():
                 try:
                     self._selector.unregister(fd)
                 except Exception:  # pylint: disable=broad-exception-caught
