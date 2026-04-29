@@ -150,9 +150,11 @@ class IOLoop(Worker):
 
         return Queue()
 
-    def close(self, closeable: Closeable) -> None:
+    def close(self, closeable: Closeable, block: bool = False) -> None:
         self._close_queue.put(closeable)
         self._wake_select()
+        if block:
+            self._close_queue.join()
 
     def _process(self) -> None:
         while not self._stop_request.is_set():
@@ -176,14 +178,14 @@ class IOLoop(Worker):
         return [
             selectable.fileno()
             for selectable in self._selectables.values()
-            if selectable.wants_to_read()
+            if not selectable.is_closed() and selectable.wants_to_read()
         ]
 
     def _build_wlist(self) -> list[int]:
         return [
             selectable.fileno()
             for selectable in self._selectables.values()
-            if selectable.wants_to_write()
+            if not selectable.is_closed() and selectable.wants_to_write()
         ]
 
     def _perform_register(self, selectable: Selectable) -> None:
@@ -213,6 +215,8 @@ class IOLoop(Worker):
                 closeable.close()
             except IOError as ex:
                 logger.error(f"Error during closing {ex}, {closeable}")
+            finally:
+                self._close_queue.task_done()
 
     def _clean_closed(self) -> None:
         self._selectables = {

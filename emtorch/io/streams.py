@@ -80,7 +80,11 @@ class StreamLogger(InputStream):
         self._buffer = bytearray()
 
     def read(self) -> None:
-        for b in self.stream.read(4 * 1024):
+        data = self.stream.read(4 * 1024)
+        if len(data) == 0:
+            # EOF
+            self.close()
+        for b in data:
             if b == b"\n"[0]:
                 self._flush()
             else:

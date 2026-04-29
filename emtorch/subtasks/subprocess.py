@@ -105,7 +105,8 @@ class Subprocess(BasicSubTask):
 
         self.io.close(self.process.stdin)
         self.io.close(self.process.stdout)
-        self.io.close(self.process.stderr)
+        self.io.close(self.process.stderr, block=True)
+        # it's a queue so we can wait only for the last one
 
         return result
 
