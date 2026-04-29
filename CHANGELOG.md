@@ -7,12 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+ - proper closing of streams in I/O event loop
+
 ### Changed
  - renamed results "keys" to "identifiers" internally
  - `EMTORCH_CASE_KEY` renamed to `EMTORCH_CASE_ID`
  - "groups" in results JSON became "subtasks" for consistency
  - `"all"` and `"cases"` inside results JSON embedded into `"cases"` to be more clear
  - entries in log will have consistent format for "subtask" name portion of the log
+ - added `values` to results (possibility to aggregate values per case)
+ - added `logger-int-matcher` and `logger-float-matcher` monitoring subtasks
 
 ### Added
  - `--repeats` argument will allow to repeat test cases for each data specified number of times

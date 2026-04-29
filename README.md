@@ -250,6 +250,20 @@ Available tasks:
     Arguments:
       - `monitor` - (string) name of the `coap_monitor`
         instance used to send the message.
+  * `logger-int-matcher` - scans logs for a pattern and
+    stores it as integer value (monitoring subtask only).
+    Arguments:
+      - `value` - name for the value to store
+      - `pattern` - regular expression containing named
+         group `value` used to extract the value
+      - `subtask` - subtask which logs should be scanned
+  * `logger-float-matcher` - scans logs for a pattern and
+    stores it as real value (monitoring subtask only).
+    Arguments:
+      - `value` - name for the value to store
+      - `pattern` - regular expression containing named
+         group `value` used to extract the value
+      - `subtask` - subtask which logs should be scanned
 
 Environment variables available in $-strings:
  * `EMTORCH_CASE_ID` - unique identifier of the current case
