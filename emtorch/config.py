@@ -32,12 +32,6 @@ class Config:
             return self.section(path)._get_value(*subpath)
         return self._obj.get(path)
 
-    def _get_required_value(self, path: str, *subpath: str) -> Any:
-        value = self._get_value(path, *subpath)
-        if value is None:
-            raise KeyError(path, *subpath)
-        return value
-
     def _get_value_typed[T: int | float | str | bool](
         self,
         path: str,
@@ -77,21 +71,34 @@ class Config:
     def get_str(self, path: str, *subpath: str, fallback: str | None = None) -> str:
         return self._get_value_typed(path, *subpath, value_type=str, fallback=fallback)
 
-    def get_config_list(self, path: str, *subpath: str) -> list[Self]:
-        value = self._get_required_value(path, *subpath)
+    def _get_list_typed[T](
+        self,
+        path: str,
+        *subpath: str,
+        value_type: type[T],
+        fallback: list[T] | None = None,
+    ) -> list[T]:
+        value = self._get_value(path, *subpath)
+        if value is None:
+            if fallback is None:
+                raise KeyError(path, *subpath)
+            return fallback
         if not isinstance(value, list):
             raise TypeError("not an list", path, *subpath)
-        if any(not isinstance(x, dict) for x in value):
-            raise TypeError("not all elements are dict", path, *subpath)
+        if any(not isinstance(x, value_type) for x in value):
+            raise TypeError(
+                f"Expected list of values of type: {value_type.__name__}",
+                path,
+                *subpath,
+            )
+        return cast(list[T], value)
+
+    def get_config_list(self, path: str, *subpath: str) -> list[Self]:
+        value = self._get_list_typed(path, *subpath, value_type=dict)
         return [self.__class__(v) for v in value]
 
     def get_str_list(self, path: str, *subpath: str) -> list[str]:
-        value = self._get_required_value(path, *subpath)
-        if not isinstance(value, list):
-            raise TypeError("not an list", path, *subpath)
-        if any(not isinstance(x, str) for x in value):
-            raise TypeError("not all elements are str", path, *subpath)
-        return value
+        return self._get_list_typed(path, *subpath, value_type=str)
 
     def to_dict(self) -> dict[str, Any]:
         return self._obj
