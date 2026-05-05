@@ -55,9 +55,6 @@ class OutputStream(Stream):
     def wants_to_read(self) -> bool:
         return False
 
-    def wants_to_write(self) -> bool:
-        return False
-
 
 class StreamWriter(OutputStream):
     def __init__(self, name: str, stream: IO[bytes], data: bytes):
