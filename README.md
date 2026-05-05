@@ -76,15 +76,11 @@ Below is the `default-config.json` with comments:
 ``` json-with-comments
 {
   "case": {                    // for each case
-    "delays": {
-      "between_cases": 0.2,    // delay between Test Cases
-      "before_actions": 1      // delay after all setups
-    },
     "setups": [                // list of setups
       {
-        "type": "subprocess",  // type of setup tasks
         "name": "setup",       // name used in results
-        "args": {              // arguments for given setup
+        "type": "subprocess",  // type of setup tasks
+        "args": {              // arguments for given type
           "cmd": [
             "echo",
             "SETUP"
@@ -97,8 +93,8 @@ Below is the `default-config.json` with comments:
         }
       },
       {                        // second setup
-        "type": "ping_alive",
         "name": "ping",
+        "type": "ping_alive",
         "args": {
           "host": "127.0.0.1",
           "timeout": 10,
@@ -109,8 +105,8 @@ Below is the `default-config.json` with comments:
     "monitoring": [],          // monitoring tasks
     "actions": [               // case actions (core of the experiment)
       {
-        "type": "subprocess",
         "name": "test",
+        "type": "subprocess",
         "args": {
           "cmd": [
             "cat $EMTORCH_DATA_PATH"
@@ -125,8 +121,8 @@ Below is the `default-config.json` with comments:
     ],
     "checks": [                // list of checks tasks
       {                        // same as setups
-        "type": "ping_stable",
         "name": "ping",
+        "type": "ping_stable",
         "args": {
           "host": "127.0.0.1",
           "count": 2,
@@ -134,8 +130,8 @@ Below is the `default-config.json` with comments:
         }
       },
       {
-        "type": "subprocess",
         "name": "teardown",
+        "type": "subprocess",
         "args": {
           "cmd": [
             "echo",
@@ -148,7 +144,11 @@ Below is the `default-config.json` with comments:
           "shell": false
         }
       }
-    ]
+    ],
+    "delays": {
+      "between_cases": 0.2,    // delay between Test Cases
+      "before_actions": 1      // delay after all setups
+    }
   }
 }
 ```

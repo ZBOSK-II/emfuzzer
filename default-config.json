@@ -1,9 +1,5 @@
 {
   "case": {
-    "delays": {
-      "between_cases": 0.2,
-      "before_actions": 1
-    },
     "setups": [
       {
         "type": "subprocess",
@@ -72,6 +68,10 @@
           "shell": false
         }
       }
-    ]
+    ],
+    "delays": {
+      "between_cases": 0.2,
+      "before_actions": 1
+    }
   }
 }
