@@ -11,13 +11,58 @@ import pytest
 from emtorch.config import Config
 
 
-def test_throws_on_unknown_key() -> None:
+def test_throws_on_unknown_int_key() -> None:
     conf = Config({"a": 1, "b": 2, "c": {"d": 3}})
 
     with pytest.raises(KeyError):
         conf.get_int("x")
     with pytest.raises(KeyError):
         conf.get_int("c", "x")
+
+
+def test_throws_on_unknown_float_key() -> None:
+    conf = Config({"a": 1, "b": 2, "c": {"d": 3}})
+
+    with pytest.raises(KeyError):
+        conf.get_float("x")
+    with pytest.raises(KeyError):
+        conf.get_float("c", "x")
+
+
+def test_throws_on_unknown_bool_key() -> None:
+    conf = Config({"a": 1, "b": 2, "c": {"d": 3}})
+
+    with pytest.raises(KeyError):
+        conf.get_bool("x")
+    with pytest.raises(KeyError):
+        conf.get_bool("c", "x")
+
+
+def test_throws_on_unknown_str_key() -> None:
+    conf = Config({"a": 1, "b": 2, "c": {"d": 3}})
+
+    with pytest.raises(KeyError):
+        conf.get_str("x")
+    with pytest.raises(KeyError):
+        conf.get_str("c", "x")
+
+
+def test_throws_on_unknown_str_list_key() -> None:
+    conf = Config({"a": 1, "b": 2, "c": {"d": 3}})
+
+    with pytest.raises(KeyError):
+        conf.get_str_list("x")
+    with pytest.raises(KeyError):
+        conf.get_str_list("c", "x")
+
+
+def test_throws_on_unknown_config_list_key() -> None:
+    conf = Config({"a": 1, "b": 2, "c": {"d": 3}})
+
+    with pytest.raises(KeyError):
+        conf.get_config_list("x")
+    with pytest.raises(KeyError):
+        conf.get_config_list("c", "x")
 
 
 def test_returns_int() -> None:

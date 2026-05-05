@@ -8,7 +8,7 @@ Module for loading application configuration.
 
 import json
 from pathlib import Path
-from typing import Any, Self, cast
+from typing import Any, Self, Sequence, cast
 
 
 class Config:
@@ -28,39 +28,57 @@ class Config:
 
     def _get_value(self, path: str, *subpath: str) -> Any:
         if subpath:
-            try:
-                # pylint: disable=protected-access
-                return self.section(path)._get_value(*subpath)
-            except KeyError:
-                raise KeyError(path, *subpath) from None
-        return self._obj[path]
+            # pylint: disable=protected-access
+            return self.section(path)._get_value(*subpath)
+        return self._obj.get(path)
 
-    def get_int(self, path: str, *subpath: str) -> int:
+    def _get_required_value(self, path: str, *subpath: str) -> Any:
         value = self._get_value(path, *subpath)
-        if not isinstance(value, int):
-            raise TypeError("not an int", path, *subpath)
+        if value is None:
+            raise KeyError(path, *subpath)
         return value
 
-    def get_float(self, path: str, *subpath: str) -> float:
+    def _get_value_typed[T: int | float | str | bool](
+        self,
+        path: str,
+        *subpath: str,
+        value_type: type[T],
+        optional_types: Sequence[type] = (),
+        fallback: T | None = None,
+    ) -> T:
         value = self._get_value(path, *subpath)
-        if type(value) not in (int, float):
-            raise TypeError("not an float", path, *subpath)
-        return float(value)
+        if value is None:
+            if fallback is None:
+                raise KeyError(path, *subpath)
+            return fallback
+        if type(value) not in (value_type, *optional_types):
+            raise TypeError(
+                f"Expected value type: {value_type.__name__}, found: {type(value).__name__}",
+                path,
+                *subpath,
+            )
+        return cast(T, value_type(value))
 
-    def get_bool(self, path: str, *subpath: str) -> bool:
-        value = self._get_value(path, *subpath)
-        if type(value) not in (int, bool):
-            raise TypeError("not an bool", path, *subpath)
-        return bool(value)
+    def get_int(self, path: str, *subpath: str, fallback: int | None = None) -> int:
+        return self._get_value_typed(path, *subpath, value_type=int, fallback=fallback)
 
-    def get_str(self, path: str, *subpath: str) -> str:
-        value = self._get_value(path, *subpath)
-        if not isinstance(value, str):
-            raise TypeError("not an str", path, *subpath)
-        return value
+    def get_float(
+        self, path: str, *subpath: str, fallback: float | None = None
+    ) -> float:
+        return self._get_value_typed(
+            path, *subpath, value_type=float, optional_types=[int], fallback=fallback
+        )
+
+    def get_bool(self, path: str, *subpath: str, fallback: bool | None = None) -> bool:
+        return self._get_value_typed(
+            path, *subpath, value_type=bool, optional_types=[int], fallback=fallback
+        )
+
+    def get_str(self, path: str, *subpath: str, fallback: str | None = None) -> str:
+        return self._get_value_typed(path, *subpath, value_type=str, fallback=fallback)
 
     def get_config_list(self, path: str, *subpath: str) -> list[Self]:
-        value = self._get_value(path, *subpath)
+        value = self._get_required_value(path, *subpath)
         if not isinstance(value, list):
             raise TypeError("not an list", path, *subpath)
         if any(not isinstance(x, dict) for x in value):
@@ -68,7 +86,7 @@ class Config:
         return [self.__class__(v) for v in value]
 
     def get_str_list(self, path: str, *subpath: str) -> list[str]:
-        value = self._get_value(path, *subpath)
+        value = self._get_required_value(path, *subpath)
         if not isinstance(value, list):
             raise TypeError("not an list", path, *subpath)
         if any(not isinstance(x, str) for x in value):
