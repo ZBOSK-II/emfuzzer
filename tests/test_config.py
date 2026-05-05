@@ -66,11 +66,11 @@ def test_throws_on_unknown_config_list_key() -> None:
 
 
 def test_returns_int() -> None:
-    conf = Config({"a": 2, "b": 3, "sub": {"x": 42, "path": {"d": 1410}}})
+    conf = Config({"a": 2, "b": 3, "sub": {"c": 42, "path": {"d": 1410}}})
 
     assert conf.get_int("a") == 2
     assert conf.get_int("b") == 3
-    assert conf.get_int("sub", "x") == 42
+    assert conf.get_int("sub", "c") == 42
     assert conf.get_int("sub", "path", "d") == 1410
 
 
@@ -86,11 +86,11 @@ def test_throws_when_not_int() -> None:
 
 
 def test_returns_float() -> None:
-    conf = Config({"a": 2.5, "b": 3, "sub": {"x": 42.4, "path": {"d": 14.10}}})
+    conf = Config({"a": 2.5, "b": 3, "sub": {"c": 42.4, "path": {"d": 14.10}}})
 
     assert conf.get_float("a") == 2.5
     assert conf.get_float("b") == 3
-    assert conf.get_float("sub", "x") == 42.4
+    assert conf.get_float("sub", "c") == 42.4
     assert conf.get_float("sub", "path", "d") == 14.10
 
 
@@ -171,12 +171,12 @@ def test_returns_bool() -> None:
 
 
 def test_returns_bool_from_int() -> None:
-    conf = Config({"a": 2, "b": -1, "c": 0, "sub": {"x": 3}})
+    conf = Config({"a": 2, "b": -1, "c": 0, "sub": {"d": 3}})
 
     assert conf.get_bool("a")
     assert conf.get_bool("b")
     assert not conf.get_bool("c")
-    assert conf.get_bool("sub", "x")
+    assert conf.get_bool("sub", "d")
 
 
 def test_throws_when_not_bool() -> None:
