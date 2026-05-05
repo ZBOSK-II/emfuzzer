@@ -21,7 +21,7 @@ class Config:
         config = self.__class__(subsection)
         if subpath:
             try:
-                config.section(*subpath)
+                return config.section(*subpath)
             except KeyError:
                 raise KeyError(path, *subpath) from None
         return config
@@ -84,7 +84,7 @@ class Config:
                 raise KeyError(path, *subpath)
             return fallback
         if not isinstance(value, list):
-            raise TypeError("not an list", path, *subpath)
+            raise TypeError("not a list", path, *subpath)
         if any(not isinstance(x, value_type) for x in value):
             raise TypeError(
                 f"Expected list of values of type: {value_type.__name__}",
