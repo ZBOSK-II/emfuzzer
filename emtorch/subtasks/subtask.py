@@ -33,6 +33,7 @@ class SubTask(ABC):
         self._name = name
         self._logger = logging.LoggerAdapter(logger, extra={"subtask": name})
 
+    @property
     def name(self) -> str:
         return self._name
 
@@ -48,6 +49,7 @@ class SubTask(ABC):
     def finish(self) -> str:
         pass
 
+    @property
     @abstractmethod
     def result_type(self) -> type[StrEnum]:
         pass
@@ -63,6 +65,7 @@ class TypedSubTask[T: StrEnum](SubTask):
     def finish(self) -> T:
         pass
 
+    @property
     @abstractmethod
     def result_type(self) -> type[T]:
         pass
@@ -79,5 +82,6 @@ class BasicSubTask(TypedSubTask[BasicResult]):
     def basic_start(self, context: CaseContext) -> bool:
         pass
 
+    @property
     def result_type(self) -> type[Result]:
         return self.Result

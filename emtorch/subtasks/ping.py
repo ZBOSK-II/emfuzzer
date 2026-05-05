@@ -91,7 +91,7 @@ class PingIsAlive(Subprocess):
         assert self.process is not None
         assert self.process.stdout is not None
 
-        self.stream = PingIsAliveStream(self.name(), self.process.stdout, self.process)
+        self.stream = PingIsAliveStream(self.name, self.process.stdout, self.process)
         self.io.register(self.stream)  # overrides registration done by parent
 
         return True

@@ -45,7 +45,7 @@ class Remote(BasicSubTask):
                 return False
             return True
         except Exception as ex:  # pylint: disable=broad-exception-caught
-            self.logger.error(f"Failed to start remote task <{self.name()}>: {ex}")
+            self.logger.error(f"Failed to start remote task <{self.name}>: {ex}")
             return False
 
     def finish(self) -> BasicSubTask.Result:
@@ -55,7 +55,7 @@ class Remote(BasicSubTask):
             except Exception as ex:  # pylint: disable=broad-exception-caught
                 signal = self.finish_config.signal
                 self.logger.error(
-                    f"Failed to send signal {signal} to remote task <{self.name()}>: {ex}"
+                    f"Failed to send signal {signal} to remote task <{self.name}>: {ex}"
                 )
                 return self.Result.ERROR
         try:
@@ -65,7 +65,7 @@ class Remote(BasicSubTask):
             return self.Result.TIMEOUT
         except Exception as ex:  # pylint: disable=broad-exception-caught
             self.logger.error(
-                f"Failed while waiting for remote task <{self.name()}>: {ex}"
+                f"Failed while waiting for remote task <{self.name}>: {ex}"
             )
             return self.Result.ERROR
         finally:

@@ -48,9 +48,7 @@ class CoapMonitor(TypedSubTask[CoapMonitorResult]):
     def start(self, context: CaseContext) -> CoapMonitorResult | SubTask.StartedType:
         self._queue = self._io.make_queue(tuple[NetworkAddress, bytes])
         self._validator = Validator(self._target, self._response_timeout)
-        self._socket = UdpClientSocket(
-            self.name() + ".udp", self._queue, self._validator
-        )
+        self._socket = UdpClientSocket(self.name + ".udp", self._queue, self._validator)
         self._io.register(self._socket)
         return SubTask.STARTED
 
@@ -65,6 +63,7 @@ class CoapMonitor(TypedSubTask[CoapMonitorResult]):
             else CoapMonitorResult.UNEXPECTED_MESSAGE_RECEIVED
         )
 
+    @property
     def result_type(self) -> type[CoapMonitorResult]:
         return CoapMonitorResult
 
@@ -101,6 +100,7 @@ class CoapSend(TypedSubTask[Validator.Result]):
     def finish(self) -> Validator.Result:
         return self._monitor.wait_for_response()
 
+    @property
     def result_type(self) -> type[Validator.Result]:
         return Validator.Result
 

@@ -78,8 +78,9 @@ class SubTaskExecution:
         self._results = results
         self._start_result: SubTask.StartResult | None = None
 
+    @property
     def name(self) -> str:
-        return self._task.name()
+        return self._task.name
 
     def start(self, context: CaseContext) -> None:
         self._start_result = self._task.start(context)
@@ -105,23 +106,24 @@ class SubTasks:
         self._prefix = prefix
         self._tasks: list[SubTaskExecution] = []
 
+    @property
     def name(self) -> str:
         return ".".join(self._prefix)
 
     def register(self, task: SubTask) -> None:
-        logger.info(f"Registering <{task.name()}>")
+        logger.info(f"Registering <{task.name}>")
         execution = SubTaskExecution(
             task,
-            self._results.register_subtask(task.name(), task.result_type()),
+            self._results.register_subtask(task.name, task.result_type),
         )
         self._tasks.append(execution)
 
     def execute_for(self, context: CaseContext) -> None:
-        logger.info(f"Start {self.name()}")
+        logger.info(f"Start {self.name}")
         for task in self._tasks:
-            logger.info(f"Executing {task.name()}")
+            logger.info(f"Executing {task.name}")
             task.execute_for(context)
-        logger.info(f"End {self.name()}")
+        logger.info(f"End {self.name}")
 
     @contextmanager
     def monitor(self, context: CaseContext) -> Iterator[None]:
@@ -132,18 +134,18 @@ class SubTasks:
             self.finish_all_for(context)
 
     def start_all(self, context: CaseContext) -> None:
-        logger.info(f"Starting {self.name()}")
+        logger.info(f"Starting {self.name}")
         for task in self._tasks:
-            logger.info(f"Starting {task.name()}")
+            logger.info(f"Starting {task.name}")
             task.start(context)
-        logger.info(f"All {self.name()} started")
+        logger.info(f"All {self.name} started")
 
     def finish_all_for(self, context: CaseContext) -> None:
-        logger.info(f"Finishing {self.name()}")
+        logger.info(f"Finishing {self.name}")
         for task in self._tasks:
-            logger.info(f"Finishing {task.name()}")
+            logger.info(f"Finishing {task.name}")
             task.finish_for(context)
-        logger.info(f"All {self.name()} finished")
+        logger.info(f"All {self.name} finished")
 
     @classmethod
     def from_config(cls, *prefix: str, context: Context) -> Self:

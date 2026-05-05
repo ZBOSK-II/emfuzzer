@@ -88,8 +88,8 @@ class Subprocess(BasicSubTask):
 
         assert self.process.stdout is not None
         assert self.process.stderr is not None
-        self.io.register(StreamLogger(self.name(), "STDOUT", self.process.stdout))
-        self.io.register(StreamLogger(self.name(), "STDERR", self.process.stderr))
+        self.io.register(StreamLogger(self.name, "STDOUT", self.process.stdout))
+        self.io.register(StreamLogger(self.name, "STDERR", self.process.stderr))
         return True
 
     def finish(self) -> BasicSubTask.Result:
