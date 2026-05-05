@@ -166,9 +166,12 @@ Monitors are tasks that their execution is started after
 setups, then they are active during the actions and
 finish before checks.
 
-All Sub Tasks instances has to be named using `name`.
+All Sub Tasks instances has to be named using key `name`.
+Their type is selected using key `type`, with type-specific
+arguments passed in key `args`. Arguments with default
+values can be omitted from config.
 
-Available tasks:
+Available task types:
  * `subprocess` - execute script and capture its exit code.
    Arguments:
     - `cmd` - (list of $-strings) command to be executed
@@ -176,7 +179,7 @@ Available tasks:
       interpret the command
     - `finish` - configuration of finishing the task:
       - `signal` - (string) signal name to be sent to the
-        task (can be `NONE`)
+        task, useful when in monitoring (can be `NONE`)
       - `timeout` - (float) time to wait for command to
         finish (starts after signal is sent)
  * `ping_stable` - pings a target number of times, expects
@@ -195,7 +198,7 @@ Available tasks:
    Arguments:
      - `connection` - dictionary containing:
        - `host` - (string) SSH host name
-       - `port`- (integer) SSH port
+       - `port`- (integer) SSH port (default: 22)
        - `username` - (string) user name
        - `password` - (string) user's password
      - `command` - (string) command to be executed
@@ -206,14 +209,14 @@ Available tasks:
        the command
     - `finish` - configuration of finishing the task:
       - `signal` - (string) signal name to be sent to the
-        task (can be `NONE`)
+        task, useful when in monitoring (can be `NONE`)
       - `timeout` - (float) time to wait for command to
         finish (starts after signal is sent)
  * `sftp-upload` - uploads file using SFTP
    Arguments:
      - `connection` - dictionary containing:
        - `host` - (string) SSH host name
-       - `port`- (integer) SSH port
+       - `port`- (integer) SSH port (default: 22)
        - `username` - (string) user name
        - `password` - (string) user's password
      - `local_path` - ($-string) path to a local file to
@@ -226,7 +229,7 @@ Available tasks:
    Arguments:
      - `connection` - dictionary containing:
        - `host` - (string) SSH host name
-       - `port`- (integer) SSH port
+       - `port`- (integer) SSH port (default: 22)
        - `username` - (string) user name
        - `password` - (string) user's password
      - `remote_path` - ($-string) path to a remote file to
@@ -265,6 +268,10 @@ Available tasks:
          group `value` used to extract the value
       - `subtask` - subtask which logs should be scanned
 
-Environment variables available in $-strings:
+$-strings in arguments allow for interpolation of `$KEYWORD`
+inside passed string. Both `$KEYWORD` and `${KEYWORD}` are
+supported. Use `$$` to escape `$` character.
+
+Keywords available in $-strings:
  * `EMTORCH_CASE_ID` - unique identifier of the current case
  * `EMTORCH_DATA_PATH` - path to the case data
